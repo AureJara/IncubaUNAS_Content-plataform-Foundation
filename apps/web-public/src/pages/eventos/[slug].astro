@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Agenda from '../../components/Agenda.astro';
+import Container from '../../components/Container.astro';
+import Notice from '../../components/Notice.astro';
+import { getEvent, getSite, UpstreamError } from '../../lib/api';
+import { isCancelled, kindIcon, kindLabel, registrationSentence } from '../../lib/events';
+import { formatRange, pageTitle } from '../../lib/format';
+import { siteSlug } from '../../lib/site';
+
+const slug = siteSlug();
+const eventSlug = Astro.params.slug ?? '';
+let site = null;
+let event = null;
+let failed = false;
+
+try {
+  const [siteResult, eventResult] = await Promise.all([getSite(slug), getEvent(slug, eventSlug)]);
+  site = siteResult.data;
+  event = eventResult.data;
+  if (event) {
+    if (eventResult.cache.cacheControl) Astro.response.headers.set('cache-control', eventResult.cache.cacheControl);
+    if (eventResult.cache.surrogateKey) Astro.response.headers.set('surrogate-key', eventResult.cache.surrogateKey);
+  } else {
+    Astro.response.status = 404;
+  }
+} catch (error) {
+  if (!(error instanceof UpstreamError)) throw error;
+  failed = true;
+  Astro.response.status = 503;
+  Astro.response.headers.set('cache-control', 'no-store');
+}
+
+const locale = site?.locale ?? 'es-PE';
+const siteName = site?.name ?? 'IncubaUNAS';
+const cancelled = event ? isCancelled(event) : false;
+const registration = event ? registrationSentence(event.registration) : null;
+const title = event?.title ?? (failed ? 'Servicio no disponible' : 'Evento no encontrado');
+---
+
+<Layout title={pageTitle(title, siteName)} site={site} description={event?.description ?? undefined} noindex={!event}>
+  {
+    failed ? (
+      <Container>
+        <Notice tone="error">No pudimos cargar el evento. Inténtalo de nuevo en unos minutos.</Notice>
+      </Container>
+    ) : !event ? (
+      <Container>
+        <h1 class="text-headline-md-mobile md:text-headline-md font-headline-md text-on-surface mb-4">Evento no encontrado</h1>
+        <a class="text-primary font-bold hover:underline" href="/eventos">Ver todos los eventos</a>
+      </Container>
+    ) : (
+      <article>
+        <header class="relative overflow-hidden border-b border-surface-container-highest bg-gradient-to-b from-surface-container-lowest via-background to-surface-container-low">
+          <span class="material-symbols-outlined absolute right-6 top-6 text-[10rem] leading-none text-primary/10 select-none hidden md:block" aria-hidden="true">
+            {kindIcon(event.kind)}
+          </span>
+          <div class="relative max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-16 space-y-4">
+            <a href="/eventos" class="inline-flex items-center gap-1 text-label-lg font-label-lg text-primary hover:underline">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
+              Todos los eventos
+            </a>
+            <p class="text-label-sm font-label-sm uppercase tracking-wider text-tertiary">{kindLabel(event.kind)}</p>
+            <h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface tracking-tight max-w-3xl">{event.title}</h1>
+            <p class="flex items-center gap-2 text-body-lg font-body-lg text-secondary">
+              <span class="material-symbols-outlined text-primary" aria-hidden="true">calendar_month</span>
+              {formatRange(event.starts_at, event.ends_at, event.timezone, locale)}
+            </p>
+            {cancelled && (
+              <p class="inline-block rounded-md bg-error-container px-3 py-1 text-label-md font-label-md text-on-error-container" role="status">
+                Este evento fue cancelado.
+              </p>
+            )}
+          </div>
+        </header>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div class="lg:col-span-2 space-y-10">
+            {event.description && (
+              <section aria-labelledby="acerca">
+                <h2 id="acerca" class="text-headline-md-mobile md:text-headline-md font-headline-md text-on-surface mb-3">Acerca del evento</h2>
+                <p class="text-body-lg font-body-lg text-secondary max-w-prose">{event.description}</p>
+              </section>
+            )}
+            <section aria-labelledby="agenda">
+              <h2 id="agenda" class="text-headline-md-mobile md:text-headline-md font-headline-md text-on-surface mb-4">Agenda</h2>
+              <Agenda event={event} locale={locale} />
+            </section>
+          </div>
+
+          {!cancelled && (
+            <aside class="lg:col-span-1" aria-labelledby="inscripcion">
+              <div class="sticky top-24 rounded-xl border border-surface-container-highest bg-surface-container-lowest p-6 shadow-sm space-y-4">
+                <h2 id="inscripcion" class="text-headline-sm font-headline-sm text-on-surface">Inscripción</h2>
+                {registration && <p class="text-body-md font-body-md text-secondary">{registration}</p>}
+                {/* Espacio estable para la isla de registro del Equipo 3 (PF-043): se monta aquí por data-attributes. */}
+                <div data-registration-slot data-site-slug={slug} data-event-slug={event.slug}>
+                  <noscript><p class="text-body-sm text-secondary">Activa JavaScript para inscribirte.</p></noscript>
+                </div>
+              </div>
+            </aside>
+          )}
+        </div>
+      </article>
+    )
+  }
+</Layout>

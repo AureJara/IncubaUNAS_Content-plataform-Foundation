@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "configuration.event.cancelled.v1",
+  "description": "Dueño: Equipo 2 (configuration). Contrato del lado consumidor, pendiente de confirmar.",
+  "type": "object",
+  "allOf": [{ "$ref": "../envelope.v1.json" }],
+  "properties": {
+    "topic": { "const": "configuration.event.cancelled.v1" },
+    "producer": { "const": "configuration" },
+    "data": {
+      "type": "object",
+      "required": ["event_id", "publication_id", "reason_code", "effective_at"],
+      "properties": {
+        "event_id": { "type": "string", "format": "uuid" },
+        "publication_id": { "type": "string", "format": "uuid" },
+        "reason_code": { "type": "string", "minLength": 1 },
+        "effective_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

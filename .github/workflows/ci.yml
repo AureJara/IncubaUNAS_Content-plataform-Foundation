@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_only_admin_password
+          PLATFORM_DB_MIGRATOR_PASSWORD: ci_only_platform_migrator
+          PLATFORM_DB_APP_PASSWORD: ci_only_platform_app
+          CONTENT_DB_MIGRATOR_PASSWORD: ci_only_content_migrator
+          CONTENT_DB_APP_PASSWORD: ci_only_content_app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      # El sitio público lee estas variables al compilar; los valores no son secretos.
+      SITE_SLUG: demo
+      ASTRO_TELEMETRY_DISABLED: '1'
+      PLATFORM_DATABASE_ADMIN_URL: postgres://platform_migrator:ci_only_platform_migrator@localhost:5432/platform
+      PLATFORM_DATABASE_URL: postgres://platform_app:ci_only_platform_app@localhost:5432/platform
+      CONTENT_DATABASE_ADMIN_URL: postgres://content_migrator:ci_only_content_migrator@localhost:5432/content
+      CONTENT_DATABASE_URL: postgres://content_app:ci_only_content_app@localhost:5432/content
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Crear roles y bases de datos (mismo script que docker compose)
+        env:
+          POSTGRES_USER: postgres
+          PGPASSWORD: ci_only_admin_password
+          PGHOST: localhost
+          PLATFORM_DB_MIGRATOR_PASSWORD: ci_only_platform_migrator
+          PLATFORM_DB_APP_PASSWORD: ci_only_platform_app
+          CONTENT_DB_MIGRATOR_PASSWORD: ci_only_content_migrator
+          CONTENT_DB_APP_PASSWORD: ci_only_content_app
+        run: sh docker/postgres/init/01-roles-and-databases.sh
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm contracts:lint
+      - run: pnpm test
+      - run: pnpm build
+      - name: Prueba de humo del sitio compilado (CSP, sin recursos de terceros, degradación)
+        run: pnpm test:smoke
+      - name: Auditoría de dependencias
+        run: pnpm audit --prod --audit-level=high

@@ -1,0 +1,8 @@
+extends: [[spectral:asyncapi, recommended]]
+rules:
+  # Nos mantenemos en AsyncAPI 3.0.0 hasta que el parser del resto de equipos soporte 3.1.
+  asyncapi-latest-version: off
+  # No publicamos un buzón de equipo en un repositorio público.
+  asyncapi-info-contact-properties: off
+  # Cada operación lleva `summary`.
+  asyncapi-3-operation-description: off

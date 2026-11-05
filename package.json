@@ -1,17 +1,40 @@
 {
-  "name": "incubaunas-platform",
+  "name": "incubaunas-content-platform-foundation",
+  "version": "0.1.0",
+  "private": true,
   "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+  "description": "Equipo 1 — Content & Platform Foundation de la plataforma de eventos de IncubaUNAS",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24"
   },
-  "dependencies": {
-    "@astrojs/tailwind": "^5.1.4",
-    "astro": "^5.1.0",
-    "tailwindcss": "^3.4.17"
+  "scripts": {
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r --if-present test",
+    "contracts:lint": "node tools/lint-contracts.mjs",
+    "db:up": "docker compose up -d --wait postgres",
+    "db:down": "docker compose down",
+    "stack:up": "docker compose up -d --wait",
+    "check": "pnpm lint && pnpm typecheck && pnpm contracts:lint && pnpm test && pnpm test:smoke",
+    "test:smoke": "pnpm -r --if-present test:smoke"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stoplight/spectral-cli": "^6.17.0",
+    "@types/node": "^26.6.6",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.1.0",
+    "yaml": "^2.9.1"
   }
 }

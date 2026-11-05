@@ -1,0 +1,257 @@
+---
+import Layout from '../layouts/Layout.astro';
+import EventCard from '../components/EventCard.astro';
+import Notice from '../components/Notice.astro';
+import { getSite, listEvents, UpstreamError, type PublicEventSummary } from '../lib/api';
+import { siteSlug } from '../lib/site';
+
+// El inicio mezcla el diseño institucional (texto fijo) con los próximos eventos reales de la Content API.
+const FEATURED = 3;
+let site = null;
+let upcoming: PublicEventSummary[] = [];
+let failed = false;
+try {
+  const [siteResult, eventsResult] = await Promise.all([getSite(siteSlug()), listEvents(siteSlug())]);
+  site = siteResult.data;
+  upcoming = (eventsResult.data?.items ?? []).filter((event) => event.status !== 'cancelled').slice(0, FEATURED);
+  if (eventsResult.cache.cacheControl) Astro.response.headers.set('cache-control', eventsResult.cache.cacheControl);
+  if (eventsResult.cache.surrogateKey) Astro.response.headers.set('surrogate-key', eventsResult.cache.surrogateKey);
+} catch (error) {
+  if (!(error instanceof UpstreamError)) throw error;
+  // La página se sirve igual (el resto es contenido fijo), pero esta versión degradada no se cachea.
+  failed = true;
+  Astro.response.headers.set('cache-control', 'no-store');
+}
+const locale = site?.locale ?? 'es-PE';
+---
+
+<Layout title="IncubaUNAS | Conéctate, Suscríbete y Crea Eventos Extraordinarios" site={site} activeNav="inicio">
+  <!-- 2. Hero Section -->
+  <section class="relative overflow-hidden pt-12 pb-20 lg:pt-16 lg:pb-24 border-b border-surface-container-highest bg-gradient-to-b from-surface-container-lowest via-background to-surface-container-low">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <!-- Header & Pitch -->
+      <div class="text-center max-w-4xl mx-auto space-y-5">
+        <h1 class="text-display font-display text-on-surface tracking-tight leading-tight">
+          Conéctate, Suscríbete y Crea <span class="text-primary">Eventos Extraordinarios</span>
+        </h1>
+        <p class="text-body-lg font-body-lg text-secondary max-w-2xl mx-auto">
+          Somos la incubadora de la Universidad Nacional Agraria de la Selva. Brindamos asesoría y asistencia técnica para la creación de emprendimientos innovadores.
+        </p>
+        <!-- CTAs -->
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+          <a
+            class="bg-primary-container hover:bg-primary text-on-primary font-semibold px-6 py-3 rounded-lg shadow-sm transition-all duration-200 ease-in-out active:scale-95 flex items-center gap-2 text-label-lg font-label-lg"
+            href="/eventos"
+          >
+            <span class="material-symbols-outlined" data-icon="explore">explore</span>
+            Explorar Eventos
+          </a>
+          <a
+            class="bg-surface-container-lowest border border-on-surface hover:bg-on-surface hover:text-surface-container-lowest text-on-surface font-semibold px-6 py-3 rounded-lg transition-all duration-200 ease-in-out active:scale-95 flex items-center gap-2 text-label-lg font-label-lg"
+            href="/convocar"
+          >
+            <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+            Crear mi Evento
+          </a>
+        </div>
+      </div>
+
+      <!-- Próximos eventos: datos reales de la Content API -->
+      <div class="mt-14" id="eventos">
+        <div class="flex items-end justify-between gap-4 mb-6">
+          <h2 class="text-headline-md-mobile md:text-headline-md font-headline-md text-on-surface">Próximos eventos</h2>
+          <a class="text-primary font-bold text-label-lg font-label-lg inline-flex items-center gap-1 hover:underline" href="/eventos">
+            Ver todos
+            <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
+        {
+          failed ? (
+            <Notice tone="error">No pudimos cargar los eventos. Inténtalo de nuevo en unos minutos.</Notice>
+          ) : upcoming.length === 0 ? (
+            <Notice>Por ahora no hay eventos publicados. Vuelve pronto.</Notice>
+          ) : (
+            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcoming.map((event) => (
+                <li class="flex">
+                  <EventCard event={event} locale={locale} />
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Data Section (Métricas y Cifras Clave) -->
+  <section class="py-16 bg-surface-container-lowest border-b border-surface-container-highest">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Metrica 1 -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+10</p>
+          <h4 class="text-title font-title text-on-surface">Programas</h4>
+        </div>
+        <!-- Metrica 2 -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+300</p>
+          <h4 class="text-title font-title text-on-surface">Emprendedores impactados</h4>
+        </div>
+        <!-- Metrica 3 -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-tertiary-container tracking-tight leading-none mb-2">+40</p>
+          <h4 class="text-title font-title text-on-surface">Startups incubadas</h4>
+        </div>
+        <!-- Metrica 4 -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">$500k</p>
+          <h4 class="text-title font-title text-on-surface">Capital semilla</h4>
+        </div>
+        <!-- Metrica 5: Mentores -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-primary tracking-tight leading-none mb-2">+20</p>
+          <h4 class="text-title font-title text-on-surface">Mentores</h4>
+        </div>
+        <!-- Metrica 6: Startups Financiadas -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+8</p>
+          <h4 class="text-title font-title text-on-surface">Startups Financiadas</h4>
+        </div>
+        <!-- Metrica 7: Talleres -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+30</p>
+          <h4 class="text-title font-title text-on-surface">Talleres</h4>
+        </div>
+        <!-- Metrica 8: Congresos -->
+        <div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+          <p class="text-display font-display text-tertiary-container tracking-tight leading-none mb-2">+2</p>
+          <h4 class="text-title font-title text-on-surface">Congresos</h4>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Awards and Merits (Premios y Reconocimientos) -->
+  <section class="py-16 bg-surface-container-low border-b border-surface-container-highest">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="flex flex-col items-center text-center justify-center mb-10 gap-3 max-w-2xl mx-auto">
+        <h2 class="text-headline-lg font-headline-lg text-on-surface mt-1">Premios y Reconocimientos</h2>
+        <p class="text-secondary text-body-md font-body-md max-w-md text-center">
+          Avalados por organismos internacionales de tecnología, auditoría de pagos y gremios de organizadores profesionales.
+        </p>
+      </div>
+      <div class="max-w-5xl mx-auto flex flex-wrap justify-center gap-6">
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm flex flex-col items-center justify-center text-center flex-1 min-w-[260px] max-w-sm hover:shadow-md transition-all duration-200 group">
+          <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary mb-4 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-2xl" data-icon="emoji_events">emoji_events</span>
+          </div>
+          <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">
+            Primera incubadora en llevar emprendimientos amazónicos a Europa
+          </h3>
+        </div>
+
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm flex flex-col items-center justify-center text-center flex-1 min-w-[260px] max-w-sm hover:shadow-md transition-all duration-200 group">
+          <div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary-container mb-4 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-2xl" data-icon="workspace_premium">workspace_premium</span>
+          </div>
+          <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">
+            2 startups en Programas de Mentor Day - España
+          </h3>
+        </div>
+
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm flex flex-col items-center justify-center text-center flex-1 min-w-[260px] max-w-sm hover:shadow-md transition-all duration-200 group">
+          <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary mb-4 group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-2xl" data-icon="military_tech">military_tech</span>
+          </div>
+          <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">
+            Articulación con Gobiernos regionales y toda la Red CITE
+          </h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. What We Offer (Lo que ofrecemos) -->
+  <section class="py-16 lg:py-20 bg-surface-container-lowest border-b border-surface-container-highest" id="programas-resumen">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <h2 class="text-headline-lg font-headline-lg text-on-surface mt-1">Lo que Ofrecemos para Asistentes y Creadores</h2>
+        <p class="text-secondary text-body-md font-body-md mt-2">
+          Una suite holística creada tanto para entusiastas que buscan conectar como para marcas que producen experiencias masivas.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group">
+          <div class="space-y-4 flex flex-col items-center">
+            <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto">
+              <span class="material-symbols-outlined text-2xl" data-icon="supervisor_account">supervisor_account</span>
+            </div>
+            <div>
+              <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Mentoría</h3>
+              <p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Acompañamiento personalizado y soporte en fondos concursables.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group">
+          <div class="space-y-4 flex flex-col items-center">
+            <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto">
+              <span class="material-symbols-outlined text-2xl" data-icon="school">school</span>
+            </div>
+            <div>
+              <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Capacitaciones</h3>
+              <p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Formación para fortalecer ideas y negocios sostenibles.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group">
+          <div class="space-y-4 flex flex-col items-center">
+            <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto">
+              <span class="material-symbols-outlined text-2xl" data-icon="hub">hub</span>
+            </div>
+            <div>
+              <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Networking</h3>
+              <p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Acceso a una red de emprendedores y mentores.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group">
+          <div class="space-y-4 flex flex-col items-center">
+            <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto">
+              <span class="material-symbols-outlined text-2xl" data-icon="domain">domain</span>
+            </div>
+            <div>
+              <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Coworking</h3>
+              <p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Espacios de trabajo colaborativo totalmente equipados.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Our Allies (Nuestros aliados) -->
+  <section class="py-16 bg-surface-container-low border-b border-surface-container-highest">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 class="text-headline-lg font-headline-lg text-on-surface mt-1">Nuestros Aliados</h2>
+        <p class="text-secondary text-body-md font-body-md mt-2">Empresas e instituciones que confían y colaboran con nuestra incubadora</p>
+      </div>
+
+      <div class="mt-8 max-w-5xl mx-auto bg-surface-container-lowest p-6 sm:p-8 rounded-2xl border border-surface-container-highest shadow-sm flex items-center justify-center">
+        <img
+          class="w-full h-auto object-contain max-h-[420px] rounded-lg"
+          src="/brand/aliados.png"
+          width="711"
+          height="351"
+          loading="lazy"
+          alt="Logos de los aliados de IncubaUNAS: Ministerio de la Producción, PRO Innóvate, red CITE, Gobierno Regional de Huánuco, Equipu, Kunan, MentorDay y otras instituciones"
+        />
+      </div>
+    </div>
+  </section>
+</Layout>

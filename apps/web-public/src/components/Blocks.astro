@@ -1,0 +1,139 @@
+---
+import { renderMarkdown } from '../lib/markdown';
+import { safeHref } from '../lib/format';
+import { mediaUrl, siteSlug } from '../lib/site';
+import { getEvent, listEvents, UpstreamError } from '../lib/api';
+import Agenda from './Agenda.astro';
+import EventCard from './EventCard.astro';
+import type { PublicPage } from '../lib/api';
+
+interface Props {
+  blocks: PublicPage['blocks'];
+  locale: string;
+}
+
+const { blocks, locale } = Astro.props;
+const slug = siteSlug();
+
+// Los bloques de eventos leen la proyección pública; si la API falla, el bloque se omite sin tumbar la página.
+async function safe<T>(work: () => Promise<T>): Promise<T | null> {
+  try {
+    return await work();
+  } catch (error) {
+    if (error instanceof UpstreamError) return null;
+    throw error;
+  }
+}
+
+const catalog = blocks.some((b) => b.type === 'event_catalog') ? await safe(() => listEvents(slug)) : null;
+const events = await Promise.all(
+  blocks
+    .filter((b) => b.type === 'featured_event' || b.type === 'agenda')
+    .map(async (b) => [String(b.props.event_slug), await safe(() => getEvent(slug, String(b.props.event_slug)))] as const),
+);
+const eventBySlug = new Map(events.map(([eventSlug, result]) => [eventSlug, result?.data ?? null]));
+
+const BUTTON =
+  'inline-flex items-center gap-2 bg-primary-container hover:bg-primary text-on-primary font-semibold px-6 py-3 rounded-lg shadow-sm transition-all duration-200 ease-in-out active:scale-95 text-label-lg font-label-lg';
+---
+
+{
+  blocks.map((block) => (
+    <>
+      {block.type === 'hero' && (
+        <section class="relative overflow-hidden rounded-xl border border-surface-container-highest bg-gradient-to-b from-surface-container-lowest via-background to-surface-container-low px-6 py-14 lg:py-20 text-center">
+          <div class="max-w-3xl mx-auto space-y-5">
+            <h1 class="text-display-mobile md:text-display font-display text-on-surface tracking-tight">
+              {String(block.props.heading)}
+            </h1>
+            {block.props.subheading && (
+              <p class="text-body-lg font-body-lg text-secondary max-w-2xl mx-auto">{String(block.props.subheading)}</p>
+            )}
+            {block.props.cta_label && block.props.cta_href && (
+              <p class="pt-2">
+                <a class={BUTTON} href={safeHref(block.props.cta_href)}>
+                  {String(block.props.cta_label)}
+                  <span class="material-symbols-outlined text-xl" aria-hidden="true">arrow_forward</span>
+                </a>
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
+      {block.type === 'rich_text' && <section class="prose-content" set:html={renderMarkdown(String(block.props.markdown))} />}
+
+      {block.type === 'image' && mediaUrl(String(block.props.media_id)) && (
+        <figure class="overflow-hidden rounded-xl border border-surface-container-highest bg-surface-container-lowest">
+          <img class="w-full h-auto" src={mediaUrl(String(block.props.media_id))!} alt={String(block.props.alt)} loading="lazy" />
+          {block.props.caption && (
+            <figcaption class="px-4 py-3 text-body-sm font-body-sm text-secondary">{String(block.props.caption)}</figcaption>
+          )}
+        </figure>
+      )}
+
+      {block.type === 'cta' && (
+        <section>
+          <a class={BUTTON} href={safeHref(block.props.href)}>
+            {String(block.props.label)}
+          </a>
+        </section>
+      )}
+
+      {block.type === 'faq' && (
+        <section class="max-w-3xl divide-y divide-surface-container-highest rounded-xl border border-surface-container-highest bg-surface-container-lowest" aria-label="Preguntas frecuentes">
+          {(block.props.items as { question: string; answer: string }[]).map((item) => (
+            <details class="group px-5 py-4">
+              <summary class="flex cursor-pointer items-center justify-between gap-4 text-title font-title text-on-surface">
+                {item.question}
+                <span class="material-symbols-outlined text-secondary transition-transform group-open:rotate-180" aria-hidden="true">expand_more</span>
+              </summary>
+              <div class="prose-content mt-3" set:html={renderMarkdown(item.answer)} />
+            </details>
+          ))}
+        </section>
+      )}
+
+      {block.type === 'event_catalog' && (
+        <section aria-labelledby="catalogo">
+          <h2 id="catalogo" class="text-headline-md-mobile md:text-headline-md font-headline-md text-on-surface mb-6">
+            Próximos eventos
+          </h2>
+          {!catalog?.data || catalog.data.items.length === 0 ? (
+            <p class="rounded-lg border-l-4 border-primary bg-primary/5 px-4 py-3 text-body-md text-secondary">
+              Por ahora no hay eventos publicados.
+            </p>
+          ) : (
+            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {catalog.data.items.map((event) => (
+                <li class="flex">
+                  <EventCard event={event} locale={locale} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {block.type === 'featured_event' && eventBySlug.get(String(block.props.event_slug)) && (
+        <section class="max-w-md">
+          <EventCard event={eventBySlug.get(String(block.props.event_slug))!} locale={locale} />
+        </section>
+      )}
+
+      {block.type === 'agenda' && eventBySlug.get(String(block.props.event_slug)) && (
+        <section aria-label="Agenda">
+          <Agenda event={eventBySlug.get(String(block.props.event_slug))!} locale={locale} />
+        </section>
+      )}
+
+      {block.type === 'lead_form' && (
+        <section class="rounded-xl border border-surface-container-highest bg-surface-container-low p-6">
+          <h2 class="text-headline-sm font-headline-sm text-on-surface">{String(block.props.title)}</h2>
+          {block.props.description && <p class="mt-2 text-body-md text-secondary">{String(block.props.description)}</p>}
+          <p class="mt-3 text-body-sm text-secondary">El formulario de contacto estará disponible próximamente.</p>
+        </section>
+      )}
+    </>
+  ))
+}

@@ -1,0 +1,6 @@
+extends: [[spectral:oas, recommended]]
+rules:
+  # Los componentes compartidos viven en common.v1.yaml; "sin usar" aquí no es un defecto.
+  oas3-unused-component: off
+  # Cada operación lleva `summary`; la `description` se escribe solo cuando aporta reglas de negocio.
+  operation-description: off

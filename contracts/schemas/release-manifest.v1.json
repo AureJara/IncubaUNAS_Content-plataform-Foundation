@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Manifiesto de release de evento (supuesto del lado consumidor)",
+  "description": "SUPUESTO: el Equipo 2 todavía no publicó el formato del manifiesto referenciado por configuration.event.release_published.v1. Esto es lo mínimo que Content necesita para su proyección pública; se valida al activar una release y debe confirmarse con el Equipo 2. Los campos desconocidos se ignoran.",
+  "type": "object",
+  "required": ["event", "programs", "sessions"],
+  "properties": {
+    "event": {
+      "type": "object",
+      "required": [
+        "id",
+        "site_id",
+        "slug",
+        "title",
+        "kind",
+        "starts_at",
+        "ends_at",
+        "timezone",
+        "status"
+      ],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "site_id": { "type": "string", "format": "uuid" },
+        "slug": { "type": "string", "pattern": "^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "kind": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "description": { "type": ["string", "null"], "maxLength": 5000 },
+        "starts_at": { "type": "string", "format": "date-time" },
+        "ends_at": { "type": "string", "format": "date-time" },
+        "timezone": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["published", "closed", "cancelled"] }
+      }
+    },
+    "programs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["slug", "name"],
+        "properties": {
+          "slug": { "type": "string" },
+          "name": { "type": "string" },
+          "color": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "sessions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "starts_at", "ends_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "program_slug": { "type": ["string", "null"] },
+          "title": { "type": "string" },
+          "starts_at": { "type": "string", "format": "date-time" },
+          "ends_at": { "type": "string", "format": "date-time" },
+          "venue_name": { "type": ["string", "null"] },
+          "speakers": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

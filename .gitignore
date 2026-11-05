@@ -1,32 +1,29 @@
-# Build outputs & Astro cache
-dist/
-.astro/
-.cache/
-.vite/
-
-# Dependencies
+# dependencias y build
 node_modules/
 /.pnp
 .pnp.js
+dist/
+coverage/
+.astro/
+.cache/
+.vite/
+*.tsbuildinfo
 
-# Environment variables & secrets
+# secretos: el repositorio es público, nada de esto se versiona
 .env
-.env.production
-.env.development
-.env.local
-.env.*.local
+.env.*
 !.env.example
+*.pem
+*.key
 
-# Logs
+# registros
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Coverage / Testing
-coverage/
-
-# Editor & IDE configs
+# editor y SO
 .idea/
 .vscode/*
 !.vscode/extensions.json
@@ -35,8 +32,6 @@ coverage/
 *.sublime-workspace
 *.swp
 *.swo
-
-# OS files
 .DS_Store
 .DS_Store?
 ._*
@@ -44,3 +39,6 @@ coverage/
 .Trashes
 Thumbs.db
 ehthumbs.db
+
+# local
+.claude/settings.local.json

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "configuration.event.release_published.v1",
+  "description": "Dueño: Equipo 2 (configuration). Contrato del lado consumidor: Content lo materializa como pending y lo activa solo con el manifiesto completo. Los campos exactos están pendientes de confirmar con el Equipo 2.",
+  "type": "object",
+  "allOf": [{ "$ref": "../envelope.v1.json" }],
+  "properties": {
+    "topic": { "const": "configuration.event.release_published.v1" },
+    "producer": { "const": "configuration" },
+    "data": {
+      "type": "object",
+      "required": [
+        "event_id",
+        "publication_id",
+        "release_version",
+        "manifest_ref",
+        "manifest_hash",
+        "effective_at"
+      ],
+      "properties": {
+        "event_id": { "type": "string", "format": "uuid" },
+        "publication_id": { "type": "string", "format": "uuid" },
+        "release_version": { "type": "integer", "minimum": 1 },
+        "manifest_ref": { "type": "string", "format": "uri-reference" },
+        "manifest_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "effective_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

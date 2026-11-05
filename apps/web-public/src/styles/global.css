@@ -1,0 +1,148 @@
+/*
+ * Sistema de diseño "Nexus Horizon" (docs/diseno/.../nexus_horizon/DESIGN.md).
+ * Los tokens (colores, tipografías, espaciados) viven en tailwind.config.mjs, tal como los entregó el
+ * equipo de frontend; Tailwind 4 los carga con @config. Las fuentes se sirven desde este mismo sitio
+ * (paquetes @fontsource): la CSP no admite orígenes externos y los visitantes no se exponen a terceros.
+ */
+@import 'tailwindcss';
+@config '../../tailwind.config.mjs';
+
+@layer base {
+  /* Tailwind 4 usa `currentColor` como borde por defecto; el diseño se pensó con el gris claro de Tailwind 3. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: #e5e7eb;
+  }
+
+  /* Foco visible para quien navega con teclado. */
+  :focus-visible {
+    outline: 3px solid var(--brand-primary, #005bbf);
+    outline-offset: 2px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+/*
+ * Componentes propios dentro de `@layer components`: así las utilidades de Tailwind (`text-base`, `mt-3`…)
+ * pueden ajustarlos. Sin la capa, el `font-size: 24px` del icono ganaría siempre a `text-[7rem]`.
+ */
+@layer components {
+  /* Iconos (Material Symbols Outlined, autoalojados). */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    border: 2px solid var(--brand-primary, #005bbf);
+    color: var(--brand-primary, #005bbf);
+    font-weight: 600;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  /* Contenido editorial (Markdown ya saneado en el servidor): el HTML llega sin clases. */
+  .prose-content {
+    max-width: 68ch;
+    @apply text-on-surface;
+  }
+  .prose-content > * + * {
+    margin-top: 1rem;
+  }
+  .prose-content h1,
+  .prose-content h2,
+  .prose-content h3 {
+    font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', sans-serif;
+    @apply text-on-surface;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    margin-top: 2rem;
+  }
+  .prose-content h1 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .prose-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .prose-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  .prose-content p,
+  .prose-content li {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .prose-content ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+  }
+  .prose-content ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+  }
+  .prose-content a {
+    color: var(--brand-primary, #005bbf);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-content blockquote {
+    border-left: 4px solid var(--brand-primary, #005bbf);
+    padding-left: 1rem;
+    @apply text-secondary;
+  }
+  .prose-content code {
+    @apply bg-surface-container;
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.9em;
+  }
+  .prose-content hr {
+    @apply border-surface-container-highest;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

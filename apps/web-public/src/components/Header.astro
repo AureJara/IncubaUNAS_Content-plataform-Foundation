@@ -1,0 +1,97 @@
+---
+import { isActivePath, type NavItem } from '../lib/nav';
+
+interface Props {
+  siteName: string;
+  navigation: NavItem[];
+}
+
+const { siteName, navigation } = Astro.props;
+const pathname = Astro.url.pathname;
+const acceder = isActivePath('/acceder', pathname);
+
+const desktopLink = (active: boolean) =>
+  active
+    ? 'text-primary font-bold border-b-2 border-primary pb-0.5 text-label-lg font-label-lg transition-colors duration-150'
+    : 'text-secondary hover:text-on-surface transition-colors duration-150 text-label-lg font-label-lg';
+---
+
+<header class="sticky top-0 z-50 bg-surface-container-lowest border-b border-surface-container-highest shadow-sm">
+  <div class="flex justify-between items-center w-full px-6 lg:px-12 py-4 max-w-7xl mx-auto">
+    <!-- Marca -->
+    <a class="flex items-center gap-2 group transition-all duration-200 ease-in-out active:scale-95" href="/" aria-label={`${siteName}: inicio`}>
+      <img src="/brand/logo.png" alt={siteName} width="95" height="36" class="h-8 sm:h-9 w-auto object-contain" />
+    </a>
+
+    <!-- Navegación (el menú lo define el CMS; sin menú propio se usa el del diseño) -->
+    <nav class="hidden md:flex items-center gap-8" aria-label="Principal">
+      {
+        navigation.map((item) => {
+          const active = isActivePath(item.href, pathname);
+          return (
+            <a href={item.href} class={desktopLink(active)} aria-current={active ? 'page' : undefined}>
+              {item.label}
+            </a>
+          );
+        })
+      }
+    </nav>
+
+    <!-- Acción -->
+    <div class="flex items-center gap-3">
+      <a
+        href="/acceder"
+        class="bg-primary text-on-primary rounded-lg px-5 py-2 text-label-lg font-label-lg font-semibold hover:bg-primary-container transition-all duration-200 ease-in-out active:scale-95 shadow-sm inline-block"
+        aria-current={acceder ? 'page' : undefined}
+      >
+        Acceder
+      </a>
+
+      <button
+        id="mobile-menu-btn"
+        type="button"
+        class="md:hidden p-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors"
+        aria-label="Abrir menú de navegación"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="material-symbols-outlined text-2xl" aria-hidden="true">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menú móvil -->
+  <div id="mobile-menu" hidden class="md:hidden border-t border-surface-container-highest px-6 py-4 space-y-3 bg-surface-container-lowest">
+    {
+      navigation.map((item) => {
+        const active = isActivePath(item.href, pathname);
+        return (
+          <a
+            href={item.href}
+            aria-current={active ? 'page' : undefined}
+            class={`block py-2 text-label-lg font-label-lg ${active ? 'text-primary font-bold' : 'text-secondary hover:text-on-surface'}`}
+          >
+            {item.label}
+          </a>
+        );
+      })
+    }
+    <div class="pt-2">
+      <a href="/acceder" class="block text-center bg-secondary-container text-primary font-semibold py-2 px-4 rounded-lg text-label-lg">
+        Acceder
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const button = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  if (button && menu) {
+    button.addEventListener('click', () => {
+      const open = menu.hasAttribute('hidden');
+      menu.toggleAttribute('hidden', !open);
+      button.setAttribute('aria-expanded', String(open));
+    });
+  }
+</script>

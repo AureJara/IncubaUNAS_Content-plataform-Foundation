@@ -1,0 +1,13 @@
+node_modules
+dist
+coverage
+.astro
+pnpm-lock.yaml
+contracts/openapi/*.generated.*
+**/*.generated.ts
+**/dist
+**/.astro
+pnpm-lock.yaml
+
+# Diseño de referencia exportado por Stitch: se conserva tal cual lo entregó el equipo de frontend
+docs/diseno/
