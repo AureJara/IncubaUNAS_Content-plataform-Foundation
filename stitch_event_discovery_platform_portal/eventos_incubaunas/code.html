@@ -1,0 +1,816 @@
+<!DOCTYPE html><html class="h-full bg-background text-on-surface" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Eventos y Convocatorias - IncubaUNAS</title>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-container": "#566475",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed-variant": "#004493",
+            "inverse-on-surface": "#eef1f4",
+            "error-container": "#ffdad6",
+            "secondary-fixed": "#d6e4f9",
+            "outline": "#727785",
+            "on-tertiary": "#ffffff",
+            "surface": "#f7fafd",
+            "on-tertiary-fixed-variant": "#005236",
+            "surface-dim": "#d7dadd",
+            "primary-fixed": "#d8e2ff",
+            "on-surface-variant": "#414754",
+            "on-secondary-fixed": "#0f1c2c",
+            "surface-container-low": "#f1f4f7",
+            "surface-bright": "#f7fafd",
+            "background": "#f7fafd",
+            "on-secondary-fixed-variant": "#3a4859",
+            "outline-variant": "#c1c6d6",
+            "on-error": "#ffffff",
+            "on-primary-fixed": "#001a41",
+            "secondary-container": "#d3e1f6",
+            "secondary-fixed-dim": "#bac8dc",
+            "inverse-primary": "#adc7ff",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#70fbbd",
+            "surface-variant": "#e0e3e6",
+            "surface-container": "#ebeef1",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#adc7ff",
+            "error": "#ba1a1a",
+            "on-background": "#181c1e",
+            "on-primary-container": "#ffffff",
+            "on-surface": "#181c1e",
+            "inverse-surface": "#2d3133",
+            "on-tertiary-fixed": "#002113",
+            "tertiary": "#006c49",
+            "surface-container-highest": "#e0e3e6",
+            "surface-container-high": "#e5e8eb",
+            "tertiary-container": "#00885c",
+            "on-tertiary-container": "#000703",
+            "primary": "#005bbf",
+            "primary-container": "#1a73e8",
+            "tertiary-fixed-dim": "#4fdea2",
+            "surface-tint": "#005bc0",
+            "on-primary": "#ffffff",
+            "secondary": "#525f71"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1.5rem",
+            "space-xl": "2rem",
+            "margin-lg": "3rem",
+            "gutter-sm": "1rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin-sm": "1rem",
+            "space-md": "1rem",
+            "margin": "1.5rem",
+            "space-sm": "0.5rem",
+            "gutter-lg": "2rem"
+          },
+          "fontFamily": {
+            "display": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "display-mobile": ["Plus Jakarta Sans"],
+            "label-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-md-mobile": ["Plus Jakarta Sans"],
+            "title": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "body-md": ["Inter"],
+            "label-lg": ["Inter"]
+          },
+          "fontSize": {
+            "display": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "headline-md-mobile": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "title": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="min-h-full flex flex-col font-body-md text-on-surface bg-background antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TOP APP BAR -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface border-b border-surface-container-highest dark:border-outline-variant shadow-sm dark:shadow-none transition-colors duration-200">
+<div class="flex justify-between items-center w-full px-6 lg:px-12 py-3.5 max-w-7xl mx-auto">
+<!-- Brand Logo Lockup -->
+<a class="flex items-center gap-3 transition-transform duration-200 hover:opacity-90 active:scale-95" href="#">
+<img alt="IncubaUNAS" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1lZLG5rVWgu_OTDb4qE-fv4x4PwDKvVwSd3K2uYTaVBGi2ZKOAi7Anp4_6SVdIzwLJFbfO7NfcyZDjDRTKsKaMMb5soPkPGmS_xz0FZ8Q82p62rius1Rc2l1ZqGSeiLhD6iVqIqlKQufJmpP1aclZLHUld04iGCh8JnTwbE6DCEn_HZMnjR4BPQXJ9oILXobGx44L1ai8l4UgYcEMIJMHPfwDaEA0HxtFbKsEdYx7mRbh0s6LPdCw">
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 font-label-lg text-label-lg" href="#">
+          Nosotros
+        </a>
+<a class="text-primary dark:text-inverse-primary font-bold border-b-2 border-primary dark:border-inverse-primary pb-1 font-label-lg text-label-lg" href="#">
+          Eventos
+        </a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 font-label-lg text-label-lg" href="#">
+          Programas
+        </a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 font-label-lg text-label-lg" href="#">Convocar</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 font-label-lg text-label-lg" href="#">
+          Portafolio
+        </a>
+</nav>
+<!-- Right Action & Mobile Toggle -->
+<div class="flex items-center gap-3">
+<button class="inline-flex items-center justify-center px-5 py-2 font-label-lg text-label-lg rounded-lg bg-primary hover:bg-primary-container text-on-primary transition-all duration-200 shadow-sm active:scale-95">
+          Acceder
+        </button>
+<button aria-label="Abrir menú" class="md:hidden p-2 rounded-lg text-secondary hover:bg-surface-container transition-colors" id="mobile-menu-btn">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</div>
+<!-- Mobile Navigation Drawer -->
+<div class="hidden md:hidden px-6 pt-2 pb-5 border-t border-surface-container bg-surface-container-lowest" id="mobile-menu">
+<div class="flex flex-col space-y-3">
+<a class="px-3 py-2 rounded-lg font-label-lg text-label-lg text-secondary hover:bg-surface-container" href="#">Nosotros</a>
+<a class="px-3 py-2 rounded-lg font-label-lg text-label-lg font-bold text-primary bg-surface-container-low" href="#">Eventos</a>
+<a class="px-3 py-2 rounded-lg font-label-lg text-label-lg text-secondary hover:bg-surface-container" href="#">Programas</a>
+<a class="px-3 py-2 rounded-lg font-label-lg text-label-lg text-secondary hover:bg-surface-container" href="#">Postular</a>
+<a class="px-3 py-2 rounded-lg font-label-lg text-label-lg text-secondary hover:bg-surface-container" href="#">Portafolio</a>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="flex-1">
+<!-- HERO & SEARCH BAR -->
+<section class="relative bg-surface border-b border-surface-container-highest/60 overflow-hidden py-12 lg:py-16">
+<!-- Ambient Background Graphic Glows -->
+<div class="absolute -top-24 right-0 w-96 h-96 bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute top-1/2 left-0 w-80 h-80 bg-tertiary-fixed/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="max-w-3xl mb-8">
+
+<h1 class="font-headline-lg md:font-display text-headline-lg-mobile md:text-headline-lg font-bold text-on-surface tracking-tight mb-4">
+            Eventos y Convocatorias
+          </h1>
+<p class="font-body-lg text-body-md md:text-body-lg text-secondary max-w-2xl leading-relaxed">
+            Descubre talleres, conferencias, demo days y bootcamps diseñados para fortalecer el ecosistema emprendedor e innovador de la Amazonía peruana.
+          </p>
+</div>
+<!-- Comprehensive Event Search Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest shadow-sm p-4 lg:p-6 mb-6">
+<form class="grid grid-cols-1 md:grid-cols-12 gap-3" onsubmit="event.preventDefault();">
+<!-- Keyword Search -->
+<div class="md:col-span-5 relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-11 pr-4 py-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-on-surface placeholder:text-outline text-body-md focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Buscar por nombre, ponente, tema o palabra clave..." type="text">
+</div>
+<!-- Category Selector -->
+<div class="md:col-span-3 relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline" data-icon="category">category</span>
+<select class="w-full pl-11 pr-8 py-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-on-surface text-body-md focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none cursor-pointer">
+<option value="">Todas las categorías</option>
+<option value="agtech">AgTech</option>
+<option value="bionegocios">Bionegocios &amp; Biodiversidad</option>
+<option value="innovacion">Innovación y Patentes</option>
+<option value="finanzas">Finanzas &amp; Fondos</option>
+<option value="cleantech">Tecnologías Limpias</option>
+<option value="bootcamp">Bootcamps &amp; Talleres</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+<!-- Modality Selector -->
+<div class="md:col-span-2 relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline" data-icon="location_on">location_on</span>
+<select class="w-full pl-11 pr-8 py-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-on-surface text-body-md focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none cursor-pointer">
+<option value="">Modalidad</option>
+<option value="presencial">Presencial (Campus UNAS)</option>
+<option value="virtual">Virtual</option>
+<option value="hibrido">Híbrido</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+<!-- Submit Button -->
+<div class="md:col-span-2">
+<button class="w-full h-full min-h-[46px] px-6 py-3 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 transition-all duration-150 shadow-sm active:scale-95" type="submit">
+<span class="material-symbols-outlined text-lg" data-icon="filter_list">filter_list</span>
+<span class="">Buscar</span>
+</button>
+</div>
+</form>
+<!-- Quick Filters Pills -->
+<div class="flex items-center gap-2 pt-4 mt-4 border-t border-surface-container overflow-x-auto no-scrollbar text-label-md">
+<span class="text-secondary font-medium mr-1 flex items-center gap-1 shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="label">label</span>
+              Filtro rápido:
+            </span>
+<button class="px-3.5 py-1.5 rounded-full bg-on-surface text-surface-container-lowest font-medium transition-all shrink-0">
+              Todos
+            </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant transition-colors shrink-0">
+              Esta semana
+            </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant transition-colors shrink-0">
+              Próximos bootcamps
+            </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant transition-colors shrink-0">
+              Talleres gratuitos
+            </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant transition-colors shrink-0">
+              Demo Days
+            </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant transition-colors shrink-0">
+              Hackathons
+            </button>
+</div>
+</div>
+<!-- Meta status row -->
+<div class="flex flex-wrap items-center justify-between text-body-sm text-secondary gap-4">
+<p class="">Mostrando <span class="font-semibold text-on-surface">6 eventos activos</span> para la comunidad UNAS y la región Huánuco</p>
+<div class="flex items-center gap-3">
+<span class="text-outline">Ordenar por:</span>
+<select class="bg-transparent border-0 text-on-surface font-semibold text-body-sm focus:ring-0 cursor-pointer p-0">
+<option>Más recientes primero</option>
+<option>Fecha del evento (Próximos)</option>
+<option>Mayor cupo disponible</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- EVENTS GRID SECTION -->
+<section class="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- EVENT CARD 1: Demo Day (Destacado) -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-highest overflow-hidden hover:border-outline-variant hover:shadow-lg transition-all duration-200 group">
+<!-- Thumbnail Header with badges -->
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A modern presentation stage in an auditorium with startup founders presenting AgTech solutions on a luminous digital screen with lush Amazonian green elements, professional photographic style with ambient cool and warm contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARoE6z9lnUZwWBQFkc-FIPA-mhiUk6lrIhz09aPR9RSrfHVSrgNV9YKSwZQxbGJuMzsF8D9O-xCBOiD2z8zguwylCncWKDNLNsuBjlRXso33UhYwJbDi9an-zcOCS2kwsoS3vDW1dr_CnJkYcKVCyMAqsVNuE2ZyMfRbOjbWAMYSJOgsY28zHWaaV1mXH__VoSQtfTeiR8A2bahYcDR5aLxO3HfRh1C6dj_giyqMs">
+<div class="absolute top-3 left-3 flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
+                24 OCT 2024
+              </span>
+<span class="px-2.5 py-1 rounded-md bg-tertiary-container text-on-primary font-semibold text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="check_circle">check_circle</span>
+                Gratuito
+              </span>
+</div>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-label-sm font-medium backdrop-blur-sm">
+                Campus UNAS - Auditorio Central
+              </span>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-6 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-tertiary">
+                  Bionegocios &amp; Startups
+                </span>
+<span class="inline-flex items-center text-label-sm text-tertiary font-semibold gap-1 bg-tertiary/10 px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+                  Inscripciones abiertas
+                </span>
+</div>
+<h2 class="font-title text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors leading-snug mb-3">
+                Demo Day IncubaUNAS 2024: Innovación desde la Amazonía
+              </h2>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3 mb-4">
+                Presentación final de las 10 mejores biostartups y emprendimientos agrícolas incubados durante el año ante inversionistas ángeles y fondos de capital semilla.
+              </p>
+</div>
+<!-- Metadata specs -->
+<div class="space-y-3 pt-3 border-t border-surface-container">
+<div class="grid grid-cols-2 gap-2 text-label-md text-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="schedule">schedule</span>
+<span class="">09:00 - 14:00 PET</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="groups">groups</span>
+<span class="">120 Asistentes</span>
+</div>
+</div>
+<!-- Speaker / Partner Info -->
+<div class="flex items-center gap-2.5 py-1">
+<div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-label-sm">
+                  UN
+                </div>
+<div class="text-body-sm truncate">
+<span class="font-semibold text-on-surface block truncate">Comité de Inversiones UNAS</span>
+<span class="text-outline text-label-sm block truncate">En alianza con ProInnóvate Perú</span>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-3">
+<span class="text-label-sm font-medium text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="local_fire_department">local_fire_department</span>
+                  Últimos 18 cupos
+                </span>
+<button class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all duration-150 active:scale-95 shadow-sm">
+                  Inscribirme
+                </button>
+</div>
+</div>
+</div>
+</article>
+<!-- EVENT CARD 2: Taller Propiedad Intelectual -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-highest overflow-hidden hover:border-outline-variant hover:shadow-lg transition-all duration-200 group">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close up of scientific research notes and digital patent schematics beside an Amazonian botanical sample, captured in a bright laboratory environment with neutral tech-forward lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQd6cRJLRJkTIVnucUBlZWaqjFzjma75x9-lIDus5wYzACjoXTVTo1GnS_utop7-yqF99crYG7qzmPjC0TI2m_FIPcmV9nCDAtxfDglVF5X78ougsuty5ph2CNPzO3ZgA-h0t4Ac9oSWfQEphF0RyFo-th29CgOVBn3DAaTDV6NzNDazDTyFJXnlRAH9vWZ4zavBZGw6e0Osc46VbueUrn5q10TbmjF-tKI-xfcVc">
+<div class="absolute top-3 left-3 flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
+                29 OCT 2024
+              </span>
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-semibold text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+                Virtual (Zoom)
+              </span>
+</div>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-label-sm font-medium backdrop-blur-sm">
+                Sala Virtual IncubaUNAS
+              </span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-primary">
+                  Propiedad Intelectual
+                </span>
+<span class="inline-flex items-center text-label-sm text-secondary font-semibold gap-1 bg-surface-container px-2 py-0.5 rounded-full">
+                  Certificado oficial
+                </span>
+</div>
+<h2 class="font-title text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors leading-snug mb-3">
+                Taller Práctico: Patentes y Protección para Biostartups
+              </h2>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3 mb-4">
+                Aprende cómo registrar patentes de invención, modelos de utilidad y secretos comerciales basados en recursos genéticos amazónicos con expertos de INDECOPI.
+              </p>
+</div>
+<div class="space-y-3 pt-3 border-t border-surface-container">
+<div class="grid grid-cols-2 gap-2 text-label-md text-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="schedule">schedule</span>
+<span class="">17:00 - 19:30 PET</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="public">public</span>
+<span class="">Acceso Global</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5 py-1">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-primary font-bold text-label-sm">
+                  DR
+                </div>
+<div class="text-body-sm truncate">
+<span class="font-semibold text-on-surface block truncate">Dr. Ricardo Montes</span>
+<span class="text-outline text-label-sm block truncate">Especialista en Biotecnología INDECOPI</span>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-3">
+<span class="text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="event_seat">event_seat</span>
+                  Libre previa inscripción
+                </span>
+<button class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold border border-surface-container-highest transition-all duration-150 active:scale-95">
+                  Ver detalles
+                </button>
+</div>
+</div>
+</div>
+</article>
+<!-- EVENT CARD 3: Bootcamp AgTech -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-highest overflow-hidden hover:border-outline-variant hover:shadow-lg transition-all duration-200 group">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Young agricultural engineers testing IoT soil moisture sensor devices in a tropical cocoa plantation under clear natural light, modern agricultural technology context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9lW-JxVehQtff_tym4pR_0sBCy_RuujPYsBmjtcIFZe6Coco-XvyA7ow4U7iIiZNEFPvmBebZUVu-YhV8qZ3Mve1910M-JTxsbpxFqVzRwqf8EZkCNLopHvuzQIwktc5vzaDnZmcVOvrKl15FqqCal8UAhoo6TCKGel08S8mHaoEM9vTjwsigWb5IRat1JBIPIAgnX03B9J3pEWoHXmhyYV_08FDO3pKC33ejev4">
+<div class="absolute top-3 left-3 flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
+                08 NOV 2024
+              </span>
+<span class="px-2.5 py-1 rounded-md bg-tertiary-container text-on-primary font-semibold text-label-sm shadow-sm flex items-center gap-1">
+                Híbrido
+              </span>
+</div>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-label-sm font-medium backdrop-blur-sm">
+                Lab AgTech UNAS &amp; Tingo María
+              </span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-tertiary">
+                  AgTech &amp; IoT
+                </span>
+<span class="inline-flex items-center text-label-sm text-tertiary font-semibold gap-1 bg-tertiary/10 px-2 py-0.5 rounded-full">
+                  Intensivo 3 días
+                </span>
+</div>
+<h2 class="font-title text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors leading-snug mb-3">
+                Bootcamp AgTech: Sensores IoT y Agricultura de Precisión
+              </h2>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3 mb-4">
+                Taller inmersivo de prototipado rápido con microcontroladores y sensores para monitorizar cultivos de café y cacao en tiempo real.
+              </p>
+</div>
+<div class="space-y-3 pt-3 border-t border-surface-container">
+<div class="grid grid-cols-2 gap-2 text-label-md text-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="schedule">schedule</span>
+<span class="">Viernes a Domingo</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="hardware">hardware</span>
+<span class="">Incluye kit de hardware</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5 py-1">
+<div class="w-7 h-7 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary font-bold text-label-sm">
+                  IA
+                </div>
+<div class="text-body-sm truncate">
+<span class="font-semibold text-on-surface block truncate">Ing. Alan Vásquez</span>
+<span class="text-outline text-label-sm block truncate">Líder Técnico AgTech Hub</span>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-3">
+<span class="text-label-sm font-medium text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span>
+                  Solo 25 vacantes
+                </span>
+<button class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all duration-150 active:scale-95 shadow-sm">
+                  Inscribirme
+                </button>
+</div>
+</div>
+</div>
+</article>
+<!-- EVENT CARD 4: Networking Night -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-highest overflow-hidden hover:border-outline-variant hover:shadow-lg transition-all duration-200 group">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="An evening social gathering of diverse tech entrepreneurs and business founders chatting casually holding coffee and notebooks on a modern wooden deck surrounded by tropical greenery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCip9kcbAAzq12ns-CnjvMjwTt1gFeYzBy3i7kqoVk6sKWsIXbttU_TeoF0Xixm7sJJVUDny8IaKtPlLY7Ie0pVeZ62rxYRonYlxFsf2OruFtffOhDpfKmgp5uLG48KK_Wr8MerKC6NmbLK_8Q1hxWxgusszJjFQ2tGd3X3h1P9Ezvmgb9cOHQ-KlwOCG8pqwfzb6z24s-J0k9mD9tMdfWUba-lssLXr5tewV9hCyg">
+<div class="absolute top-3 left-3 flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
+                15 NOV 2024
+              </span>
+<span class="px-2.5 py-1 rounded-md bg-tertiary-container text-on-primary font-semibold text-label-sm shadow-sm flex items-center gap-1">
+                Presencial
+              </span>
+</div>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-label-sm font-medium backdrop-blur-sm">
+                Terraza Coworking IncubaUNAS
+              </span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-primary">
+                  Comunidad &amp; Redes
+                </span>
+<span class="inline-flex items-center text-label-sm text-secondary font-semibold gap-1 bg-surface-container px-2 py-0.5 rounded-full">
+                  Networking
+                </span>
+</div>
+<h2 class="font-title text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors leading-snug mb-3">
+                Networking Night: Conectando Emprendedores e Inversionistas
+              </h2>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3 mb-4">
+                Espacio distendido para generar alianzas estratégicas, conocer co-fundadores y validar modelos de negocio con mentoría 1 a 1 en vivo.
+              </p>
+</div>
+<div class="space-y-3 pt-3 border-t border-surface-container">
+<div class="grid grid-cols-2 gap-2 text-label-md text-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="schedule">schedule</span>
+<span class="">18:30 - 21:30 PET</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="coffee">coffee</span>
+<span class="">Coffee break amazónico</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5 py-1">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-primary font-bold text-label-sm">
+                  EP
+                </div>
+<div class="text-body-sm truncate">
+<span class="font-semibold text-on-surface block truncate">Ecosistema Emprendedor</span>
+<span class="text-outline text-label-sm block truncate">Red Alumni UNAS</span>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-3">
+<span class="text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="how_to_reg">how_to_reg</span>
+                  Acceso exclusivo incubados
+                </span>
+<button class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold border border-surface-container-highest transition-all duration-150 active:scale-95">
+                  Ver detalles
+                </button>
+</div>
+</div>
+</div>
+</article>
+<!-- EVENT CARD 5: Webinar Fondos Concursables -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-highest overflow-hidden hover:border-outline-variant hover:shadow-lg transition-all duration-200 group">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Professional working on a laptop surrounded by financial charts and project proposal grant documents in a clean modern office workspace with bright natural light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuixfsfg3Krs-pD_ZsSPHCC6rdIsqw4h4ksPK-ICcEx7vkZepVjd96Wuwo8pQSsiFntlcCBSFqFQE-PW7-dOM9jHnRu2Zvm5ZrzCw4ZeYlIgXwilGMVQH8cPZ04QHisb4aEYwvEhEeYPN8KCkjgxSFHMg6VZZXeXY-bzeZjYL9QeNAHJo0nTm4HDNhNVZweiSm8YIG1q4kQqpc9EO2mebG3wcHpvstOqnarpYWfrU">
+<div class="absolute top-3 left-3 flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
+                22 NOV 2024
+              </span>
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-semibold text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+                Virtual (Meet)
+              </span>
+</div>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-label-sm font-medium backdrop-blur-sm">
+                Transmisión en directo
+              </span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-primary">
+                  Financiamiento &amp; Fondos
+                </span>
+<span class="inline-flex items-center text-label-sm text-tertiary font-semibold gap-1 bg-tertiary/10 px-2 py-0.5 rounded-full">
+                  No reembolsable
+                </span>
+</div>
+<h2 class="font-title text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors leading-snug mb-3">
+                Webinar: Fondos Concursables ProInnóvate para Startups
+              </h2>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3 mb-4">
+                Estrategias y claves para formular proyectos exitosos en el concurso StartUp Perú 10G y fondos de validación para bioproductos de la selva central.
+              </p>
+</div>
+<div class="space-y-3 pt-3 border-t border-surface-container">
+<div class="grid grid-cols-2 gap-2 text-label-md text-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="schedule">schedule</span>
+<span class="">16:00 - 18:00 PET</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="payments">payments</span>
+<span class="">Hasta S/ 150,000</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5 py-1">
+<div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-label-sm">
+                  MG
+                </div>
+<div class="text-body-sm truncate">
+<span class="font-semibold text-on-surface block truncate">Mg. Karen Benavides</span>
+<span class="text-outline text-label-sm block truncate">Consultora Senior de Fondos I+D+i</span>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-3">
+<span class="text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="play_circle">play_circle</span>
+                  Grabación disponible
+                </span>
+<button class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all duration-150 active:scale-95 shadow-sm">
+                  Inscribirme
+                </button>
+</div>
+</div>
+</div>
+</article>
+<!-- EVENT CARD 6: Ideatón Biodiversidad -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-highest overflow-hidden hover:border-outline-variant hover:shadow-lg transition-all duration-200 group">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Multidisciplinary student teams collaborating with sticky notes, tablets, and biological samples inside a light-filled modern campus innovation room, focused energetic atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9YLrK--YeG3GkdxyKGSeU_nwuZg8eVWIVtfEENlH4tpmG1_-iSOqfZkil11ArQuHUfB_LGMtzOBJieCVOdfUD-p3s2igdY-eVzpmzs_qe2UCr8OHFofLcI5RdU2aX7X8VkYzDhV-XB72_jtxoRAtZQ3Tex3MIYuM7kP5lrvuOODdwwCXpLGn-P-g-6p8L6nyevavYiQk0yHs1BlgJA9z83cX6jv-5rmOVBgUhwUc">
+<div class="absolute top-3 left-3 flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
+                02 DIC 2024
+              </span>
+<span class="px-2.5 py-1 rounded-md bg-tertiary-container text-on-primary font-semibold text-label-sm shadow-sm flex items-center gap-1">
+                Presencial
+              </span>
+</div>
+<div class="absolute bottom-3 left-3">
+<span class="px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-label-sm font-medium backdrop-blur-sm">
+                Campus UNAS - Pabellón Agronomía
+              </span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-tertiary">
+                  Economía Circular
+                </span>
+<span class="inline-flex items-center text-label-sm text-primary font-semibold gap-1 bg-secondary-container/60 px-2 py-0.5 rounded-full">
+                  Premios en efectivo
+                </span>
+</div>
+<h2 class="font-title text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors leading-snug mb-3">
+                Ideatón por la Biodiversidad y Economía Circular
+              </h2>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3 mb-4">
+                Maratón de co-creación de 36 horas para diseñar prototipos que transformen subproductos de palma, café y plátano en bioplásticos y biomateriales.
+              </p>
+</div>
+<div class="space-y-3 pt-3 border-t border-surface-container">
+<div class="grid grid-cols-2 gap-2 text-label-md text-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="schedule">schedule</span>
+<span class="">36 horas continuas</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-outline" data-icon="emoji_events">emoji_events</span>
+<span class="">S/ 10,000 en premios</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5 py-1">
+<div class="w-7 h-7 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary font-bold text-label-sm">
+                  UN
+                </div>
+<div class="text-body-sm truncate">
+<span class="font-semibold text-on-surface block truncate">Dirección de Innovación UNAS</span>
+<span class="text-outline text-label-sm block truncate">Facultad de Recursos Naturales</span>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-3">
+<span class="text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="group_add">group_add</span>
+                  Equipos de 3 a 5 miembros
+                </span>
+<button class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all duration-150 active:scale-95 shadow-sm">
+                  Inscribirme
+                </button>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- PAGINATION -->
+<div class="mt-12 flex items-center justify-between border-t border-surface-container pt-6">
+<p class="text-body-sm text-secondary">
+          Mostrando página <span class="font-semibold text-on-surface">1</span> de <span class="font-semibold text-on-surface">4</span>
+</p>
+<nav class="flex items-center gap-1.5">
+<button class="p-2 rounded-lg border border-surface-container-highest text-outline hover:text-on-surface hover:bg-surface-container disabled:opacity-40 transition-colors" disabled="">
+<span class="material-symbols-outlined text-lg" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-9 h-9 rounded-lg bg-primary text-on-primary font-semibold text-label-md flex items-center justify-center shadow-sm">
+            1
+          </button>
+<button class="w-9 h-9 rounded-lg border border-surface-container-highest text-secondary hover:bg-surface-container hover:text-on-surface font-semibold text-label-md flex items-center justify-center transition-colors">
+            2
+          </button>
+<button class="w-9 h-9 rounded-lg border border-surface-container-highest text-secondary hover:bg-surface-container hover:text-on-surface font-semibold text-label-md flex items-center justify-center transition-colors">
+            3
+          </button>
+<span class="px-1 text-outline">...</span>
+<button class="w-9 h-9 rounded-lg border border-surface-container-highest text-secondary hover:bg-surface-container hover:text-on-surface font-semibold text-label-md flex items-center justify-center transition-colors">
+            4
+          </button>
+<button class="p-2 rounded-lg border border-surface-container-highest text-secondary hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span>
+</button>
+</nav>
+</div>
+</section>
+<!-- NEWSLETTER / ALERT SECTION -->
+
+</main>
+<!-- FOOTER -->
+<footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-surface-container-highest dark:border-outline-variant transition-colors duration-200">
+<div class="w-full px-6 lg:px-12 py-12 max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+<!-- Column 1: Brand Info -->
+<div class="lg:col-span-2 space-y-4">
+<a class="inline-block transition-transform hover:opacity-90" href="#">
+<img alt="IncubaUNAS" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1lZLG5rVWgu_OTDb4qE-fv4x4PwDKvVwSd3K2uYTaVBGi2ZKOAi7Anp4_6SVdIzwLJFbfO7NfcyZDjDRTKsKaMMb5soPkPGmS_xz0FZ8Q82p62rius1Rc2l1ZqGSeiLhD6iVqIqlKQufJmpP1aclZLHUld04iGCh8JnTwbE6DCEn_HZMnjR4BPQXJ9oILXobGx44L1ai8l4UgYcEMIJMHPfwDaEA0HxtFbKsEdYx7mRbh0s6LPdCw">
+</a>
+<p class="font-body-sm text-body-sm text-secondary dark:text-secondary-fixed-dim max-w-sm leading-relaxed">
+            Incubadora de Empresas de la Universidad Nacional Agraria de la Selva. Impulsamos biostartups y emprendimientos de base tecnológica para el desarrollo sostenible de la Amazonía peruana.
+          </p>
+<div class="flex items-center space-x-3 text-secondary pt-2">
+<a aria-label="Red profesional" class="p-2 rounded-lg bg-surface-container hover:bg-primary-fixed hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="work">work</span>
+</a>
+<a aria-label="Canal oficial" class="p-2 rounded-lg bg-surface-container hover:bg-primary-fixed hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="podcasts">podcasts</span>
+</a>
+<a aria-label="Comunidad" class="p-2 rounded-lg bg-surface-container hover:bg-primary-fixed hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="public">public</span>
+</a>
+<a aria-label="Galería y eventos" class="p-2 rounded-lg bg-surface-container hover:bg-primary-fixed hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="photo_library">photo_library</span>
+</a>
+</div>
+</div>
+<!-- Column 2: Ubicación & Contacto -->
+<div>
+<h3 class="font-title text-title text-on-surface dark:text-inverse-on-surface mb-3 font-semibold">
+            Contacto &amp; Sede
+          </h3>
+<ul class="space-y-2.5 font-body-sm text-body-sm text-secondary dark:text-secondary-fixed-dim">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-base text-outline shrink-0 mt-0.5" data-icon="pin_drop">pin_drop</span>
+<span class="">Dirección y mapa: Campus Universitario UNAS, Carretera Central Km 1.5, Tingo María, Huánuco, Perú</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-outline shrink-0" data-icon="email">email</span>
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors" href="mailto:contacto@incubaunas.edu.pe">contacto@incubaunas.edu.pe</a>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-outline shrink-0" data-icon="call">call</span>
+<span class="">+1 (555) 000-0000</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-outline shrink-0" data-icon="schedule">schedule</span>
+<span class="">Horario de atención: 9:00 - 18:00</span>
+</li>
+<li class="">
+<a class="inline-flex items-center gap-1 text-primary dark:text-inverse-primary font-semibold hover:underline" href="#">
+<span class="">Formulario de contacto</span>
+<span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Column 3: Ecosistema -->
+<div>
+<h3 class="font-title text-title text-on-surface dark:text-inverse-on-surface mb-3 font-semibold">
+            Ecosistema
+          </h3>
+<ul class="space-y-2 font-body-sm text-body-sm">
+<li class=""><a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">Comunidad</a></li>
+<li class=""><a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">Canal oficial</a></li>
+<li class=""><a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">Galería y eventos</a></li>
+<li class=""><a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">Red profesional</a></li>
+</ul>
+</div>
+<!-- Column 4: Legal & Soporte -->
+<div>
+<h3 class="font-title text-title text-on-surface dark:text-inverse-on-surface mb-3 font-semibold">
+            Legales
+          </h3>
+<ul class="space-y-2 font-body-sm text-body-sm">
+<li class=""><a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">Términos y condiciones</a></li>
+<li class=""><a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">Políticas de privacidad</a></li>
+<li class=""><a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">Políticas de cookies</a></li>
+</ul>
+</div>
+</div>
+<!-- Footer Bottom Copyright -->
+<div class="pt-8 border-t border-surface-container-highest dark:border-outline-variant flex flex-col sm:flex-row items-center justify-between text-body-sm text-secondary dark:text-secondary-fixed-dim gap-4">
+<p class="">© 2024 EventosPro. Todos los derechos reservados.</p>
+<p class="text-label-sm text-outline">
+          IncubaUNAS — Vicerrectorado de Investigación UNAS
+        </p>
+</div>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+    // Responsive Mobile Menu Toggle
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  </script>
+
+
+</body></html>

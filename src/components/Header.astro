@@ -1,0 +1,102 @@
+---
+interface Props {
+  activeNav?: 'inicio' | 'nosotros' | 'eventos' | 'programas' | 'convocar' | 'portafolio' | 'acceder';
+}
+
+const { activeNav } = Astro.props;
+
+const navItems = [
+  { id: 'nosotros', label: 'Nosotros', href: '/nosotros' },
+  { id: 'eventos', label: 'Eventos', href: '/eventos' },
+  { id: 'programas', label: 'Programas', href: '/programas' },
+  { id: 'convocar', label: 'Convocar', href: '/convocar' },
+  { id: 'portafolio', label: 'Portafolio', href: '/portafolio' },
+];
+---
+
+<header class="sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface border-b border-surface-container-highest dark:border-outline-variant shadow-sm dark:shadow-none">
+  <div class="flex justify-between items-center w-full px-6 lg:px-12 py-4 max-w-7xl mx-auto">
+    <!-- Brand Logo -->
+    <a class="flex items-center gap-2 group transition-all duration-200 ease-in-out active:scale-95" href="/">
+      <img
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyg6AgiZft7_bBd24o7L7PiT1dfa_xwEzKqqjUzH7YYJvJ5fFXFthQp26IFcXPfatCOh8jYkxToze2hJGp-tCRFpHebrSuWgKxwgxEvruN0Z-Sak1HueNiWyiz12r7mMhAZ-nuTb338-QdRUUb30jZCoGb5zSUh95SKMlpAsmuw_w2aeToy5gp-xVDdi0sPIgSYpBrvWcpg75u-AEAR2nsXTa-6h2IGDBIOReVSeqL9Fcn6OGD5L8i"
+        alt="IncubaUNAS"
+        class="h-8 sm:h-9 w-auto object-contain"
+      />
+    </a>
+
+    <!-- Navigation Links -->
+    <nav class="hidden md:flex items-center gap-8">
+      {navItems.map((item) => {
+        const isActive = activeNav === item.id;
+        return (
+          <a
+            href={item.href}
+            class={
+              isActive
+                ? "text-primary dark:text-inverse-primary font-bold border-b-2 border-primary pb-0.5 text-label-lg font-label-lg transition-colors duration-150"
+                : "text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 text-label-lg font-label-lg"
+            }
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Trailing Action -->
+    <div class="flex items-center gap-3">
+      <a
+        href="/acceder"
+        class="bg-primary text-on-primary rounded-lg px-5 py-2 text-label-lg font-label-lg font-semibold hover:bg-primary-container transition-all duration-200 ease-in-out active:scale-95 shadow-sm inline-block"
+      >
+        Acceder
+      </a>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-btn"
+        type="button"
+        class="md:hidden p-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="material-symbols-outlined text-2xl">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-surface-container-highest px-6 py-4 space-y-3 bg-surface-container-lowest">
+    {navItems.map((item) => {
+      const isActive = activeNav === item.id;
+      return (
+        <a
+          href={item.href}
+          class={`block py-2 text-label-lg font-label-lg ${
+            isActive ? "text-primary font-bold" : "text-secondary hover:text-on-surface"
+          }`}
+        >
+          {item.label}
+        </a>
+      );
+    })}
+    <div class="pt-2">
+      <a
+        href="/convocar/crear"
+        class="block text-center bg-secondary-container text-primary font-semibold py-2 px-4 rounded-lg text-label-lg"
+      >
+        Crear Convocatoria (Sesión Iniciada)
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  if (menuBtn && menu) {
+    menuBtn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  }
+</script>

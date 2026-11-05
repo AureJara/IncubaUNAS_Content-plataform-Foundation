@@ -1,0 +1,593 @@
+<!DOCTYPE html><html class="h-full bg-surface" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Postular / Crear Evento - IncubaUNAS</title>
+<!-- Material Symbols Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Inter and Plus Jakarta Sans Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config verbatím from guidelines -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "tertiary": "#006c49",
+            "on-surface-variant": "#414754",
+            "on-tertiary-container": "#000703",
+            "surface-tint": "#005bc0",
+            "outline-variant": "#c1c6d6",
+            "on-surface": "#181c1e",
+            "on-error-container": "#93000a",
+            "secondary": "#525f71",
+            "inverse-on-surface": "#eef1f4",
+            "primary": "#005bbf",
+            "on-primary-container": "#ffffff",
+            "on-secondary-container": "#566475",
+            "inverse-surface": "#2d3133",
+            "error-container": "#ffdad6",
+            "tertiary-fixed": "#70fbbd",
+            "on-background": "#181c1e",
+            "primary-fixed": "#d8e2ff",
+            "primary-fixed-dim": "#adc7ff",
+            "tertiary-container": "#00885c",
+            "on-tertiary-fixed-variant": "#005236",
+            "error": "#ba1a1a",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f1f4f7",
+            "on-error": "#ffffff",
+            "on-primary-fixed-variant": "#004493",
+            "on-secondary-fixed-variant": "#3a4859",
+            "surface-bright": "#f7fafd",
+            "on-primary-fixed": "#001a41",
+            "outline": "#727785",
+            "surface": "#f7fafd",
+            "secondary-container": "#d3e1f6",
+            "on-tertiary-fixed": "#002113",
+            "inverse-primary": "#adc7ff",
+            "background": "#f7fafd",
+            "surface-container": "#ebeef1",
+            "tertiary-fixed-dim": "#4fdea2",
+            "secondary-fixed": "#d6e4f9",
+            "secondary-fixed-dim": "#bac8dc",
+            "surface-variant": "#e0e3e6",
+            "surface-dim": "#d7dadd",
+            "on-secondary-fixed": "#0f1c2c",
+            "surface-container-high": "#e5e8eb",
+            "primary-container": "#1a73e8",
+            "surface-container-highest": "#e0e3e6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin": "1.5rem",
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "space-xl": "2rem",
+            "margin-sm": "1rem",
+            "space-xs": "0.25rem",
+            "gutter-lg": "2rem",
+            "margin-lg": "3rem",
+            "gutter-sm": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-md-mobile": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "display-mobile": ["Plus Jakarta Sans"],
+            "title": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "label-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-md-mobile": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "display": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+            "display-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "title": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-full font-body-md text-body-md antialiased selection:bg-primary selection:text-on-primary">
+<!-- TOP APP BAR / NAVIGATION (Source of Truth JSON + IncubaUNAS Identity) -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface border-b border-surface-container-highest dark:border-outline-variant shadow-sm dark:shadow-none sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-6 lg:px-12 py-3.5 max-w-7xl mx-auto">
+<!-- Brand Logo Lockup -->
+<a class="flex items-center gap-3 transition-all duration-200 ease-in-out active:scale-95 focus:outline-none" href="#">
+<img alt="IncubaUNAS Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfKghtF_dAbCfH5uHfKq9-UTbElBgPP1tdYeNniJIQ2giPxjzbe12p6WqwwRZ18L9og9eg5RM2TvaA8a7E232wSwvBrnTX6K-57850onQoGW5Ldd5SFr98rBsghHA0rCdiLJgps2JDxNtxHLuAK-IS5VCJRI7twjSVm2sH26r7Uq1kJ37PPuvRVnK7uwHECyL4LQ4cTe7BzYbY9QGPDShM6azHW4gWjDj4RNhplGM-tzOwVEg4nzLv">
+<div class="hidden sm:flex flex-col border-l border-surface-container-highest pl-3">
+</div>
+</a>
+<!-- Desktop Navigation Links (with exact JSON tokens & active Postular) -->
+<nav class="hidden md:flex items-center space-x-8">
+<a class="font-label-lg text-label-lg text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150" href="#">Nosotros</a>
+<a class="font-label-lg text-label-lg text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150" href="#">Eventos</a>
+<a class="font-label-lg text-label-lg text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150" href="#">Programas</a>
+<!-- ACTIVE NAVIGATION ITEM (Postular tab locked) -->
+<a aria-current="page" class="font-label-lg text-label-lg text-primary dark:text-inverse-primary font-bold border-b-2 border-primary dark:border-inverse-primary pb-1 flex items-center gap-1.5" href="#">
+<span class="">Convocar</span>
+
+</a>
+<a class="font-label-lg text-label-lg text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150" href="#">Portafolio</a></nav>
+<!-- Trailing Action -->
+<div class="flex items-center gap-4">
+<button class="inline-flex items-center justify-center font-label-lg text-label-lg px-5 py-2.5 rounded-lg bg-primary hover:bg-surface-tint text-on-primary shadow-sm hover:shadow transition-all duration-200 ease-in-out active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" type="button">
+<span class="">Acceder</span>
+<span class="material-symbols-outlined ml-1.5 text-base">login</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="flex-grow py-8 lg:py-12 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto w-full"><!-- Header / Breadcrumbs Notice -->
+<div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Convocar un Evento o Programa</h1>
+<p class="font-body-md text-body-md text-secondary mt-1.5 max-w-3xl">
+      Publica y gestiona eventos, talleres y convocatorias de incubación y aceleración para el ecosistema emprendedor e innovador de la UNAS.
+    </p>
+</div>
+
+</div>
+<!-- HERO ACCESS REQUIRED CARD -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded-2xl p-8 lg:p-12 shadow-sm text-center relative overflow-hidden mb-12">
+<div class="max-w-2xl mx-auto relative z-10 flex flex-col items-center">
+<!-- Icon Badge -->
+<div class="w-16 h-16 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-6 shadow-sm">
+<span class="material-symbols-outlined text-4xl">admin_panel_settings</span>
+</div>
+<span class="inline-block px-3 py-1 rounded-full bg-secondary-container/50 text-secondary text-label-sm font-semibold mb-3">
+      Autenticación Obligatoria
+    </span>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-3 tracking-tight">
+      Inicia sesión para crear una convocatoria o evento
+    </h2>
+<p class="font-body-md text-body-md text-secondary leading-relaxed mb-8">
+      Para garantizar la autenticidad y el respaldo institucional de las convocatorias en el ecosistema IncubaUNAS, debes identificarte con tu cuenta institucional de la UNAS o registrarte como docente, organizador o entidad aliada.
+    </p>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg bg-primary hover:bg-surface-tint text-on-primary font-label-lg text-label-lg font-bold shadow-md hover:shadow-lg transition-all duration-200 active:scale-95" type="button">
+<span class="material-symbols-outlined text-xl">login</span>
+<span class="">Iniciar Sesión</span>
+</button>
+
+</div>
+<!-- Institutional Helper Notice -->
+<div class="mt-8 pt-6 border-t border-surface-container flex flex-wrap items-center justify-center gap-6 text-label-sm text-secondary">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-tertiary">check_circle</span>
+        Cuentas @unas.edu.pe admitidas
+      </span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-tertiary">check_circle</span>
+        Validación técnica automática
+      </span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-tertiary">check_circle</span>
+        Respaldo oficial DITT - UNAS
+      </span>
+</div>
+</div>
+</div>
+<!-- BENEFITS / WHAT YOU CAN DO SECTION -->
+<div class="mb-8">
+<div class="text-center max-w-2xl mx-auto mb-10">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-2">
+      Herramientas disponibles para organizadores y facultades
+    </h3>
+<p class="font-body-sm text-body-sm text-secondary">
+      Al identificarte como organizador oficial, desbloquearás el gestor integral de convocatorias de la UNAS:
+    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Benefit 1 -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-sm transition-all hover:border-primary/40 flex flex-col">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed text-primary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl">tune</span>
+</div>
+<h4 class="font-title text-title text-on-surface font-bold mb-2">Gestión de Convocatorias</h4>
+<p class="font-body-sm text-body-sm text-secondary leading-relaxed flex-grow">
+        Personaliza criterios de postulación, cronograma con sesiones híbridas o presenciales y etapas de selección específicas.
+      </p>
+</div>
+<!-- Benefit 2 -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-sm transition-all hover:border-primary/40 flex flex-col">
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed text-tertiary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl">group_add</span>
+</div>
+<h4 class="font-title text-title text-on-surface font-bold mb-2">Co-organización y Staff</h4>
+<p class="font-body-sm text-body-sm text-secondary leading-relaxed flex-grow">
+        Asigna personal de apoyo logístico de IncubaUNAS, evaluadores y moderadores institucionales por correo electrónico.
+      </p>
+</div>
+<!-- Benefit 3 -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-sm transition-all hover:border-primary/40 flex flex-col">
+<div class="w-12 h-12 rounded-xl bg-secondary-container text-primary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl">campaign</span>
+</div>
+<h4 class="font-title text-title text-on-surface font-bold mb-2">Difusión en la Red UNAS</h4>
+<p class="font-body-sm text-body-sm text-secondary leading-relaxed flex-grow">
+        Alcance directo a facultades de Agronomía, Recursos Naturales Renovables, Zootecnia y círculos de investigación tecnológica.
+      </p>
+</div>
+<!-- Benefit 4 -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-sm transition-all hover:border-primary/40 flex flex-col">
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed text-secondary font-bold flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-2xl">analytics</span>
+</div>
+<h4 class="font-title text-title text-on-surface font-bold mb-2">Monitoreo en Tiempo Real</h4>
+<p class="font-body-sm text-body-sm text-secondary leading-relaxed flex-grow">
+        Dashboard completo para calificar postulaciones, filtrar equipos, validar asistencia y descargar reportes para ProInnóvate.
+      </p>
+</div>
+</div>
+</div>
+<!-- CONTACT / SUPPORT CALLOUT -->
+<div class="bg-surface-container-low/60 border border-surface-container-highest rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<span class="material-symbols-outlined text-primary text-3xl">contact_support</span>
+<div>
+<h4 class="font-label-lg text-label-lg font-bold text-on-surface">¿Representas a una entidad externa, empresa o cooperativa?</h4>
+<p class="font-body-sm text-body-sm text-secondary">Coordina con la Dirección de Innovación de la UNAS para formalizar convenios de co-organización.</p>
+</div>
+</div>
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container border border-surface-container-highest text-primary font-label-md text-label-md font-semibold transition-colors whitespace-nowrap shadow-xs" href="#">
+<span class="">Contactar Coordinación</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div></main>
+<!-- FOOTER (Source of Truth JSON Tokens + IncubaUNAS Campus Context) -->
+<footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-surface-container-highest dark:border-outline-variant mt-16">
+<div class="w-full px-6 lg:px-12 py-12 max-w-7xl mx-auto">
+<!-- Top Grid Footer Links -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+<!-- Column 1: Brand & Campus -->
+<div>
+<div class="flex items-center gap-2 mb-4">
+<img alt="IncubaUNAS Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfKghtF_dAbCfH5uHfKq9-UTbElBgPP1tdYeNniJIQ2giPxjzbe12p6WqwwRZ18L9og9eg5RM2TvaA8a7E232wSwvBrnTX6K-57850onQoGW5Ldd5SFr98rBsghHA0rCdiLJgps2JDxNtxHLuAK-IS5VCJRI7twjSVm2sH26r7Uq1kJ37PPuvRVnK7uwHECyL4LQ4cTe7BzYbY9QGPDShM6azHW4gWjDj4RNhplGM-tzOwVEg4nzLv">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-inverse-on-surface">IncubaUNAS</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary dark:text-secondary-fixed-dim leading-relaxed mb-4">
+            Incubadora de Empresas de la Universidad Nacional Agraria de la Selva. Impulsando la bioeconomía, AgTech y el emprendimiento en la Amazonía Peruana.
+          </p>
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-secondary">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="">Carretera Central Km 1.21, Tingo María, Huánuco, Perú</span>
+</div>
+</div>
+<!-- Column 2: Contacto & Atención (Literal Links from JSON) -->
+<div>
+<h4 class="font-title text-title text-on-surface dark:text-inverse-on-surface font-semibold mb-4">Contacto</h4>
+<ul class="space-y-2.5 font-label-md text-label-md">
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-sm">map</span>
+<span class="">Dirección y mapa</span>
+</a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 flex items-center gap-2" href="mailto:contacto@eventospro.com">
+<span class="material-symbols-outlined text-sm">mail</span>
+<span class="">contacto@eventospro.com</span>
+</a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 flex items-center gap-2" href="tel:+15550000000">
+<span class="material-symbols-outlined text-sm">call</span>
+<span class="">+1 (555) 000-0000</span>
+</a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Formulario de contacto
+              </a>
+</li>
+<li class="text-secondary dark:text-secondary-fixed-dim text-xs pt-1">
+              Horario de atención: 9:00 - 18:00
+            </li>
+</ul>
+</div>
+<!-- Column 3: Ecosistema & Redes (Literal Links from JSON) -->
+<div>
+<h4 class="font-title text-title text-on-surface dark:text-inverse-on-surface font-semibold mb-4">Ecosistema</h4>
+<ul class="space-y-2.5 font-label-md text-label-md">
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Comunidad
+              </a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Canal oficial
+              </a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Galería y eventos
+              </a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Red profesional
+              </a>
+</li>
+</ul>
+</div>
+<!-- Column 4: Legales & Certificaciones (Literal Links from JSON) -->
+<div>
+<h4 class="font-title text-title text-on-surface dark:text-inverse-on-surface font-semibold mb-4">Términos</h4>
+<ul class="space-y-2.5 font-label-md text-label-md">
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Términos y condiciones
+              </a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Políticas de privacidad
+              </a>
+</li>
+<li class="">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="#">
+                Políticas de cookies
+              </a>
+</li>
+<li class="pt-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-secondary-container/50 text-secondary text-xs font-semibold">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+                Acreditado ProInnóvate
+              </span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Bottom Separator & Copyright -->
+<div class="pt-8 border-t border-surface-container flex flex-col sm:flex-row items-center justify-between gap-4">
+<p class="font-body-sm text-body-sm text-secondary dark:text-secondary-fixed-dim">
+          © 2024 EventosPro. Todos los derechos reservados.
+        </p>
+<div class="flex items-center gap-6 font-label-sm text-label-sm text-secondary">
+<span class="">IncubaUNAS - Dirección de Emprendimiento</span>
+<span class="">Versión 2.4.0</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- MICRO-INTERACTIONS AND DYNAMIC FORM LOGIC -->
+<script>
+    // 1. Tag Pill Toggle Helper
+    function toggleTagPill(button, tagName) {
+      const isSelected = button.classList.contains('border-primary');
+      const iconSpan = button.querySelector('.material-symbols-outlined');
+      const wrapper = document.getElementById('activeTagsWrapper');
+      
+      if (isSelected) {
+        button.classList.remove('border-primary', 'bg-primary/10', 'text-primary', 'font-bold');
+        button.classList.add('border-surface-container-highest', 'bg-surface-container-low', 'text-secondary');
+        iconSpan.textContent = 'add';
+        // Remove from active container
+        const chips = wrapper.querySelectorAll('span.inline-flex');
+        chips.forEach(chip => {
+          if (chip.textContent.includes(tagName)) chip.remove();
+        });
+      } else {
+        button.classList.add('border-primary', 'bg-primary/10', 'text-primary', 'font-bold');
+        button.classList.remove('border-surface-container-highest', 'bg-surface-container-low', 'text-secondary');
+        iconSpan.textContent = 'check';
+        // Add to active container
+        addTagChip(tagName);
+      }
+    }
+
+    function addCustomTag() {
+      const input = document.getElementById('customTagInput');
+      const value = input.value.trim();
+      if (!value) return;
+      addTagChip(value);
+      input.value = '';
+    }
+
+    function addTagChip(name) {
+      const wrapper = document.getElementById('activeTagsWrapper');
+      const span = document.createElement('span');
+      span.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-sm text-label-sm animate-fade-in';
+      span.innerHTML = `<span>${name}</span><button type="button" onclick="this.parentElement.remove()" class="hover:text-error transition-colors flex items-center"><span class="material-symbols-outlined text-sm">close</span></button>`;
+      wrapper.appendChild(span);
+    }
+
+    // 2. Affiliation Counter & Validation
+    function updateAffiliationCount() {
+      const checkedCount = document.querySelectorAll('input[name="affiliation"]:checked').length;
+      const countText = document.getElementById('affiliationCountText');
+      const counterContainer = document.getElementById('affiliationCounter');
+      const alertMessage = document.getElementById('affiliationAlert');
+      
+      if (checkedCount === 0) {
+        countText.textContent = '0 entidades (Requerido)';
+        counterContainer.classList.remove('text-tertiary', 'bg-tertiary-container/10', 'border-tertiary-container/30');
+        counterContainer.classList.add('text-error', 'bg-error-container/40', 'border-error-container');
+        alertMessage.classList.remove('hidden');
+      } else {
+        countText.textContent = `${checkedCount} entidad${checkedCount > 1 ? 'es' : ''} seleccionada${checkedCount > 1 ? 's' : ''}`;
+        counterContainer.classList.add('text-tertiary', 'bg-tertiary-container/10', 'border-tertiary-container/30');
+        counterContainer.classList.remove('text-error', 'bg-error-container/40', 'border-error-container');
+        alertMessage.classList.add('hidden');
+      }
+
+      // Update card visual borders
+      document.querySelectorAll('.affiliation-card').forEach(card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        if (checkbox && checkbox.checked) {
+          card.classList.add('border-primary', 'bg-primary/5', 'border-2');
+          card.classList.remove('border-surface-container-highest', 'bg-surface-container-lowest', 'border');
+        } else if (checkbox) {
+          card.classList.remove('border-primary', 'bg-primary/5', 'border-2');
+          card.classList.add('border-surface-container-highest', 'bg-surface-container-lowest', 'border');
+        }
+      });
+    }
+
+    // 3. Dynamic Session Builder
+    let sessionCounter = 2;
+    function addNewSessionRow() {
+      sessionCounter++;
+      const container = document.getElementById('sessionsContainer');
+      const newCard = document.createElement('div');
+      newCard.className = 'session-card border border-surface-container-highest rounded-xl p-5 bg-surface-bright relative transition-all duration-150 hover:border-outline-variant';
+      newCard.innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2.5">
+            <span class="w-6 h-6 rounded-full bg-surface-container text-on-surface text-label-sm font-label-sm font-bold flex items-center justify-center">${sessionCounter}</span>
+            <span class="font-title text-title text-on-surface font-bold">Sesión ${sessionCounter}: Nueva Jornada</span>
+          </div>
+          <button type="button" onclick="this.closest('.session-card').remove(); updateSessionCount();" class="text-error hover:text-on-error-container p-1 rounded hover:bg-error-container/30 transition-colors flex items-center gap-1 font-label-sm text-label-sm">
+            <span class="material-symbols-outlined text-base">delete</span>
+            <span>Eliminar sesión</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div class="md:col-span-4">
+            <label class="block font-label-sm text-label-sm text-on-surface mb-1.5">Nombre de la sesión *</label>
+            <input type="text" placeholder="Ej: Sesión ${sessionCounter}: Ronda de Validación" required
+              class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm font-body-sm text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-label-sm text-label-sm text-on-surface mb-1.5">Fecha *</label>
+            <input type="date" required
+              class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2.5 text-body-sm font-body-sm text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block font-label-sm text-label-sm text-on-surface mb-1.5">Hora Inicio *</label>
+            <input type="time" value="09:00" required
+              class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2.5 text-body-sm font-body-sm text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-label-sm text-label-sm text-on-surface mb-1.5">Hora Fin *</label>
+            <input type="time" value="12:00" required
+              class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2.5 text-body-sm font-body-sm text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+          </div>
+          <div class="md:col-span-4">
+            <label class="block font-label-sm text-label-sm text-on-surface mb-1.5">Modalidad</label>
+            <select class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm font-body-sm text-on-surface focus:border-primary outline-none">
+              <option selected>Presencial (Campus Universitario)</option>
+              <option>Virtual (Zoom / Google Meet)</option>
+              <option>Híbrida</option>
+            </select>
+          </div>
+          <div class="md:col-span-8">
+            <label class="block font-label-sm text-label-sm text-on-surface mb-1.5">Lugar / Aula o Enlace Virtual *</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-base">pin_drop</span>
+              <input type="text" placeholder="Ej: Auditorio de Agronomía" required
+                class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg pl-9 pr-3 py-2.5 text-body-sm font-body-sm text-on-surface focus:border-primary outline-none">
+            </div>
+          </div>
+        </div>
+      `;
+      container.appendChild(newCard);
+      updateSessionCount();
+    }
+
+    function updateSessionCount() {
+      const count = document.querySelectorAll('.session-card').length;
+      document.getElementById('sessionCountText').textContent = `${count} jornada${count > 1 ? 's' : ''}`;
+    }
+
+    // 4. Invite Collaborators by Email
+    function addInvitedCollaborator() {
+      const emailInput = document.getElementById('collaboratorEmail');
+      const roleSelect = document.getElementById('collaboratorRole');
+      const email = emailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        emailInput.focus();
+        return;
+      }
+
+      const role = roleSelect.value;
+      const chipsWrapper = document.getElementById('collaboratorsChipsWrapper');
+      
+      const chip = document.createElement('div');
+      chip.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-surface-container-highest text-body-sm font-body-sm';
+      chip.innerHTML = `
+        <span class="material-symbols-outlined text-sm text-primary">person</span>
+        <span>${email}</span>
+        <span class="text-xs bg-secondary-container px-1.5 py-0.5 rounded text-secondary font-medium">${role}</span>
+        <button type="button" onclick="this.parentElement.remove()" class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">close</span></button>
+      `;
+      chipsWrapper.appendChild(chip);
+      emailInput.value = '';
+    }
+
+    // 5. Final Form Validation and Feedback
+    function validateAndPublish() {
+      const checkedAffiliations = document.querySelectorAll('input[name="affiliation"]:checked').length;
+      const sessionCards = document.querySelectorAll('.session-card').length;
+      const title = document.getElementById('eventTitle').value.trim();
+
+      if (!title) {
+        alert("Por favor ingrese el título del evento.");
+        document.getElementById('eventTitle').focus();
+        return;
+      }
+
+      if (checkedAffiliations === 0) {
+        alert("Atención: Debe seleccionar al menos una afiliación o entidad convocante obligatoria.");
+        document.getElementById('affiliationGrid').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      if (sessionCards === 0) {
+        alert("Atención: Debe registrar al menos una sesión de fecha y hora para el cronograma del evento.");
+        return;
+      }
+
+      alert("¡Convocatoria enviada con éxito! El equipo de coordinación de IncubaUNAS revisará los datos para habilitar la inscripción pública.");
+    }
+  </script>
+
+
+</body></html>

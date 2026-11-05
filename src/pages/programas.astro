@@ -1,0 +1,384 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Programas de Incubación | IncubaUNAS" activeNav="programas">
+  <!-- SECTION 1: NUESTROS PROGRAMAS -->
+  <section class="py-16 lg:py-24 max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+      <div>
+        <h2 class="font-headline-lg text-headline-lg text-on-surface">Nuestros Programas</h2>
+        <p class="font-body-md text-body-md text-secondary mt-2 max-w-xl">
+          Ofrecemos programas especializados diseñados para acompañarte en cada etapa de tu emprendimiento.
+        </p>
+      </div>
+    </div>
+
+    <!-- Bento-style Grid of 4 Programs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Card 1: DESPEGA UNAS -->
+      <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest shadow-sm hover:border-outline-variant transition-all duration-200 p-8 flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
+        <div>
+          <!-- Header Badges -->
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-semibold">
+              Ideación y Validación
+            </span>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-low text-secondary font-label-sm text-label-sm border border-surface-container-highest">
+              <span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+              3 meses
+            </span>
+          </div>
+          <!-- Title & Bio -->
+          <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">DESPEGA UNAS</h3>
+          <p class="font-body-md text-body-md text-secondary mt-3 leading-relaxed">
+            Si tienes una idea de emprendimiento y no sabes por dónde empezar, ¡estamos aquí para ayudarte! A través de mentorías, talleres y metodologías probadas, te guiaremos en el camino para convertir tu visión en una oportunidad real de negocio. ¡Da el primer paso y haz realidad tu emprendimiento con nosotros!
+          </p>
+          <hr class="my-6 border-surface-container-highest" />
+          <!-- Breakdown: ¿Qué incluye? -->
+          <div class="mb-6">
+            <h4 class="font-title text-title text-on-surface flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-primary text-xl" data-icon="checklist">checklist</span>
+              ¿Qué incluye?
+            </h4>
+            <ul class="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Coolhunting:</strong> Descubrimiento de necesidades e ideas</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Design Thinking:</strong> Validación de necesidades / problemas Ideación & Prototyping</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Value Proposition:</strong> Propuesta de valor inicial</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>BMC:</strong> Propuesta de valor y MVP</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Pre-modelo de negocio estructurado</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Pre Pitch & Idea stable:</strong> Presentaciones corporativas de ideas & selección</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Programa integral que involucra las 5 verticales estratégicas</span>
+              </li>
+            </ul>
+          </div>
+          <!-- Breakdown: ¿Para quién es? -->
+          <div class="p-4 rounded-lg bg-surface-container-low border border-surface-container-highest mb-8">
+            <p class="font-label-md text-label-md text-on-surface font-semibold mb-1 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-base" data-icon="group">group</span>
+              ¿Para quién es?
+            </p>
+            <p class="font-body-sm text-body-sm text-secondary">
+              Emprendedores con ideas innovadoras que buscan validar y estructurar su propuesta de negocio.
+            </p>
+          </div>
+        </div>
+        <!-- Card Action Button -->
+        <a class="w-full bg-primary hover:bg-primary-container text-on-primary py-3 px-4 rounded-lg text-center font-label-lg text-label-lg transition-all duration-200 active:scale-95 shadow-sm flex items-center justify-center gap-2" href="/convocar">
+          <span>Postular a Despega UNAS</span>
+          <span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Card 2: Incuba Lands -->
+      <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest shadow-sm hover:border-outline-variant transition-all duration-200 p-8 flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-tertiary-container"></div>
+        <div>
+          <!-- Header Badges -->
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md font-semibold">
+              Incubación y Tracción
+            </span>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-low text-secondary font-label-sm text-label-sm border border-surface-container-highest">
+              <span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+              4 meses
+            </span>
+          </div>
+          <!-- Title & Bio -->
+          <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-tertiary-container transition-colors">Incuba Lands</h3>
+          <p class="font-body-md text-body-md text-secondary mt-3 leading-relaxed">
+            Transforma ideas validadas en negocios sostenibles, brindando apoyo para estructurar y consolidar empresas con impacto social, económico y ambiental en la Amazonía.
+          </p>
+          <hr class="my-6 border-surface-container-highest" />
+          <!-- Breakdown: ¿Qué incluye? -->
+          <div class="mb-6">
+            <h4 class="font-title text-title text-on-surface flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-tertiary text-xl" data-icon="checklist">checklist</span>
+              ¿Qué incluye?
+            </h4>
+            <ul class="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Desarrollo De MVP (BETA):</strong> Arquitectura y construcción funcional</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Lanzamiento De producto:</strong> Go-to-market planificado</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Validación De mercado Y técnica:</strong> Pruebas de campo rigurosas</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Generación De ventas iniciales:</strong> Estrategias de monetización y funnel</span>
+              </li>
+            </ul>
+          </div>
+          <!-- Breakdown: ¿Para quién es? -->
+          <div class="p-4 rounded-lg bg-surface-container-low border border-surface-container-highest mb-8">
+            <p class="font-label-md text-label-md text-on-surface font-semibold mb-1 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-base" data-icon="group">group</span>
+              ¿Para quién es?
+            </p>
+            <p class="font-body-sm text-body-sm text-secondary">
+              Startups con proyectos validados que buscan llevar su negocio al siguiente nivel.
+            </p>
+          </div>
+        </div>
+        <!-- Card Action Button -->
+        <a class="w-full bg-primary hover:bg-primary-container text-on-primary py-3 px-4 rounded-lg text-center font-label-lg text-label-lg transition-all duration-200 active:scale-95 shadow-sm flex items-center justify-center gap-2" href="/convocar">
+          <span>Postular a Incuba Lands</span>
+          <span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Card 3: Pre-Aceleración -->
+      <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest shadow-sm hover:border-outline-variant transition-all duration-200 p-8 flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-secondary"></div>
+        <div>
+          <!-- Header Badges -->
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md font-bold uppercase tracking-wider">
+              Próximamente
+            </span>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-low text-secondary font-label-sm text-label-sm border border-surface-container-highest">
+              <span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+              4 meses
+            </span>
+          </div>
+          <!-- Title & Bio -->
+          <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Pre-Aceleración</h3>
+          <p class="font-body-md text-body-md text-secondary mt-3 leading-relaxed">
+            Preparación especializada para startups listas para escalar y levantar rondas de financiamiento con inversores y fondos de impacto.
+          </p>
+          <hr class="my-6 border-surface-container-highest" />
+          <!-- Breakdown: ¿Qué incluye? -->
+          <div class="mb-6">
+            <h4 class="font-title text-title text-on-surface flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-primary text-xl" data-icon="checklist">checklist</span>
+              ¿Qué incluye?
+            </h4>
+            <ul class="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Preparación Para ronda De inversión:</strong> Due diligence y data room</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span><strong>Presentación Rondas de Inversión:</strong> Demo Days y enlace con Business Angels</span>
+              </li>
+            </ul>
+          </div>
+          <!-- Breakdown: ¿Para quién es? -->
+          <div class="p-4 rounded-lg bg-surface-container-low border border-surface-container-highest mb-8">
+            <p class="font-label-md text-label-md text-on-surface font-semibold mb-1 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-base" data-icon="group">group</span>
+              ¿Para quién es?
+            </p>
+            <p class="font-body-sm text-body-sm text-secondary">
+              Empresas, startups e instituciones que buscan impulsar la innovación colaborativa.
+            </p>
+          </div>
+        </div>
+        <!-- Card Action Button -->
+        <a class="w-full bg-surface-container-high hover:bg-surface-variant text-on-surface py-3 px-4 rounded-lg text-center font-label-lg text-label-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 border border-outline-variant" href="/convocar">
+          <span class="material-symbols-outlined text-base" data-icon="notifications">notifications</span>
+          <span>Registrar Interés</span>
+        </a>
+      </div>
+
+      <!-- Card 4: Open Innovation -->
+      <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest shadow-sm hover:border-outline-variant transition-all duration-200 p-8 flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-primary-container"></div>
+        <div>
+          <!-- Header Badges -->
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md font-semibold">
+              Innovación y Alianzas
+            </span>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-low text-secondary font-label-sm text-label-sm border border-surface-container-highest">
+              <span class="material-symbols-outlined text-sm" data-icon="all_inclusive">all_inclusive</span>
+              Continuo
+            </span>
+          </div>
+          <!-- Title & Bio -->
+          <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Open Innovation</h3>
+          <p class="font-body-md text-body-md text-secondary mt-3 leading-relaxed">
+            Si buscas conectar startups, emprendedores, empresas e inversores para impulsar soluciones innovadoras a desafíos actuales y acelerar el crecimiento de proyectos disruptivos. ¡Este es el espacio ideal para ti!
+          </p>
+          <hr class="my-6 border-surface-container-highest" />
+          <!-- Breakdown: ¿Qué incluye? -->
+          <div class="mb-6">
+            <h4 class="font-title text-title text-on-surface flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-primary text-xl" data-icon="checklist">checklist</span>
+              ¿Qué incluye?
+            </h4>
+            <ul class="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Introducción a la innovación abierta y metodologías ágiles</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Webinars especializados con líderes del sector bioeconómico</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Talleres de co-creación y resolución de retos empresariales</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Mesas de trabajo colaborativo academia-empresa</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Networking estratégico multilateral</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-tertiary text-base mt-0.5" data-icon="check_circle">check_circle</span>
+                <span>Eventos de pitch corporativo y rondas de presentación</span>
+              </li>
+            </ul>
+          </div>
+          <!-- Breakdown: ¿Para quién es? -->
+          <div class="p-4 rounded-lg bg-surface-container-low border border-surface-container-highest mb-8">
+            <p class="font-label-md text-label-md text-on-surface font-semibold mb-1 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-base" data-icon="group">group</span>
+              ¿Para quién es?
+            </p>
+            <p class="font-body-sm text-body-sm text-secondary">
+              Empresas, startups e instituciones que buscan impulsar la innovación colaborativa.
+            </p>
+          </div>
+        </div>
+        <!-- Card Action Button -->
+        <a class="w-full bg-primary hover:bg-primary-container text-on-primary py-3 px-4 rounded-lg text-center font-label-lg text-label-lg transition-all duration-200 active:scale-95 shadow-sm flex items-center justify-center gap-2" href="/convocar">
+          <span>Conectar con Ecosistema</span>
+          <span class="material-symbols-outlined text-base" data-icon="hub">hub</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: FLUJO DEL PROCESO -->
+  <section class="py-16 lg:py-24 bg-surface-container-low border-t border-surface-container-highest">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="font-headline-lg text-headline-lg text-on-surface">Flujo del Proceso</h2>
+        <p class="font-body-lg text-body-lg text-secondary mt-2">
+          Un camino estructurado desde la idea hasta la empresa consolidada
+        </p>
+      </div>
+      <!-- Sequential Timeline Flow -->
+      <div class="relative">
+        <!-- Desktop connecting rail -->
+        <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-surface-container-highest -translate-y-6 z-0"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+          <!-- Step 01 -->
+          <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-shadow relative">
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center font-bold shadow-sm">
+                01
+              </span>
+              <span class="px-2.5 py-1 rounded bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+                3 meses
+              </span>
+            </div>
+            <h3 class="font-title text-title text-on-surface font-bold">DESPEGA UNAS</h3>
+            <p class="font-body-sm text-body-sm text-primary font-semibold mt-1">Ideación & Prototipado</p>
+            <p class="font-body-sm text-body-sm text-secondary mt-3">
+              Validación de necesidades del mercado y formulación del Producto Mínimo Viable (MVP).
+            </p>
+          </div>
+          <!-- Step 02 -->
+          <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-shadow relative">
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-10 h-10 rounded-full bg-tertiary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center font-bold shadow-sm">
+                02
+              </span>
+              <span class="px-2.5 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+                4 meses
+              </span>
+            </div>
+            <h3 class="font-title text-title text-on-surface font-bold">Incuba Lands</h3>
+            <p class="font-body-sm text-body-sm text-tertiary font-semibold mt-1">Validación & Primeras Ventas</p>
+            <p class="font-body-sm text-body-sm text-secondary mt-3">
+              Lanzamiento del producto al mercado amazónico y consolidación de tracción comercial inicial.
+            </p>
+          </div>
+          <!-- Step 03 -->
+          <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-shadow relative">
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-10 h-10 rounded-full bg-secondary text-on-secondary font-headline-sm text-headline-sm flex items-center justify-center font-bold shadow-sm">
+                03
+              </span>
+              <span class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+                4 meses
+              </span>
+            </div>
+            <h3 class="font-title text-title text-on-surface font-bold">Pre-Aceleración</h3>
+            <p class="font-body-sm text-body-sm text-secondary font-semibold mt-1">Inversión & Escalamiento</p>
+            <p class="font-body-sm text-body-sm text-secondary mt-3">
+              Preparación para rondas de inversión formal, capital semilla y vinculación con ángeles inversionistas.
+            </p>
+          </div>
+          <!-- Step 04 -->
+          <div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-shadow relative">
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container font-headline-sm text-headline-sm flex items-center justify-center font-bold shadow-sm">
+                04
+              </span>
+              <span class="px-2.5 py-1 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">
+                Continuo
+              </span>
+            </div>
+            <h3 class="font-title text-title text-on-surface font-bold">Open Innovation</h3>
+            <p class="font-body-sm text-body-sm text-primary font-semibold mt-1">Conexión & Alianzas</p>
+            <p class="font-body-sm text-body-sm text-secondary mt-3">
+              Vinculación continua con corporaciones, consorcios internacionales y alianzas estratégicas.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Banner CTA in timeline -->
+      <div class="mt-16 bg-surface-container-lowest border border-surface-container-highest rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+            <span class="material-symbols-outlined text-3xl" data-icon="lightbulb">lightbulb</span>
+          </div>
+          <div>
+            <h4 class="font-title text-title text-on-surface font-bold">¿Tienes dudas sobre cuál es tu etapa?</h4>
+            <p class="font-body-sm text-body-sm text-secondary">
+              Nuestros asesores de innovación pueden evaluar tu propuesta y recomendarte la mejor ruta.
+            </p>
+          </div>
+        </div>
+        <a href="/convocar" class="bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg px-6 py-3 rounded-lg shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap inline-block text-center">
+          Agendar Orientación
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

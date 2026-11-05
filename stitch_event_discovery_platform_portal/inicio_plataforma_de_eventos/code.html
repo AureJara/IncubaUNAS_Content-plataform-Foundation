@@ -1,0 +1,474 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="es" style="width: 1280px; height: 4900px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>EventosPro | Conéctate, Suscríbete y Crea Eventos Extraordinarios</title>
+<!-- Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-surface": "#2d3133",
+            "surface-dim": "#d7dadd",
+            "on-tertiary-container": "#000703",
+            "secondary-fixed": "#d6e4f9",
+            "primary-container": "#1a73e8",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "surface-container-highest": "#e0e3e6",
+            "on-primary-fixed": "#001a41",
+            "tertiary-fixed": "#70fbbd",
+            "on-error-container": "#93000a",
+            "surface-container-high": "#e5e8eb",
+            "outline-variant": "#c1c6d6",
+            "secondary": "#525f71",
+            "on-primary-container": "#ffffff",
+            "on-error": "#ffffff",
+            "on-background": "#181c1e",
+            "surface-tint": "#005bc0",
+            "surface-bright": "#f7fafd",
+            "tertiary-container": "#00885c",
+            "outline": "#727785",
+            "primary": "#005bbf",
+            "background": "#f7fafd",
+            "on-tertiary-fixed": "#002113",
+            "on-secondary-container": "#566475",
+            "primary-fixed-dim": "#adc7ff",
+            "tertiary-fixed-dim": "#4fdea2",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#eef1f4",
+            "primary-fixed": "#d8e2ff",
+            "tertiary": "#006c49",
+            "surface-variant": "#e0e3e6",
+            "secondary-fixed-dim": "#bac8dc",
+            "on-secondary-fixed-variant": "#3a4859",
+            "on-surface-variant": "#414754",
+            "on-surface": "#181c1e",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f1f4f7",
+            "surface-container-lowest": "#ffffff",
+            "error-container": "#ffdad6",
+            "surface-container": "#ebeef1",
+            "on-primary-fixed-variant": "#004493",
+            "on-tertiary-fixed-variant": "#005236",
+            "secondary-container": "#d3e1f6",
+            "surface": "#f7fafd",
+            "on-secondary-fixed": "#0f1c2c",
+            "inverse-primary": "#adc7ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-sm": "1rem",
+            "margin": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "gutter": "1.5rem",
+            "gutter-lg": "2rem",
+            "margin-sm": "1rem",
+            "margin-lg": "3rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Plus Jakarta Sans"],
+            "label-sm": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "label-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "title": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "display-mobile": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-md-mobile": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "display": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "title": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "display-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-md-mobile": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface antialiased selection:bg-primary selection:text-on-primary min-h-screen flex flex-col font-body-md text-body-md">
+<!-- 1. TopNavBar (Shared Component Execution) -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface border-b border-surface-container-highest dark:border-outline-variant shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center w-full px-6 lg:px-12 py-4 max-w-7xl mx-auto">
+<!-- Brand Logo -->
+<a class="flex items-center gap-2 group transition-all duration-200 ease-in-out active:scale-95" href="#"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyg6AgiZft7_bBd24o7L7PiT1dfa_xwEzKqqjUzH7YYJvJ5fFXFthQp26IFcXPfatCOh8jYkxToze2hJGp-tCRFpHebrSuWgKxwgxEvruN0Z-Sak1HueNiWyiz12r7mMhAZ-nuTb338-QdRUUb30jZCoGb5zSUh95SKMlpAsmuw_w2aeToy5gp-xVDdi0sPIgSYpBrvWcpg75u-AEAR2nsXTa-6h2IGDBIOReVSeqL9Fcn6OGD5L8i" alt="IncubaUNAS" class="h-8 sm:h-9 w-auto object-contain"></a>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 text-label-lg font-label-lg" href="#">Nosotros</a>
+<!-- Active Tab for Homepage Intent: 'Eventos' -->
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 text-label-lg font-label-lg" href="#eventos">Eventos</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 text-label-lg font-label-lg" href="#programas">Programas</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 text-label-lg font-label-lg" href="#postular">Convocar</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 text-label-lg font-label-lg" href="#portafolio">Portafolio</a></nav>
+<!-- Trailing Action -->
+<div class="flex items-center gap-3">
+<button class="bg-primary text-on-primary rounded-lg px-5 py-2 text-label-lg font-label-lg font-semibold hover:bg-primary-container transition-all duration-200 ease-in-out active:scale-95 shadow-sm" type="button">
+          Acceder
+        </button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow">
+<!-- 2. Hero Section -->
+<section class="relative overflow-hidden pt-12 pb-20 lg:pt-16 lg:pb-24 border-b border-surface-container-highest bg-gradient-to-b from-surface-container-lowest via-background to-surface-container-low">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<!-- Header & Pitch -->
+<div class="text-center max-w-4xl mx-auto space-y-5">
+
+<h1 class="text-display font-display text-on-surface tracking-tight leading-tight">
+            Conéctate, Suscríbete y Crea <span class="text-primary">Eventos Extraordinarios</span>
+</h1>
+<p class="text-body-lg font-body-lg text-secondary max-w-2xl mx-auto">Somos la incubadora de la Universidad Nacional Agraria de la Selva. Brindamos asesoría y asistencia técnica para la creación de emprendimientos innovadores.</p>
+<!-- CTAs -->
+<div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+<a class="bg-primary-container hover:bg-primary text-on-primary font-semibold px-6 py-3 rounded-lg shadow-sm transition-all duration-200 ease-in-out active:scale-95 flex items-center gap-2 text-label-lg font-label-lg" href="#eventos">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+              Explorar Eventos
+            </a>
+<a class="bg-surface-container-lowest border border-on-surface hover:bg-on-surface hover:text-surface-container-lowest text-on-surface font-semibold px-6 py-3 rounded-lg transition-all duration-200 ease-in-out active:scale-95 flex items-center gap-2 text-label-lg font-label-lg" href="#crear">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+              Crear mi Evento
+            </a>
+</div>
+</div>
+<!-- Interactive Search & Filter Bar -->
+
+<!-- Featured Event Cards Preview (Bento Showcase) -->
+<div class="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="eventos">
+<!-- Card 1: Tech Summit 2025 -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A grand tech conference auditorium with ambient blue staging lights and high-definition screens displaying AI architecture. A professional keynote speaker engages an audience of entrepreneurs in a sleek, modern architectural hall with clean white lines, deep navy accents, and subtle green indicator displays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqzJsWIWe-2fSwJr3PHssJz5sS_KGi6SEcw2XXO_3KGD-RUVHhIKEE8TVZxMsJ-ToH1lU3AoJiyuEOsdQMhqq_OBlGevCRK2Vy2-r8VXxa5yeVHZbNbFpgZmGbISj71thq3wUpejQS94Wjl5KnEdvI-6ULs9sJA_bTY-JsF5NFQXHu9LEzqBP1C1sxkJHuaQCPOw8l2nbVMRWxQxaR__fDazOHJLRb-TuZ_TS7-Tw">
+<div class="absolute top-3 left-3 bg-tertiary-fixed text-on-tertiary-fixed px-2.5 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span>
+                En vivo
+              </div>
+<div class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur text-on-surface px-2.5 py-0.5 rounded-md text-label-sm font-label-sm">
+                Tecnología
+              </div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between">
+<div>
+<div class="flex items-center gap-2 text-secondary text-body-sm font-body-sm mb-2">
+<span class="material-symbols-outlined text-base text-primary" data-icon="calendar_month">calendar_month</span>
+<span class="">14 - 16 Noviembre, 2025</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">
+                  Global Tech Summit 2025: Cloud &amp; AI
+                </h3>
+<p class="text-secondary text-body-sm font-body-sm mt-2 line-clamp-2">
+                  El congreso tecnológico líder que reúne a directores de tecnología, fundadores de startups e ingenieros de software pioneros en Latinoamérica.
+                </p>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container-highest flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base" data-icon="place">place</span>
+<span class="text-body-sm font-body-sm text-secondary">Ciudad Digital &amp; Streaming</span>
+</div>
+<a class="text-primary font-bold text-label-lg font-label-lg inline-flex items-center gap-1 hover:underline" href="#">
+                  Registrarse
+                  <span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 2: Masterclass Innovación -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A collaborative contemporary executive workshop room filled with natural morning light and minimal glass whiteboards. Attendees in business casual attire exchange ideas across clean oak tables with laptop computers, surrounded by navy branding boards and verdant interior plants." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfVKZaYB45vsZuK3WdaaPnusdkNhTs1aOat3EwTU81b8MjtZYPvPCAh21Fo-H-J3PKboOWnzmeaoh5s7iA5WCYhRrSKHiYAoiMcR_elykGwQXjOU54dU6L6rqq_A87FUDr3cqJo8nj5-_MKJPlGJDeYzBS2NJ0IVrGSuibRTUvF0w6azIspVsDGQGffYq1h9OvTqfoYJ39G-viLH4vps9I5Xm3TJK3JPqKr17za0A">
+<div class="absolute top-3 left-3 bg-tertiary-fixed text-on-tertiary-fixed px-2.5 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-xs" data-icon="check_circle">check_circle</span>
+                Inscripciones abiertas
+              </div>
+<div class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur text-on-surface px-2.5 py-0.5 rounded-md text-label-sm font-label-sm">
+                Masterclass
+              </div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between">
+<div>
+<div class="flex items-center gap-2 text-secondary text-body-sm font-body-sm mb-2">
+<span class="material-symbols-outlined text-base text-primary" data-icon="calendar_month">calendar_month</span>
+<span class="">28 Noviembre, 2025</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">
+                  Masterclass de Innovación y Venture Capital
+                </h3>
+<p class="text-secondary text-body-sm font-body-sm mt-2 line-clamp-2">
+                  Aprende estrategias de levantamiento de capital institucional, estructuración de rondas seed y escalamiento acelerado con socios inversores.
+                </p>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container-highest flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base" data-icon="place">place</span>
+<span class="text-body-sm font-body-sm text-secondary">Campus Central &amp; Online</span>
+</div>
+<a class="text-primary font-bold text-label-lg font-label-lg inline-flex items-center gap-1 hover:underline" href="#">
+                  Registrarse
+                  <span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 3: Design & Product Expo -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A vibrant product design showcase hall with illuminated display pedestals and sleek digital interfaces. Creative professionals test interactive UI prototypes under warm gallery spotlights with minimalist geometric architectural partitions in deep navy and brushed metal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy4ZElrzTlf4SrtIEygWIEiT0qVLVv_Pl7yjNs6lO9ZgaAKNV-7h1SeUtMlfNem1upNCB12q-bgTBQao_OF2NQLD8Mc0h95FY3oKhBTu_vL0PqcLCAXbADvS7g5Y652C_BSY3fERA7pE1DecdUYDP-T6dwl5F35e6uLS7Q54Hv0KUq8j0ToSscDgm0FXlQCYNX42zZMbAlbyzLOhozCskb4yPjJIzYLbmWEz3y_8M">
+<div class="absolute top-3 left-3 bg-tertiary-fixed text-on-tertiary-fixed px-2.5 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-xs" data-icon="stars">stars</span>
+                Últimos cupos
+              </div>
+<div class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur text-on-surface px-2.5 py-0.5 rounded-md text-label-sm font-label-sm">
+                Diseño
+              </div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between">
+<div>
+<div class="flex items-center gap-2 text-secondary text-body-sm font-body-sm mb-2">
+<span class="material-symbols-outlined text-base text-primary" data-icon="calendar_month">calendar_month</span>
+<span class="">05 Diciembre, 2025</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">
+                  Product Experience Forum &amp; Expo
+                </h3>
+<p class="text-secondary text-body-sm font-body-sm mt-2 line-clamp-2">
+                  Un encuentro exclusivo para diseñadores de experiencia, líderes de producto y directores creativos enfocados en interfaces de próxima generación.
+                </p>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container-highest flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base" data-icon="place">place</span>
+<span class="text-body-sm font-body-sm text-secondary">Hub de Innovación</span>
+</div>
+<a class="text-primary font-bold text-label-lg font-label-lg inline-flex items-center gap-1 hover:underline" href="#">
+                  Registrarse
+                  <span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- 3. Data Section (Métricas y Cifras Clave) -->
+<section class="py-16 bg-surface-container-lowest border-b border-surface-container-highest">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="text-center max-w-2xl mx-auto mb-12">
+
+
+
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><!-- Metrica 1 -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+10</p>
+<h4 class="text-title font-title text-on-surface">Programas</h4>
+</div>
+<!-- Metrica 2 -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+300</p>
+<h4 class="text-title font-title text-on-surface">Emprendedores impactados</h4>
+</div>
+<!-- Metrica 3 -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-tertiary-container tracking-tight leading-none mb-2">+40</p>
+<h4 class="text-title font-title text-on-surface">Startups incubadas</h4>
+</div>
+<!-- Metrica 4 -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">$500k</p>
+<h4 class="text-title font-title text-on-surface">Capital semilla</h4>
+</div>
+<!-- Metrica 5: Mentores -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-primary tracking-tight leading-none mb-2">+20</p>
+<h4 class="text-title font-title text-on-surface">Mentores</h4>
+</div>
+<!-- Metrica 6: Startups Financiadas -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+8</p>
+<h4 class="text-title font-title text-on-surface">Startups Financiadas</h4>
+</div>
+<!-- Metrica 7: Talleres -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-on-surface tracking-tight leading-none mb-2">+30</p>
+<h4 class="text-title font-title text-on-surface">Talleres</h4>
+</div>
+<!-- Metrica 8: Congresos -->
+<div class="p-6 rounded-xl border border-surface-container-highest bg-background hover:bg-surface-container-low transition-colors duration-150">
+<p class="text-display font-display text-tertiary-container tracking-tight leading-none mb-2">+2</p>
+<h4 class="text-title font-title text-on-surface">Congresos</h4>
+</div></div>
+</div>
+</section>
+<!-- 4. Awards and Merits (Premios y Reconocimientos) -->
+<section class="py-16 bg-surface-container-low border-b border-surface-container-highest">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="flex flex-col items-center text-center justify-center mb-10 gap-3 max-w-2xl mx-auto">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface mt-1">Premios y Reconocimientos</h2>
+</div>
+<p class="text-secondary text-body-md font-body-md max-w-md text-center">
+Avalados por organismos internacionales de tecnología, auditoría de pagos y gremios de organizadores profesionales.
+</p>
+</div>
+<div class="max-w-5xl mx-auto flex flex-wrap justify-center gap-6"><div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm flex flex-col items-center justify-center text-center flex-1 min-w-[260px] max-w-sm hover:shadow-md transition-all duration-200 group"><div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary mb-4 group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-2xl" data-icon="emoji_events">emoji_events</span></div><h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Primera incubadora en llevar emprendimientos amazónicos a Europa</h3></div><div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm flex flex-col items-center justify-center text-center flex-1 min-w-[260px] max-w-sm hover:shadow-md transition-all duration-200 group"><div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary-container mb-4 group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-2xl" data-icon="workspace_premium">workspace_premium</span></div><h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">2 startups en Programas de Mentor Day - España</h3></div><div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm flex flex-col items-center justify-center text-center flex-1 min-w-[260px] max-w-sm hover:shadow-md transition-all duration-200 group"><div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary mb-4 group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-2xl" data-icon="military_tech">military_tech</span></div><h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Articulación con Gobiernos regionales y toda la Red CITE</h3></div></div>
+</div>
+</section>
+<!-- 5. What We Offer (Lo que ofrecemos) -->
+<section class="py-16 lg:py-20 bg-surface-container-lowest border-b border-surface-container-highest" id="programas">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="text-center max-w-3xl mx-auto mb-14">
+
+<h2 class="text-headline-lg font-headline-lg text-on-surface mt-1">Lo que Ofrecemos para Asistentes y Creadores</h2>
+<p class="text-secondary text-body-md font-body-md mt-2">Una suite holística creada tanto para entusiastas que buscan conectar como para marcas que producen experiencias masivas.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"><div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group"><div class="space-y-4 flex flex-col items-center"><div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto"><span class="material-symbols-outlined text-2xl" data-icon="supervisor_account">supervisor_account</span></div><div><h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Mentoría</h3><p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Acompañamiento personalizado y soporte en fondos concursables.</p></div></div></div><div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group"><div class="space-y-4 flex flex-col items-center"><div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto"><span class="material-symbols-outlined text-2xl" data-icon="school">school</span></div><div><h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Capacitaciones</h3><p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Formación para fortalecer ideas y negocios sostenibles.</p></div></div></div><div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group"><div class="space-y-4 flex flex-col items-center"><div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto"><span class="material-symbols-outlined text-2xl" data-icon="hub">hub</span></div><div><h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Networking</h3><p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Acceso a una red de emprendedores y mentores.</p></div></div></div><div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center group"><div class="space-y-4 flex flex-col items-center"><div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-primary group-hover:scale-105 transition-transform mx-auto"><span class="material-symbols-outlined text-2xl" data-icon="domain">domain</span></div><div><h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">Coworking</h3><p class="text-secondary text-body-sm font-body-sm mt-2 leading-relaxed">Espacios de trabajo colaborativo totalmente equipados.</p></div></div></div></div></div>
+</section>
+<!-- 6. Our Allies (Nuestros aliados) -->
+<section class="py-16 bg-surface-container-low border-b border-surface-container-highest">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="text-center max-w-2xl mx-auto mb-10">
+
+<h2 class="text-headline-lg font-headline-lg text-on-surface mt-1">Nuestros Aliados</h2>
+<p class="text-secondary text-body-md font-body-md mt-2">Empresas e instituciones que confían y colaboran con nuestra incubadora</p>
+</div>
+<!-- Allies Grid -->
+
+<!-- Endorsement Quote Card -->
+
+<div class="mt-8 max-w-5xl mx-auto bg-surface-container-lowest p-6 sm:p-8 rounded-2xl border border-surface-container-highest shadow-sm flex items-center justify-center"><img class="w-full h-auto object-contain max-h-[420px] rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxu04CPTiH8gcuRWsJZ3O_iKUyklucSGhLF20fhcGOQLNhNO5Murk9ZnaduZZo2wy0XUfzSbHsUexEnwbdrdfAWKbNbUWzcdg_2rudCmWctOfKJWSMUaEGivuIBjVAQLBr_lmTt4AylM4j6WxEZOmkeUF4QFMZDCuDqrS49j9yI9dfBREe1pTXQSCeTJNvnXNymyWvHCOSsLhSvUafYbQK7q_hZkIzuhQB8H6FnydScKqxYOQdM4-u" alt="Aliados IncubaUNAS"></div></div>
+</section>
+<!-- Postular Section (Anchor match) -->
+
+</main>
+<!-- 7. Footer (Shared Component Execution) -->
+<footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-surface-container-highest dark:border-outline-variant text-on-surface dark:text-inverse-on-surface">
+<div class="w-full px-6 lg:px-12 py-12 max-w-7xl mx-auto">
+<!-- Top Brand Mission -->
+
+<!-- Three Columns Matrix -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-10 py-10" id="contacto">
+<!-- Columna 1: Contactos -->
+<div><div class="mb-6"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCevF-uIwLZgNqwCTu3DE3pwO_sYQHbyFwnUo0ZpoQ-GJDrCDNizmLkf6Fr4eVWw65xtHqnO-KyC-qgbVQNkFj-hoSVZgY_FEdEoUSgrqvir2HG9w657GzS1DwmdZbyeLzgSvLbJC3kqSYyD5Ib0m8VcZiC-EoBrU3v-rCeWtRuqtdty6mUrdV4EeDLhqHV9c007KOuLzoEkmVEQE2ZFKIfM8L3o0WwttXvnMiuCRWRCpyPBoCY_EJc" alt="Incuba UNAS Logo" class="h-12 w-auto object-contain mb-4"><p class="text-body-sm font-body-sm text-secondary dark:text-secondary-fixed-dim leading-relaxed">Transformamos ideas universitarias en startups de alto impacto que contribuyen al desarrollo económico y social del Perú desde la Amazonía.</p></div>
+<h4 class="text-title font-title text-on-surface dark:text-inverse-on-surface mb-4">Contactos</h4>
+<ul class="space-y-3 text-body-sm font-body-sm text-secondary dark:text-secondary-fixed-dim">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary text-lg shrink-0 mt-0.5" data-icon="location_on">location_on</span>
+<span class="">Dirección y mapa: Av. Innovación 450, Distrito Tecnológico</span>
+</li>
+<li class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary text-lg shrink-0" data-icon="mail">mail</span>
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="mailto:contacto@eventospro.com">contacto@eventospro.com</a>
+</li>
+<li class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary text-lg shrink-0" data-icon="call">call</span>
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150" href="tel:+15552345678">+1 (555) 234-5678</a>
+</li>
+<li class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary text-lg shrink-0" data-icon="chat">chat</span>
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 font-medium" href="#">Formulario de contacto: Escríbenos directamente</a>
+</li>
+<li class="flex items-center gap-2.5 pt-1">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary text-lg shrink-0" data-icon="schedule">schedule</span>
+<span class="">Horario de atención: 9:00 - 18:00</span>
+</li>
+</ul>
+</div>
+<!-- Columna 2: Legal -->
+<div>
+<h4 class="text-title font-title text-on-surface dark:text-inverse-on-surface mb-4">Legal</h4>
+<ul class="space-y-3 text-body-sm font-body-sm text-secondary dark:text-secondary-fixed-dim">
+<li class="">
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 block" href="#">Términos y condiciones</a>
+</li>
+<li class="">
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 block" href="#">Políticas de privacidad</a>
+</li>
+<li class="">
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 block" href="#">Políticas de cookies</a>
+</li>
+<li class="">
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 block" href="#">Comunidad</a>
+</li>
+<li class="">
+<a class="hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 block" href="#">Galería y eventos</a>
+</li>
+</ul>
+</div>
+<!-- Columna 3: Redes Sociales -->
+<div>
+<h4 class="text-title font-title text-on-surface dark:text-inverse-on-surface mb-4">Redes Sociales</h4>
+<p class="text-secondary dark:text-secondary-fixed-dim text-body-sm font-body-sm mb-4">
+            Síguenos en nuestros canales para enterarte de convocatorias exclusivas, preventas y transmisiones en vivo.
+          </p>
+<div class="grid grid-cols-2 gap-3">
+<!-- Facebook -->
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low dark:bg-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 text-body-sm font-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="share">share</span>
+<span class="">Facebook</span>
+</a>
+<!-- YouTube -->
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low dark:bg-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 text-body-sm font-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="smart_display">smart_display</span>
+<span class="">YouTube</span>
+</a>
+<!-- Instagram -->
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low dark:bg-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 text-body-sm font-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="photo_camera">photo_camera</span>
+<span class="">Instagram</span>
+</a>
+<!-- LinkedIn -->
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low dark:bg-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 text-body-sm font-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="badge">badge</span>
+<span class="">LinkedIn</span>
+</a>
+</div>
+
+</div>
+</div>
+<!-- Bottom Copyright Line -->
+<div class="pt-8 border-t border-surface-container-highest dark:border-outline-variant flex flex-col sm:flex-row justify-between items-center text-body-sm font-body-sm text-secondary dark:text-secondary-fixed-dim gap-4">
+<p class="">© 2024 EventosPro. Todos los derechos reservados.</p>
+<p class="text-label-sm font-label-sm">Hecho con excelencia para comunidades activas en todo el mundo.</p>
+</div>
+</div>
+</footer>
+
+
+</body></html>

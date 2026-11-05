@@ -1,0 +1,913 @@
+<!DOCTYPE html><html class="h-full bg-background text-on-surface" lang="es" style="width: 1280px; height: 5496px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Nosotros | IncubaUNAS - Incubadora de Empresas UNAS</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#181c1e",
+            "secondary": "#525f71",
+            "on-secondary-fixed-variant": "#3a4859",
+            "on-tertiary-container": "#000703",
+            "secondary-fixed": "#d6e4f9",
+            "on-primary-container": "#ffffff",
+            "outline": "#727785",
+            "inverse-surface": "#2d3133",
+            "on-primary": "#ffffff",
+            "surface-container-low": "#f1f4f7",
+            "on-surface-variant": "#414754",
+            "outline-variant": "#c1c6d6",
+            "secondary-container": "#d3e1f6",
+            "tertiary-fixed": "#70fbbd",
+            "on-error": "#ffffff",
+            "surface-container": "#ebeef1",
+            "background": "#f7fafd",
+            "tertiary": "#006c49",
+            "inverse-primary": "#adc7ff",
+            "surface-tint": "#005bc0",
+            "surface-variant": "#e0e3e6",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#0f1c2c",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-error-container": "#93000a",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#00885c",
+            "surface-bright": "#f7fafd",
+            "primary-fixed": "#d8e2ff",
+            "surface": "#f7fafd",
+            "on-secondary-container": "#566475",
+            "surface-container-highest": "#e0e3e6",
+            "on-primary-fixed-variant": "#004493",
+            "primary-container": "#1a73e8",
+            "on-background": "#181c1e",
+            "secondary-fixed-dim": "#bac8dc",
+            "on-tertiary-fixed": "#002113",
+            "on-primary-fixed": "#001a41",
+            "error-container": "#ffdad6",
+            "surface-dim": "#d7dadd",
+            "inverse-on-surface": "#eef1f4",
+            "primary-fixed-dim": "#adc7ff",
+            "error": "#ba1a1a",
+            "primary": "#005bbf",
+            "on-tertiary": "#ffffff",
+            "surface-container-high": "#e5e8eb",
+            "tertiary-fixed-dim": "#4fdea2"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-lg": "1.5rem",
+            "margin-sm": "1rem",
+            "space-xl": "2rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "margin": "1.5rem",
+            "margin-lg": "3rem",
+            "gutter-sm": "1rem",
+            "gutter-lg": "2rem",
+            "gutter": "1.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "headline-md-mobile": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-mobile": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Inter"],
+            "title": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "label-lg": ["Inter"],
+            "label-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "display": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-md-mobile": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "display-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "title": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col bg-background text-on-surface antialiased selection:bg-primary-container selection:text-white">
+<!-- TOP APP BAR -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest border-b border-surface-container-highest shadow-sm">
+<div class="flex justify-between items-center w-full px-6 lg:px-12 py-3.5 max-w-7xl mx-auto">
+<!-- Logo Anchor -->
+<a aria-label="IncubaUNAS Inicio" class="flex items-center gap-3 transition-transform duration-150 active:scale-95" href="#">
+<img alt="Logo IncubaUNAS" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWvD45RM4zUEB3EBarNgp5xXURh51Gc1tGGcUjREg7K21qFCJVAloF8ezZOYgvAyHjSgGHnpqX5Q0TOVPS0bYjWCBIl7PBH4b-SGRLOOYXDBYTZRLj59tQHK_RB3rK_zR0JQEXb0K56JjtHkTMi00XkRMVqh4-BgtVfhBd2fxrLHFK7cvecB3CdKdYZs3O74u5qmOnE6I6HcDSRRUM4lgN89a_PNTHRp-kZV_qKhkxb0moVk0Fdt9w">
+</a>
+<!-- Central Nav Links -->
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-lg text-label-lg transition-colors duration-150" href="#">
+          Nosotros
+        </a>
+<a class="text-secondary hover:text-on-surface font-label-lg text-label-lg transition-colors duration-150" href="#">
+          Eventos
+        </a>
+<a class="text-secondary hover:text-on-surface font-label-lg text-label-lg transition-colors duration-150" href="#">
+          Programas
+        </a>
+<a class="text-secondary hover:text-on-surface font-label-lg text-label-lg transition-colors duration-150" href="#">Convocar</a>
+<a class="text-secondary hover:text-on-surface font-label-lg text-label-lg transition-colors duration-150" href="#">
+          Portafolio
+        </a>
+</nav>
+<!-- Trailing Action -->
+<div class="flex items-center gap-4">
+<button class="bg-primary-container hover:bg-primary text-on-primary-container px-6 py-2.5 rounded-lg font-label-lg text-label-lg transition-all duration-200 active:scale-95 shadow-sm inline-flex items-center gap-2" type="button">
+
+<span class="">Acceder</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="flex-grow">
+<!-- HERO HEADER SECTION -->
+<section class="relative bg-surface-container-lowest border-b border-surface-container-highest py-16 lg:py-24 overflow-hidden">
+<!-- Decorative Amazonian Eco-grid backdrop -->
+<div class="absolute inset-0 pointer-events-none opacity-40">
+<div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-secondary-fixed filter blur-3xl"></div>
+<div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-tertiary-fixed filter blur-3xl opacity-30"></div>
+</div>
+<div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10 text-center">
+<!-- Badge Pill -->
+
+<!-- Headline -->
+<h1 class="font-display text-headline-lg lg:text-display text-on-surface max-w-4xl mx-auto leading-tight">¿Quienes somos?</h1>
+<!-- Subtitle -->
+<p class="mt-6 font-body-lg text-body-lg text-secondary max-w-3xl mx-auto"><span style="color: rgb(128, 134, 139); font-family: Inter, system-ui, sans-serif; font-size: 20px; background-color: rgb(248, 249, 250);" class="">Somos la incubadora de empresas de la Universidad Nacional Agraria de la Selva. Brindamos asesoría, capacitación y asistencia técnica para la creación de emprendimientos innovadores con base tecnológica, orientados a proteger el ecosistema amazónico y apoyar el desarrollo de soluciones que combinen la cultura ancestral con tecnologías modernas.</span></p>
+<!-- Quick Stats Bento Strip -->
+
+</div>
+</section>
+<!-- SECCIÓN 1: QUIÉNES SOMOS (MISIÓN, VISIÓN Y VALORES) -->
+<section class="py-16 lg:py-20 max-w-7xl mx-auto px-6 lg:px-12">
+<!-- Section Intro Header -->
+
+<!-- Misión & Visión: 2 Feature Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+<!-- Misión -->
+<div class="p-8 lg:p-10 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed opacity-20 rounded-bl-full pointer-events-none"></div>
+<div>
+<div class="w-12 h-12 rounded-lg bg-surface-container-low flex items-center justify-center text-primary mb-6 border border-surface-container-high">
+<span class="material-symbols-outlined text-[28px]">rocket_launch</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Nuestra Misión</h3>
+<p class="font-body-md text-body-md text-secondary leading-relaxed">
+              Impulsar el desarrollo de emprendimientos que aprovechen la biodiversidad de la Amazonía de forma sustentable, generando un impacto positivo en la sociedad y el medioambiente, mientras fortalecemos el ecosistema emprendedor de la región amazónica peruana.
+            </p>
+</div>
+
+</div>
+<!-- Visión -->
+<div class="p-8 lg:p-10 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary-fixed opacity-20 rounded-bl-full pointer-events-none"></div>
+<div>
+<div class="w-12 h-12 rounded-lg bg-surface-container-low flex items-center justify-center text-tertiary-container mb-6 border border-surface-container-high">
+<span class="material-symbols-outlined text-[28px]">visibility</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Nuestra Visión</h3>
+<p class="font-body-md text-body-md text-secondary leading-relaxed">
+              Ser la incubadora líder en el desarrollo de emprendimientos, startups e innovación en la amazonía peruana, proyectándose como un referente en el ecosistema emprendedor de la región y contribuyendo al desarrollo sostenible del país.
+            </p>
+</div>
+
+</div>
+</div>
+<!-- 4 Pilares / Valores -->
+
+</section>
+<!-- SECCIÓN 2: ÁREAS DE ESPECIALIZACIÓN -->
+<section class="py-16 bg-surface-container-low border-y border-surface-container-highest">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="text-center max-w-3xl mx-auto mb-12">
+
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Nuestras Verticales&nbsp;</h2>
+<p class="font-body-md text-body-md text-secondary mt-2">
+            Áreas de especialización donde impulsamos la innovación y acompañamos el crecimiento de proyectos tecnológicos.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- 1: Agropecuario -->
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-surface-container-highest shadow-sm hover:border-primary transition-all duration-200 flex flex-col justify-between"><div class="flex items-start gap-5"><div class="w-14 h-14 rounded-xl bg-surface-container-low text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[32px]">psychiatry</span></div><div><h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Agropecuario</h3><p class="font-body-md text-body-md text-secondary leading-relaxed">AgTech, FoodTech, CowTech</p></div></div></div>
+<!-- 2: Sostenibilidad -->
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-surface-container-highest shadow-sm hover:border-tertiary-container transition-all duration-200 flex flex-col justify-between"><div class="flex items-start gap-5"><div class="w-14 h-14 rounded-xl bg-surface-container-low text-tertiary-container flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[32px]">nest_eco_leaf</span></div><div><h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Sostenibilidad</h3><p class="font-body-md text-body-md text-secondary leading-relaxed">HealthTech, Wellness</p></div></div></div>
+<!-- 3: Tecnologías Limpias (CleanTech) -->
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-surface-container-highest shadow-sm hover:border-primary transition-all duration-200 flex flex-col justify-between"><div class="flex items-start gap-5"><div class="w-14 h-14 rounded-xl bg-surface-container-low text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[32px]">solar_power</span></div><div><h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Tecnologías Limpias</h3><p class="font-body-md text-body-md text-secondary leading-relaxed">ClimaTech, GreenTech, CleanTech</p></div></div></div>
+</div><div class="mt-14 pt-12 border-t border-surface-container-highest"><div class="text-center max-w-2xl mx-auto mb-10"><h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Objetivos Estratégicos</h3><p class="font-body-sm text-body-sm text-secondary mt-1.5">Las metas específicas que perseguimos para cumplir nuestra misión y alcanzar nuestra visión</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm flex items-start gap-4 hover:border-primary transition-all duration-200"><div class="w-10 h-10 rounded-lg bg-surface-container-low text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-surface-container-high"><span class="material-symbols-outlined text-[20px]">school</span></div><div><p class="font-body-md text-body-md text-on-surface mt-1">Hacer accesible el emprendimiento de alto impacto a estudiantes universitarios de todos los estratos socioeconómicos.</p></div></div><div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm flex items-start gap-4 hover:border-tertiary-container transition-all duration-200"><div class="w-10 h-10 rounded-lg bg-surface-container-low text-tertiary-container flex items-center justify-center font-bold text-sm shrink-0 border border-surface-container-high"><span class="material-symbols-outlined text-[20px]">trending_up</span></div><div><p class="font-body-md text-body-md text-on-surface mt-1">Contribuir al desarrollo económico del Perú a través de la creación de startups escalables y generadoras de empleo.</p></div></div><div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm flex items-start gap-4 hover:border-primary transition-all duration-200"><div class="w-10 h-10 rounded-lg bg-surface-container-low text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-surface-container-high"><span class="material-symbols-outlined text-[20px]">groups</span></div><div><p class="font-body-md text-body-md text-on-surface mt-1">Desarrollar una nueva generación de líderes emprendedores con visión global y compromiso social.</p></div></div><div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm flex items-start gap-4 hover:border-tertiary-container transition-all duration-200"><div class="w-10 h-10 rounded-lg bg-surface-container-low text-tertiary-container flex items-center justify-center font-bold text-sm shrink-0 border border-surface-container-high"><span class="material-symbols-outlined text-[20px]">hub</span></div><div><p class="font-body-md text-body-md text-on-surface mt-1">Crear puentes entre la academia, la industria y el sector de inversión para fortalecer el ecosistema emprendedor.</p></div></div></div></div>
+</div>
+</section>
+<!-- SECCIÓN 3: NUESTRO EQUIPO (EQUIPO DIRECTIVO Y ESPECIALISTAS) -->
+<!-- REGLA ESTRICTA CUMPLIDA: Cero fotos de perfil humanas. Únicamente monogramas y avatares vectoriales estilizados. -->
+<section class="py-16 lg:py-20 max-w-7xl mx-auto px-6 lg:px-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+<div>
+
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Nuestro Equipo</h2>
+<p class="font-body-md text-body-md text-secondary mt-2 max-w-xl">
+            Liderazgo académico y técnico con experiencia directa en ecosistemas de incubación, fondos públicos y escalamiento empresarial.
+          </p>
+</div>
+<div class="mt-4 md:mt-0">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-semibold">
+<span class="material-symbols-outlined text-sm">shield_person</span>
+            Comité de Dirección IncubaUNAS
+          </span>
+</div>
+</div>
+<!-- Tarjetas en fila de 4 columnas -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Especialista 1 -->
+<div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<!-- Vector Monogram Avatar -->
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed mb-5 border-2 border-primary-container">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight">CM</span>
+</div>
+<span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm mb-3">Directora de INCUBA UNAS</span>
+<h3 class="font-title text-title text-on-surface font-bold">Melisa Zavala Guerrero</h3>
+
+<p class="font-body-sm text-body-sm text-secondary mt-3">
+              Magíster especializada en gestión de innovación y emprendimiento. Experiencia en acompañamiento en fondos concursables
+            </p>
+</div>
+
+<div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Liderazgo</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Gestión de Innovación</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Emprendimiento</span></div></div>
+<!-- Especialista 2 -->
+<div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<!-- Vector Monogram Avatar -->
+<div class="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed mb-5 border-2 border-secondary">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight">EQ</span>
+</div>
+<span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-tertiary-container font-label-sm text-label-sm mb-3">Coordinador de Programas</span>
+<h3 class="font-title text-title text-on-surface font-bold">Pedro Pérez Pinedo</h3>
+
+<p class="font-body-sm text-body-sm text-secondary mt-3">
+              Economista especializado en desarrollo de programas de innovación y gestión comercial.
+            </p>
+</div>
+
+<div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Programas</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Economía</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Modelos de Negocio</span></div></div>
+<!-- Especialista 3 -->
+<div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<!-- Vector Monogram Avatar -->
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed mb-5 border-2 border-tertiary-container">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight">RS</span>
+</div>
+<span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm mb-3">Especialista en Emprendimiento e Innovación</span>
+<h3 class="font-title text-title text-on-surface font-bold">Carlos Hidalgo Gomez</h3>
+
+<p class="font-body-sm text-body-sm text-secondary mt-3"><span style="color: rgb(128, 134, 139); font-family: Inter, system-ui, sans-serif; font-size: 14px;" class="">Experiencia en el desarrollo de ecosistemas emprendimientos y especialista en marketing digital.</span></p>
+</div>
+
+<div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Innovación</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Emprendimiento</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Mentoría</span></div></div>
+<!-- Especialista 4 -->
+<div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<!-- Vector Monogram Avatar -->
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed mb-5 border-2 border-primary">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight">VT</span>
+</div>
+<span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm mb-3">Especialista en Marketing</span>
+<h3 class="font-title text-title text-on-surface font-bold">Steven Nieto</h3>
+
+<p class="font-body-sm text-body-sm text-secondary mt-3">
+              Especialista en marketing, publicidad y estrategias de crecimiento para startups en sectores agroindustriales.
+            </p>
+</div>
+
+<div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Marketing</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Crecimiento</span><span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Digital</span></div></div>
+</div>
+</section>
+<!-- SECCIÓN 4: RED DE MENTORES (21 MENTORES - 7 FILAS X 3 COLUMNAS) -->
+<!-- REGLA ESTRICTA CUMPLIDA: Absolutamente ninguna foto de persona. Monogramas estilizados e iconografía vectorial temática. -->
+<section class="py-16 lg:py-24 bg-surface-container-low border-t border-surface-container-highest">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<!-- Section Header -->
+<div class="max-w-3xl mb-8">
+
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Red de Mentores</h2>
+<p class="font-body-md text-body-md text-secondary mt-2">
+            Nuestra red multidisciplinaria reúne a 21 profesionales, científicos y directivos de primer nivel que brindan mentoría personalizada 1 a 1 a nuestras startups incubadas.
+          </p>
+</div>
+<!-- Filter and Search Toolbar -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-4 rounded-xl bg-surface-container-lowest border border-surface-container-highest mb-10 shadow-sm">
+<!-- Filter Tabs -->
+<div class="flex flex-wrap items-center gap-2" id="mentor-filters">
+<button class="filter-btn px-4 py-2 rounded-lg text-xs font-semibold bg-on-surface text-surface-container-lowest transition-colors" data-filter="all" type="button">Todos (20)</button>
+<button class="filter-btn px-4 py-2 rounded-lg text-xs font-semibold bg-surface-container-low text-secondary hover:text-on-surface transition-colors" data-filter="agro" type="button">
+              Agropecuario
+            </button>
+<button class="filter-btn px-4 py-2 rounded-lg text-xs font-semibold bg-surface-container-low text-secondary hover:text-on-surface transition-colors" data-filter="sost" type="button">
+              Sostenibilidad
+            </button>
+<button class="filter-btn px-4 py-2 rounded-lg text-xs font-semibold bg-surface-container-low text-secondary hover:text-on-surface transition-colors" data-filter="cleantech" type="button">
+              Tecnologías Limpias
+            </button>
+</div>
+<!-- Search Input -->
+<div class="relative min-w-[260px]">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-[20px]">search</span>
+<input class="w-full pl-9 pr-4 py-2 text-xs bg-surface-container-lowest border border-surface-container-highest rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-on-surface placeholder:text-outline" id="mentor-search" placeholder="Buscar por nombre o tema..." type="text">
+</div>
+</div>
+<!-- 21 MENTOR CARDS GRID (7 Rows x 3 Cols) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="mentors-grid"><!-- Card 1 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="agro">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        GC
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Guisela Carbajal</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Ing. Agroindustrial</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Especialista en proyectos I+D+i+e con enfoque en innovación agroindustrial.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Agroindustria</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">I+D+i</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Proyectos</span>
+  </div>
+</div>
+
+<!-- Card 2 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="all">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        JG
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Julio Guere</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Especialista en Gestión de Proyectos</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Experto del CITE Agroindustrial Huallaga en gestión y desarrollo de proyectos innovadores.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Gestión</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Proyectos</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">CITE</span>
+  </div>
+</div>
+
+<!-- Card 3 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="cleantech">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        MS
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Miguel Segura</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Ing. Mecánico Electricista</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Ingeniero especializado en soluciones tecnológicas para el sector agroindustrial.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Ingeniería</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Tecnología</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Electricidad</span>
+  </div>
+</div>
+
+<!-- Card 4 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="all">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        OT
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Olga Timoteo</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Experto I+D+i+e</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Gestora de Innovación y Emprendimiento con experiencia en investigación aplicada.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">I+D+i</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Innovación</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Investigación</span>
+  </div>
+</div>
+
+<!-- Card 5 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="all">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-secondary-container text-on-surface flex items-center justify-center font-bold text-sm shrink-0 border border-secondary-fixed-dim">
+        JC
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Jaime Cavero</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Inversor en Startups</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Impulsor de nuevas empresas con enfoque en startups de base tecnológica.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Inversión</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Startups</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Financiamiento</span>
+  </div>
+</div>
+
+<!-- Card 6 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="all">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        HY
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Hongsung Yoo</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Mentor Internacional</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Mentor con experiencia global en desarrollo de ecosistemas emprendedores.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Mentoría</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Global</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Ecosistemas</span>
+  </div>
+</div>
+
+<!-- Card 7 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="agro">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        YS
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Yessenia Saavedra</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Especialista de Innovación</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">CITEagroindustrial HUALLAGA</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Innovación Agroindustrial</span>
+  </div>
+</div>
+
+<!-- Card 8 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="sost">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-secondary-container text-on-surface flex items-center justify-center font-bold text-sm shrink-0 border border-secondary-fixed-dim">
+        DP
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Dennys Pereyra</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Economista, con Maestría y Doctorado en Economía</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Experto en modelos y Planes de Bionegocios, en Organismos de Cooperación internacional.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Gestión de Proyectos</span>
+  </div>
+</div>
+
+<!-- Card 9 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="sost">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        ER
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Evelyn Ramos</h4>
+    <p class="text-xs font-semibold text-primary mb-1">CEO fundadora</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">EVAND'S - Nutrición</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Emprendimiento en Nutrición</span>
+  </div>
+</div>
+
+<!-- Card 10 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="all">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        MA
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Michell Anyosa</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Coach Fundador</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">MsC | MBA | Gerente de Innovación en Startups con amplia experiencia en el ecosistema emprendedor.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Coaching</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Innovación</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Startups</span>
+  </div>
+</div>
+
+<!-- Card 11 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="cleantech">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        RB
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Ronald Barzola</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Director de Innovación e Impacto / Incubadora SCALE</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Ms(c) Digital Transformation, YLAI Alumni , Impact Startup Competition Program Manager</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Transformación digital</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Ecosistema de emprendimiento</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Analítica digital</span>
+  </div>
+</div>
+
+<!-- Card 12 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="all">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        RE
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Rossemery Escobedo</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Directora de USIL VENTURE</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Directora de emprendimiento e innovación educativa, Especialista en innovación y emprendimiento</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Innovación educativa</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Diseño de futuros</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">I+D+i+e</span>
+  </div>
+</div>
+
+<!-- Card 13 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="cleantech">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        RI
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Ronald Ibarra</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Docente UNAS / Empresario</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Ingeniero de software con experiencia en gestión empresarial.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Ingeniería de software</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Gestión empresarial</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Liderazgo académico</span>
+  </div>
+</div>
+
+<!-- Card 14 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="cleantech">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-secondary-container text-on-surface flex items-center justify-center font-bold text-sm shrink-0 border border-secondary-fixed-dim">
+        RY
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Rannoverg Yanac</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Docente UNAS</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Mg. en Informática y en Ingeniería de Sistemas, Catedrático de la UNAS.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Machine Learning &amp; Deep Learning</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Seguridad de la información</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Gestión de servidores</span>
+  </div>
+</div>
+
+<!-- Card 15 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="all">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        CV
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Clarissa Victorio</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Gerente de la Incubadora SCALE</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Ecosystem Builder | Innovación | Formulación de proyectos.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Ecosystem Building</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Formulación de proyectos</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Innovación social</span>
+  </div>
+</div>
+
+<!-- Card 16 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="sost">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        MC
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">María Cueva</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Accelerator &amp; Pipeline Manager - Latam</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">RSM MBA 2026 Candidate | Sustainability | Innovation | Project Management</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Gestión de proyectos</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Innovación sostenible</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Aceleración de startups</span>
+  </div>
+</div>
+
+<!-- Card 17 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="cleantech">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        MA
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Mirna Ampuero</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Consultor tecnológico de Seimtem SAC</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Tech Innovator, Mechatronic Engineer</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">IoT y mecatrónica</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">AI &amp; Blockchain</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Mentoría en robótica</span>
+  </div>
+</div>
+
+<!-- Card 18 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="sost">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-secondary-container text-on-surface flex items-center justify-center font-bold text-sm shrink-0 border border-secondary-fixed-dim">
+        EA
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Estrella Aco</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Docente y Speaker</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Especialista en innovación, sostenibilidad y regeneración turística, Gestión Pública</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Regeneración turística</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Gestión pública</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Liderazgo comunitario</span>
+  </div>
+</div>
+
+<!-- Card 19 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="agro">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary-fixed-dim">
+        KS
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Kilder Saldaña</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Consultor Senior para el Monitoreo y Evaluación – IICA</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Maestro en Administración de Negocios en sectores agrícola, forestal y acuícola.</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Evaluación de proyectos</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Formulación de planes de negocio</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Sector agroforestal y acuícola</span>
+  </div>
+</div>
+
+<!-- Card 20 -->
+<div class="mentor-card rounded-xl bg-surface-container-lowest border border-surface-container-highest p-5 flex flex-col justify-between hover:shadow-md transition-all" data-category="cleantech">
+  <div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-sm shrink-0 border border-tertiary-fixed-dim">
+        HF
+      </div>
+      
+    </div>
+    <h4 class="font-headline-sm text-title font-bold text-on-surface truncate">Hans Figueroa Guaylupo</h4>
+    <p class="text-xs font-semibold text-primary mb-1">Consultor Senior para el Monitoreo y Evaluación – IICA</p>
+    <p class="font-body-sm text-body-sm text-secondary mt-1">Data Lead y Power BI Expert Top 1%. UIF Stanford | Docente. Especialista en innovación y emprendimiento - DER Huánuco</p>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-container-highest flex flex-wrap gap-1.5">
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Data Lead</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Power BI Expert</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">UIF Stanford</span>
+    <span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary text-xs">Docente</span>
+  </div>
+</div></div>
+<!-- Postulación de Mentores CTA Card -->
+<div class="mt-14 p-8 rounded-xl bg-surface-container-lowest border border-dashed border-outline-variant flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[26px]">connect_without_contact</span>
+</div>
+<div>
+<h4 class="font-title text-title text-on-surface">¿Tienes experiencia impulsando bionegocios y tecnología?</h4>
+<p class="font-body-sm text-body-sm text-secondary">Únete a nuestra red oficial de mentores e impulsa el talento de los emprendedores amazónicos.</p>
+</div>
+</div>
+<button class="whitespace-nowrap px-5 py-2.5 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white font-label-md text-label-md transition-all duration-150 active:scale-95" type="button">
+            Postular a la Red de Mentores
+          </button>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER -->
+<footer class="bg-surface-container-lowest border-t border-surface-container-highest">
+<div class="w-full px-6 lg:px-12 py-12 max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+<!-- Columna Marca / Logo -->
+<div class="space-y-4 md:col-span-1">
+<img alt="IncubaUNAS Logo" class="h-11 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWvD45RM4zUEB3EBarNgp5xXURh51Gc1tGGcUjREg7K21qFCJVAloF8ezZOYgvAyHjSgGHnpqX5Q0TOVPS0bYjWCBIl7PBH4b-SGRLOOYXDBYTZRLj59tQHK_RB3rK_zR0JQEXb0K56JjtHkTMi00XkRMVqh4-BgtVfhBd2fxrLHFK7cvecB3CdKdYZs3O74u5qmOnE6I6HcDSRRUM4lgN89a_PNTHRp-kZV_qKhkxb0moVk0Fdt9w">
+<p class="font-body-sm text-body-sm text-secondary">
+            Incubadora de empresas de la Universidad Nacional Agraria de la Selva. Articulamos ciencia, sostenibilidad y tecnología en Tingo María para el mundo.
+          </p>
+<div class="pt-2">
+<span class="inline-flex items-center gap-1.5 text-xs text-tertiary-container font-semibold">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+              Acreditada por ProInnóvate Perú
+            </span>
+</div>
+</div>
+<!-- Columna Contactos -->
+<div class="space-y-3">
+<h4 class="font-title text-title text-on-surface font-bold">Contactos</h4>
+<ul class="space-y-2.5 font-body-sm text-body-sm text-secondary">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">location_on</span>
+<span class="">Campus UNAS, Av. Universitaria s/n, Tingo María, Huánuco, Perú</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">mail</span>
+<a class="hover:text-primary transition-colors" href="mailto:contacto@incubaunas.edu.pe">contacto@incubaunas.edu.pe</a>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">call</span>
+<span class="">+51 (062) 562-341</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">schedule</span>
+<span class="">Horario de atención: 9:00 - 18:00</span>
+</li>
+</ul>
+</div>
+<!-- Columna Legal -->
+<div class="space-y-3">
+<h4 class="font-title text-title text-on-surface font-bold">Marco Legal</h4>
+<ul class="space-y-2.5 font-body-sm text-body-sm text-secondary">
+<li class="">
+<a class="hover:text-primary transition-colors" href="#">Términos y condiciones</a>
+</li>
+<li class="">
+<a class="hover:text-primary transition-colors" href="#">Políticas de privacidad</a>
+</li>
+<li class="">
+<a class="hover:text-primary transition-colors" href="#">Políticas de cookies</a>
+</li>
+<li class="">
+<a class="hover:text-primary transition-colors" href="#">Reglamento de propiedad intelectual</a>
+</li>
+<li class="">
+<a class="hover:text-primary transition-colors" href="#">Libro de reclamaciones virtual</a>
+</li>
+</ul>
+</div>
+<!-- Columna Redes & Comunidad -->
+<div class="space-y-3">
+<h4 class="font-title text-title text-on-surface font-bold">Comunidad &amp; Redes</h4>
+<p class="font-body-sm text-body-sm text-secondary">Síguenos en nuestros canales oficiales para enterarte de convocatorias y webinars:</p>
+<div class="flex items-center gap-2 pt-2">
+<a class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary hover:text-primary hover:bg-surface-container-high transition-colors" href="#" title="Facebook">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</a>
+<a class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary hover:text-primary hover:bg-surface-container-high transition-colors" href="#" title="YouTube">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+</a>
+<a class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary hover:text-primary hover:bg-surface-container-high transition-colors" href="#" title="Instagram">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</a>
+<a class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary hover:text-primary hover:bg-surface-container-high transition-colors" href="#" title="LinkedIn">
+<span class="material-symbols-outlined text-[20px]">work</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Barra Inferior Copyright -->
+<div class="mt-12 pt-6 border-t border-surface-container-highest flex flex-col sm:flex-row items-center justify-between text-xs text-secondary gap-4">
+<p class="">© 2024 EventosPro. Todos los derechos reservados.</p>
+<p class="text-outline">IncubaUNAS — Universidad Nacional Agraria de la Selva</p>
+</div>
+</div>
+</footer>
+<!-- Micro-interactions Script (Filtros y Búsqueda de Mentores) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const searchInput = document.getElementById('mentor-search');
+      const cards = document.querySelectorAll('.mentor-card');
+
+      let currentCategory = 'all';
+      let currentQuery = '';
+
+      function applyFilters() {
+        cards.forEach(card => {
+          const category = card.getAttribute('data-category');
+          const text = card.textContent.toLowerCase();
+
+          const matchesCategory = (currentCategory === 'all') || (category === currentCategory);
+          const matchesQuery = text.includes(currentQuery);
+
+          if (matchesCategory && matchesQuery) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterButtons.forEach(b => {
+            b.classList.remove('bg-on-surface', 'text-surface-container-lowest');
+            b.classList.add('bg-surface-container-low', 'text-secondary');
+          });
+          btn.classList.remove('bg-surface-container-low', 'text-secondary');
+          btn.classList.add('bg-on-surface', 'text-surface-container-lowest');
+
+          currentCategory = btn.getAttribute('data-filter');
+          applyFilters();
+        });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = e.target.value.toLowerCase().trim();
+          applyFilters();
+        });
+      }
+    });
+  </script>
+
+
+</body></html>

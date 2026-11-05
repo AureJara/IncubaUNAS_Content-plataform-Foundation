@@ -1,0 +1,153 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+interface Startup {
+  category: string;
+  description: string;
+  tagColor?: string;
+}
+
+const startups: Startup[] = [
+  {
+    category: "AgTech",
+    description: "Alimento balanceado para peces, formulado con proteína sostenible derivada de larvas, de bajo costo, que favorece la salud, el rendimiento y crecimiento óptimo de los peces, promoviendo la sostenibilidad ambiental."
+  },
+  {
+    category: "FoodTech",
+    description: "Producimos setas nativas mediante bioconversión y biotecnología micelo-fúngica, ofreciendo productos nutritivos y de alta calidad para consumidores preocupados por la salud, la gastronomía y el medio ambiente."
+  },
+  {
+    category: "AgTech",
+    description: "Cámara Térmica que integra tecnologías (IoT) y App Móvil para la gestión precisa de parámetros ambientales. Producción de Hijuelos: Utilizar una cámara térmica modular para la propagación de hijuelos de plátano."
+  },
+  {
+    category: "HealthTech",
+    description: "Polvo o harina de hoja de papaya y hojas de matico, ampliamente reconocidas por sus propiedades naturales, que sirve para hacer ungüentos, emplastos terapéuticos y también tomarlo como un té medicinal relajante."
+  },
+  {
+    category: "BeautyTech",
+    description: "La cosmética natural amazónica utiliza ingredientes autóctonos de la región, valorados por sus beneficios para el cabello y bienestar. Es una opción sostenible, respetuosa con la biodiversidad y el medio ambiente."
+  },
+  {
+    category: "FoodTech",
+    description: "Cerveza artesanal innovadora elaborada a partir de bambú, fusionando sabores únicos con especias nativas y exóticas. Inspirados en la biodiversidad y riqueza de nuestra amazonia."
+  },
+  {
+    category: "FinTech",
+    description: "Primera plataforma del mundo diseñada para digitalizar y automatizar la contabilidad de pequeños negocios. A través de tecnología inteligente eintuitiva, ayudamos a los negocios a llevar un control preciso de sus ingresos, gastos y obligaciones contables."
+  },
+  {
+    category: "HealthTech",
+    description: "Organización socioambiental y climática enfocada en cultura, educación, incidencia y participación."
+  },
+  {
+    category: "HealthTech",
+    description: "Las láminas de piel de tilapia representan una alternativa innovadora, biológica, económica y eficaz para tratar quemaduras, acelerando la curación, reduciendo el dolor y superando a los apósitos convencionales."
+  },
+  {
+    category: "Tourism",
+    description: "Plataforma logística de viajeros es una herramienta integral que simplifica y optimiza el proceso de desplazamiento, conectando recursos y servicios para brindar comodidad, eficiencia y accesibilidad."
+  },
+  {
+    category: "CleanTech",
+    description: "Reducir y valorizar residuos orgánicos mediante tecnologías en simbiosis: Bio Josh Compost para biodegradación y Hemetia Compost para larvas. Es más eficaz que el compost tradicional y la lombricultura."
+  },
+  {
+    category: "CleanTech",
+    description: "Producir carbón vegetal que provenga de los residuos generados en la transformación primaria del bambú y, a la vez, provenientes de plantaciones debidamente registrados y manejados de manera sostenible y responsable."
+  },
+  {
+    category: "FoodTech",
+    description: "Implementación de un meliponario, con fines de conservación, turismo, educación e investigación de abejas nativas sin aguijón, promoviendo la polinización sostenible, la biodiversidad local y el desarrollo de productos derivados para la comunidad."
+  },
+  {
+    category: "FoodTech",
+    description: "Elaboración de aguardiente a base de caña de azúcar el aguardiente tiene un grado de 50 de volumen con un aroma profundo, pioneros en el destilado de caña de azúcar en la provincia de Leoncio Prado."
+  },
+  {
+    category: "CleanTech",
+    description: "Elaboración de briquetas ecológicas con residuos de cajonerías, aprovechando su alto valor calorífico como combustible sostenible. Este innovador producto ecoamigable mejora la cocción y la calidad de vida en zonas rurales."
+  },
+  {
+    category: "CleanTech",
+    description: "Somos un staff de profesionales altamente especializados en la cadena productiva del bambú, impulsando soluciones innovadoras y sostenibles con fines de mejora económica, ambiental, social y cultural dentro de nuestra región."
+  },
+  {
+    category: "FoodTech",
+    description: "Se busca alta productividad en cocona, reduciendo costos con altas densidades y rendimientos para competir en el mercado de esencia, industrializando su producción con cubos congelados fortificados con hierro para refrescos."
+  },
+  {
+    category: "FoodTech",
+    description: "Es una infusión de hortalizas funcionales descongestionantes, 100% natural y sin reacciones adversas. Actúa desde la primera toma, cura las enfermedades y secuelas, induce a expectorar, elimina gérmenes y es un antibiótico natural."
+  },
+  {
+    category: "FoodTech",
+    description: "Barritas nutritivas de chocolate con cáscara de cacao y pulpa de café, ricas en nutrientes y antioxidantes. Combaten anemia, hipocalcemia y desnutrición, mejorando la digestión y fortaleciendo el sistema inmunológico. Ideales para una alimentación equilibrada."
+  },
+  {
+    category: "AgTech",
+    description: "Suplemento nutricional en bloques diseñado para mejorar la salud y productividad del ganado en la selva peruana. Ayuda a combatir la desnutrición al proporcionar un equilibrio de nutrientes esenciales, favoreciendo un mejor desarrollo y rendimiento."
+  },
+  {
+    category: "FoodTech",
+    description: "Producción de huevos azules y verdes, obtenidos mediante el manejo sostenible de gallinas a libre pastoreo, alto en vitamina A y E, ricos en Omega 3, proteínas, y bajos en colesterol y grasas saturadas."
+  },
+  {
+    category: "FoodTech",
+    description: "Diseño de un sistema HVAC para optimizar la producción de huevos en el galpón 4 de gallinas hy-line brown de la Facultad de Zootecnia, Universidad Nacional Agraria de la Seva, Leoncio Prado."
+  },
+  {
+    category: "FoodTech",
+    description: "Son productos de aceites esenciales a base de cáscaras frutales de la Amazonía, extraídos para preservar sus propiedades naturales y ofrecer beneficios aromáticos y terapéuticos, ideales para el cuidado personal y el bienestar."
+  },
+  {
+    category: "FinTech",
+    description: "Plataforma de automatización fiscal que simplifica la liquidación de impuestos para microempresarios en Perú, conectándolos con SUNAT. Ofrece reportes en tiempo real a través de una app móvil, mejorando la gestión fiscal."
+  },
+  {
+    category: "HealthTech",
+    description: "Motion Sense es un gadget con sensor de movimiento que detecta obstáculos y alerta con vibraciones, permitiendo moverse con seguridad. Es ligero, duradero, fácil de usar y mejora la vida de personas con discapacidad visual."
+  }
+];
+---
+
+<Layout title="Portafolio de Startups | IncubaUNAS" activeNav="portafolio">
+  <section class="py-12 lg:py-16 max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="max-w-3xl text-center mx-auto mb-12">
+      <h1 class="text-headline-lg font-headline-lg text-on-surface mb-4 tracking-tight">
+        Portafolio de Startups
+      </h1>
+      <p class="text-body-lg font-body-lg text-secondary leading-relaxed">
+        Descubre las innovadoras startups que han sido incubadas en INCUBA UNAS y están transformando diversos sectores desde la región amazónica del Perú.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {startups.map((startup, idx) => (
+        <article class="bg-surface-container-lowest rounded-xl border border-surface-container-highest p-6 flex flex-col justify-between hover:shadow-md hover:border-outline-variant transition-all duration-200 group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed">
+                {startup.category}
+              </span>
+              <span class="text-xs text-secondary font-mono">#{String(idx + 1).padStart(2, '0')}</span>
+            </div>
+            <h3 class="text-title font-title text-on-surface group-hover:text-primary transition-colors duration-150 font-bold mb-3">
+              {startup.category} Project
+            </h3>
+            <p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed mb-6">
+              {startup.description}
+            </p>
+          </div>
+          <div class="pt-4 border-t border-surface-container-highest flex items-center justify-between text-xs text-secondary">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm text-primary" data-icon="rocket_launch">rocket_launch</span>
+              IncubaUNAS
+            </span>
+            <span class="text-primary font-medium group-hover:underline">Conocer más &rarr;</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</Layout>
