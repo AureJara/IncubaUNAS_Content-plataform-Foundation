@@ -213,6 +213,7 @@ describe('sitio del CMS: menú, marca y tema', () => {
   it('el color de marca y el redondeo del tema llegan como variables CSS', async () => {
     const { html } = await page('/eventos');
     expect(html).toContain('--brand-primary:#aa3300');
+    expect(html).toContain('--brand-primary-rgb:170 51 0');
     expect(html).toContain('--brand-radius:16px');
   });
 
@@ -256,6 +257,20 @@ describe('seguridad del HTML y los recursos servidos', () => {
     for (const tag of html.match(/<script\b[^>]*>/g) ?? []) expect(tag, route).toMatch(/\bsrc=/);
     expect(html, route).not.toMatch(/\son[a-z]+=["']/);
     expect(html, route).not.toMatch(/(?:src|href)=["']https?:\/\/(?!admin\.example\.test)/);
+  });
+
+  it('el CSS conserva el comportamiento del build de Tailwind 3 del equipo de frontend', async () => {
+    const { html } = await page('/');
+    const [href] = [...html.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(
+      (m) => m[1]!,
+    );
+    const css = await (await fetch(`${base}${href}`)).text();
+    // El color de marca viaja como tripleta RGB: sin ella, `bg-primary/10` y similares perderían la transparencia.
+    expect(css).toContain('var(--brand-primary-rgb');
+    expect(css).toMatch(/\.text-primary\\\/15\{[^}]*--brand-primary-rgb/);
+    // Los iconos van después de las utilidades (como en su CSS): todos miden 24 px salvo con `!text-*`.
+    expect(css.indexOf('.material-symbols-outlined{')).toBeGreaterThan(css.indexOf('.text-2xl{'));
+    expect(css).toContain('.\\!text-base');
   });
 
   it('las hojas de estilo no traen fuentes `data:` ni recursos externos', async () => {

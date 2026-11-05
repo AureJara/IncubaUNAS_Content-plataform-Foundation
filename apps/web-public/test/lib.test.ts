@@ -36,13 +36,21 @@ describe('themeStyle', () => {
     const style = themeStyle({ color_primary: '#0b5fff', radius: 'lg' } as never);
     expect(style).toContain('--brand-primary:#0b5fff');
     expect(style).toContain('--brand-radius:16px');
-    // Con otra marca, el tono "hover" se deriva de ella en lugar de quedarse en el azul del diseño.
-    expect(style).toContain('--brand-primary-container:color-mix(in srgb, #0b5fff 85%, white)');
+    // Tailwind 3 necesita la tripleta RGB para poder aplicar transparencias (`bg-primary/10`).
+    expect(style).toContain('--brand-primary-rgb:11 95 255');
+    // Con otra marca, el tono "hover" se deriva de ella (15 % más cerca del blanco) en lugar de quedarse en el azul del diseño.
+    expect(style).toContain('--brand-primary-container-rgb:48 119 255');
   });
 
   it('con la marca del diseño conserva su tono exacto de contenedor', () => {
-    expect(themeStyle({ color_primary: '#005bbf' } as never)).toContain(
-      '--brand-primary-container:#1a73e8',
+    const style = themeStyle({ color_primary: '#005bbf' } as never);
+    expect(style).toContain('--brand-primary-rgb:0 91 191');
+    expect(style).toContain('--brand-primary-container-rgb:26 115 232'); // #1a73e8
+  });
+
+  it('acepta el color en mayúsculas', () => {
+    expect(themeStyle({ color_primary: '#005BBF' } as never)).toContain(
+      '--brand-primary-container-rgb:26 115 232',
     );
   });
 

@@ -52,12 +52,12 @@ const title = event?.title ?? (failed ? 'Servicio no disponible' : 'Evento no en
     ) : (
       <article>
         <header class="relative overflow-hidden border-b border-surface-container-highest bg-gradient-to-b from-surface-container-lowest via-background to-surface-container-low">
-          <span class="material-symbols-outlined absolute right-6 top-6 text-[10rem] leading-none text-primary/10 select-none hidden md:block" aria-hidden="true">
+          <span class="material-symbols-outlined absolute right-6 top-6 !text-[10rem] leading-none text-primary/10 select-none hidden md:block" aria-hidden="true">
             {kindIcon(event.kind)}
           </span>
           <div class="relative max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-16 space-y-4">
             <a href="/eventos" class="inline-flex items-center gap-1 text-label-lg font-label-lg text-primary hover:underline">
-              <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
+              <span class="material-symbols-outlined !text-base" aria-hidden="true">arrow_back</span>
               Todos los eventos
             </a>
             <p class="text-label-sm font-label-sm uppercase tracking-wider text-tertiary">{kindLabel(event.kind)}</p>

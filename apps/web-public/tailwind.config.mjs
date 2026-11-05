@@ -1,4 +1,11 @@
-/** @type {import('tailwindcss').Config} */
+/**
+ * Tokens de "Nexus Horizon" tal como los entregó el equipo de frontend (Tailwind 3). Cambios respecto a su archivo:
+ * `primary` y `primary-container` leen el color del sitio (variables `--brand-*-rgb`, con su valor original de
+ * respaldo; el formato `rgb(... / <alpha-value>)` mantiene utilidades como `bg-primary/10`), el radio sale de
+ * `--brand-radius` y las fuentes apuntan a las variables autoalojadas.
+ *
+ * @type {import('tailwindcss').Config}
+ */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   darkMode: 'class',
@@ -9,7 +16,7 @@ export default {
         'surface-dim': '#d7dadd',
         'on-tertiary-container': '#000703',
         'secondary-fixed': '#d6e4f9',
-        'primary-container': 'var(--brand-primary-container, #1a73e8)',
+        'primary-container': 'rgb(var(--brand-primary-container-rgb, 26 115 232) / <alpha-value>)',
         error: '#ba1a1a',
         'on-primary': '#ffffff',
         'surface-container-highest': '#e0e3e6',
@@ -26,7 +33,7 @@ export default {
         'surface-bright': '#f7fafd',
         'tertiary-container': '#00885c',
         outline: '#727785',
-        primary: 'var(--brand-primary, #005bbf)',
+        primary: 'rgb(var(--brand-primary-rgb, 0 91 191) / <alpha-value>)',
         background: '#f7fafd',
         'on-tertiary-fixed': '#002113',
         'on-secondary-container': '#566475',

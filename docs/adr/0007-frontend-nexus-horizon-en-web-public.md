@@ -26,10 +26,15 @@ Dos sitios públicos serían dos fuentes de verdad. Había que quedarse con **su
    - El menú lo define el CMS (`navigation`); si no hay uno (o la API cae) se usa el del diseño (`src/lib/nav.ts`).
    - `/` es la plantilla del diseño: **la página `/` del CMS queda tapada** por `index.astro`. Las demás rutas del
      CMS siguen funcionando (en el demo, `/guia`).
-3. **Tailwind 4 con su `tailwind.config.mjs` vía `@config`.** Astro 7 no es compatible con `@astrojs/tailwind` (Tailwind 3);
-   Tailwind 4 carga el mismo archivo de tokens, así que ellos siguen editando su configuración. Cambios mínimos en
-   él: `primary`, `primary-container` y el radio salen de variables (`--brand-*`) para respetar el tema del sitio, y
-   las familias de fuente apuntan a las variables autoalojadas.
+3. **Tailwind 3, igual que su build.** Se probó primero con Tailwind 4 (Astro 7 no admite `@astrojs/tailwind`), pero cambia
+   el resultado de su diseño: `p-4.5` y `shadow-xs`, que en Tailwind 3 no hacen nada, pasan a aplicar; `leading-*` gana a
+   `text-*`; la escala de sombras se renombra. Se pidió **paridad exacta**, así que `apps/web-public` usa Tailwind 3 por
+   PostCSS (`postcss.config.mjs`, con `autoprefixer`), con el mismo `tailwind.config.mjs` y el mismo orden de CSS. Cambios
+   mínimos en su configuración: `primary` y `primary-container` leen el color del sitio (variables `--brand-*-rgb`, con su
+   valor original de respaldo; el formato `rgb(... / <alpha-value>)` mantiene `bg-primary/10`), el radio sale de
+   `--brand-radius` y las fuentes apuntan a las variables autoalojadas (Inter con su eje de tamaño óptico, como la de Google).
+   Los iconos siguen midiendo 24 px sea cual sea su `text-*` (su regla va sin capa tras las utilidades): lo que se
+   ve es lo que ellos ven. Los componentes nuevos que necesitan otro tamaño usan `!text-base`.
 4. **Cero recursos de terceros.** La CSP no admite orígenes externos: las fuentes (Inter, Plus Jakarta Sans,
    Material Symbols) se sirven desde el sitio con `@fontsource`; los logos y la imagen de aliados están en
    `public/brand/`; las fotos de ejemplo de Stitch se retiraron (las tarjetas usan un degradado con el icono del
@@ -48,6 +53,12 @@ Solo `color_primary` y `radius`. El diseño fija el resto de la paleta (no solo 
 sus contrastes forman un conjunto) y las tipografías. `color_background`, `color_text` y `font_family` siguen
 existiendo en el contrato pero este sitio no los usa; si el equipo de frontend quiere temas completos, hay que
 diseñar una segunda paleta, no pintar encima de la actual.
+
+## Paridad verificada con su build
+
+Se compiló su sitio original (commit `2c5e69b`) y se comparó con el integrado, en un navegador a 1280 px de ancho, página
+por página (`/nosotros`, `/programas`, `/portafolio`, `/convocar`, `/convocar/crear`): **mismo número de elementos, misma
+altura de página y misma posición vertical y alto de cada elemento (0 px de diferencia)**. Quedan diferencias mínimas de texto: algunos anchos varían hasta 5 px y, en un párrafo, un salto de línea cae una palabra antes o después (sin cambiar la altura): el motor de fuentes no es idéntico al de Google Fonts. El pie lleva ahora el nombre del sitio. `/`, `/eventos` y `/acceder` no son comparables: usan datos reales.
 
 ## Guardas
 

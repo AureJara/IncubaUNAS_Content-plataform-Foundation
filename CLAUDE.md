@@ -30,11 +30,10 @@ pnpm format                     # Prettier
 - `.env` se carga con `--env-file`; las pruebas lo leen vía `tools/vitest-env.ts`.
 - Las pruebas que adelantan el reloj (`OffsetClock`) usan tokens de larga vigencia a propósito.
 - El broker de eventos **no está decidido**: los relays publican al log. Los consumidores se prueban con `InMemoryEventBus`.
-- **Sitio público (`apps/web-public`)**: el diseño es del equipo de frontend (Tailwind 4 + su `tailwind.config.mjs` vía `@config`; referencia en `docs/diseno/`). La CSP solo admite recursos propios: nada de Google Fonts, `lh3.googleusercontent.com`, scripts ni manejadores `on*` en línea. Vite tiene `assetsInlineLimit: 0` porque inlinar un script o una fuente `data:` rompe el menú móvil bajo esa CSP. `pnpm test:smoke` (compila y prueba el sitio real) lo vigila.
-- Tailwind 4: los estilos propios que ajusten utilidades van en `@layer components`; sin capa, `.material-symbols-outlined { font-size: 24px }` ganaría a `text-[7rem]`. Las variables del tema del sitio se llaman `--brand-*` porque `--color-*` y `--radius-*` los genera Tailwind (usar esos nombres crea referencias circulares).
-- Los archivos que llegan del equipo de frontend vienen con CRLF; normalízalos a LF antes de editarlos con scripts (un `replace` con `
-` no coincide con `
-`).
+- **Sitio público (`apps/web-public`)**: el diseño es del equipo de frontend y se mantiene **idéntico a su build** (Tailwind **3** por PostCSS con su `tailwind.config.mjs`; referencia en `docs/diseno/`, decisión en el ADR 0007). No migres a Tailwind 4 sin avisarles: cambia cosas que hoy no cambian (`p-4.5` y `shadow-xs` pasan a aplicar, `leading-*` gana a `text-*`, otra escala de sombras).
+- La CSP solo admite recursos propios: nada de Google Fonts, `lh3.googleusercontent.com`, scripts ni manejadores `on*` en línea. Vite tiene `assetsInlineLimit: 0` porque inlinar un script o una fuente `data:` rompe el menú móvil bajo esa CSP. `pnpm test:smoke` (compila y prueba el sitio real) lo vigila.
+- En `global.css` la regla de los iconos va **sin capa y después de las utilidades**, como en el CSS de ellos: todos los iconos miden 24 px sea cual sea su `text-*`. En componentes nuevos usa `!text-base` (importancia) si quieres otro tamaño. Los colores `primary` salen de variables RGB (`--brand-*-rgb`) para que `bg-primary/10` siga funcionando con el color del sitio.
+- Los archivos que llegan del equipo de frontend vienen con CRLF; normalízalos a LF antes de editarlos con scripts (un `replace` con `\n` no coincide con `\r\n`).
 - El inicio (`/`) lo sirve `index.astro`, no el CMS; la página `/` del CMS queda tapada. Las demás rutas del CMS sí se sirven (`/guia` en el demo).
 
 ## Mapa

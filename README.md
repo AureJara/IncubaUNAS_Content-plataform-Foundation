@@ -126,8 +126,8 @@ pnpm --filter @incubaunas/platform-api e2e:oidc
 | Contratos           | `pnpm contracts:lint` | OpenAPI/AsyncAPI válidos, convenciones del repo, cobertura del catálogo, sin PII |
 | Lint y arquitectura | `pnpm lint`           | El dominio y los casos de uso no importan frameworks ni adaptadores (SOLID, DIP) |
 | Tipos               | `pnpm typecheck`      | TypeScript estricto en todo el monorepo                                          |
-| Pruebas             | `pnpm test`           | 239 pruebas; las de integración usan PostgreSQL real                             |
-| Sitio compilado     | `pnpm test:smoke`     | 21 pruebas del sitio ya compilado contra una Content API simulada (ver abajo)    |
+| Pruebas             | `pnpm test`           | 240 pruebas; las de integración usan PostgreSQL real                             |
+| Sitio compilado     | `pnpm test:smoke`     | 22 pruebas del sitio ya compilado contra una Content API simulada (ver abajo)    |
 | Formato             | `pnpm format:check`   | Prettier                                                                         |
 
 `pnpm check` corre lint, tipos, contratos, pruebas y la prueba de humo.
@@ -140,7 +140,7 @@ La **prueba de humo** (`apps/web-public/test/smoke/`) compila el sitio público 
 
 El diseño del sitio público ("Nexus Horizon", exportado de Stitch) lo hace el equipo de frontend; los datos y el login los pone este repositorio. Las decisiones están en el [ADR 0007](docs/adr/0007-frontend-nexus-horizon-en-web-public.md). Lo que conviene saber:
 
-- **Dónde se edita el diseño:** `apps/web-public/src/` (`layouts/`, `components/`, `pages/`) y `apps/web-public/tailwind.config.mjs`. Usa **Tailwind 4** y carga su `tailwind.config.mjs` tal cual. El diseño original exportado se conserva en [`docs/diseno/`](docs/diseno).
+- **Dónde se edita el diseño:** `apps/web-public/src/` (`layouts/`, `components/`, `pages/`) y `apps/web-public/tailwind.config.mjs`. Usa **Tailwind 3** por PostCSS con su `tailwind.config.mjs`, igual que su build: el resultado coincide con el de su sitio original (medido en las cinco páginas de diseño conservadas). El diseño original exportado se conserva en [`docs/diseno/`](docs/diseno).
 - **Qué sale del CMS y qué es fijo:** el menú, el nombre del sitio, el color primario y el redondeo, los eventos, la agenda y las páginas como `/guia` salen de la Content API. `/`, `/nosotros`, `/programas`, `/portafolio` y `/convocar` son contenido fijo en el código; la página `/` del CMS queda tapada por la portada del diseño.
 - **Cero recursos de terceros.** La CSP solo admite recursos propios: nada de Google Fonts ni de imágenes de `lh3.googleusercontent.com`, y nada de scripts o manejadores `onclick`/`onsubmit` en línea. Las fuentes (Inter, Plus Jakarta Sans, Material Symbols) y los logos se sirven desde el sitio. Dos pruebas lo vigilan, y fallan antes que el navegador.
 - **Pendiente con ellos:** el pie trae datos de ejemplo (`eventospro.com`, un teléfono ficticio y enlaces `#`); no hay fotos de eventos (el evento publicado aún no las trae); `/convocar/crear` no envía nada porque el módulo de convocatorias no existe todavía.

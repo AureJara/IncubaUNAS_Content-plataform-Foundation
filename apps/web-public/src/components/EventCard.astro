@@ -25,7 +25,7 @@ const badgeClass = cancelled
 >
   <!-- Cabecera: el diseño usa una foto; el CMS aún no expone portada por evento, así que va un degradado con el icono del tipo. -->
   <div class="relative h-36 w-full overflow-hidden bg-gradient-to-br from-primary-fixed via-surface-container to-tertiary-fixed/50" aria-hidden="true">
-    <span class="material-symbols-outlined absolute -right-2 -bottom-4 text-[7rem] leading-none text-primary/15 select-none">{kindIcon(event.kind)}</span>
+    <span class="material-symbols-outlined absolute -right-2 -bottom-4 !text-[7rem] leading-none text-primary/15 select-none">{kindIcon(event.kind)}</span>
   </div>
   <div class="absolute top-3 left-3 flex flex-wrap gap-2">
     <span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
@@ -41,13 +41,13 @@ const badgeClass = cancelled
       <a href={`/eventos/${event.slug}`} class="after:absolute after:inset-0 focus-visible:outline-none">{event.title}</a>
     </h3>
     <p class="flex items-start gap-2 text-secondary text-body-sm font-body-sm">
-      <span class="material-symbols-outlined text-base text-primary shrink-0" aria-hidden="true">calendar_month</span>
+      <span class="material-symbols-outlined !text-base text-primary shrink-0" aria-hidden="true">calendar_month</span>
       <span>{formatRange(event.starts_at, event.ends_at, event.timezone, locale)}</span>
     </p>
     {sentence && <p class="text-body-sm font-body-sm text-secondary">{sentence}</p>}
     <p class="mt-auto pt-4 border-t border-surface-container-highest text-primary font-bold text-label-lg font-label-lg inline-flex items-center gap-1">
       Ver detalle
-      <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_forward</span>
+      <span class="material-symbols-outlined !text-base" aria-hidden="true">arrow_forward</span>
     </p>
   </div>
 </article>

@@ -48,13 +48,13 @@ const safeColor = (c: string | null | undefined) => (c && /^#[0-9a-fA-F]{6}$/.te
                 <h4 class="text-title font-title text-on-surface">{session.title}</h4>
                 {session.venue_name && (
                   <p class="flex items-center gap-1 text-body-sm font-body-sm text-secondary">
-                    <span class="material-symbols-outlined text-base" aria-hidden="true">place</span>
+                    <span class="material-symbols-outlined !text-base" aria-hidden="true">place</span>
                     {session.venue_name}
                   </p>
                 )}
                 {session.speakers && session.speakers.length > 0 && (
                   <p class="flex items-center gap-1 text-body-sm font-body-sm text-secondary">
-                    <span class="material-symbols-outlined text-base" aria-hidden="true">mic</span>
+                    <span class="material-symbols-outlined !text-base" aria-hidden="true">mic</span>
                     {session.speakers.join(', ')}
                   </p>
                 )}

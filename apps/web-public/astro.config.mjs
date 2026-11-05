@@ -1,10 +1,10 @@
 import { defineConfig, envField } from 'astro/config';
 import node from '@astrojs/node';
-import tailwindcss from '@tailwindcss/vite';
 
 // Renderizado en servidor sobre la Public Read API: cada respuesta hereda los headers de caché
 // (ETag, Cache-Control, Surrogate-Key) para que el CDN sirva las visitas sin llegar al origen.
-// Los estilos vienen del diseño "Nexus Horizon" (Tailwind 4 + tailwind.config.mjs del Equipo de frontend).
+// Los estilos vienen del diseño "Nexus Horizon": Tailwind 3 por PostCSS (postcss.config.mjs) con el tailwind.config.mjs
+// del equipo de frontend, igual que su build.
 export default defineConfig({
   output: 'server',
   adapter: node({ mode: 'standalone' }),
@@ -31,7 +31,6 @@ export default defineConfig({
   },
   vite: {
     envDir: '../../',
-    plugins: [tailwindcss()],
     // La CSP no admite scripts en línea ni `data:` en fuentes. Vite inlinaría por defecto lo que pese menos
     // de 4 KB (el script del menú móvil, algún subconjunto de fuente): todo se emite como archivo propio.
     build: { assetsInlineLimit: 0 },
