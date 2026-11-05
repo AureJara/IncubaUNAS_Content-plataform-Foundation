@@ -1,0 +1,73 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Blocks from '../components/Blocks.astro';
+import Container from '../components/Container.astro';
+import Notice from '../components/Notice.astro';
+import { getPage, getSite, UpstreamError } from '../lib/api';
+import { pageTitle } from '../lib/format';
+import { siteSlug } from '../lib/site';
+
+const slug = siteSlug();
+const path = `/${Astro.params.slug ?? ''}`;
+
+let site = null;
+let page = null;
+let cache = { cacheControl: null as string | null, surrogateKey: null as string | null };
+let upstreamDown = false;
+
+try {
+  const [siteResult, pageResult] = await Promise.all([getSite(slug), getPage(slug, path)]);
+  site = siteResult.data;
+  page = pageResult.data;
+  cache = pageResult.cache;
+} catch (error) {
+  if (!(error instanceof UpstreamError)) throw error;
+  upstreamDown = true;
+}
+
+if (upstreamDown) {
+  // Un fallo de infraestructura no se cachea: la siguiente visita vuelve a intentarlo.
+  Astro.response.status = 503;
+  Astro.response.headers.set('cache-control', 'no-store');
+} else if (!page) {
+  Astro.response.status = 404;
+} else {
+  // Se reenvían los headers de caché de la API: el CDN guarda la página y la purga por surrogate key.
+  if (cache.cacheControl) Astro.response.headers.set('cache-control', cache.cacheControl);
+  if (cache.surrogateKey) Astro.response.headers.set('surrogate-key', cache.surrogateKey);
+}
+
+const siteName = site?.name ?? 'IncubaUNAS';
+const seo = (page?.seo ?? {}) as { title?: string; description?: string; canonical_url?: string; robots?: string };
+---
+
+{
+  upstreamDown ? (
+    <Layout title={pageTitle('Servicio no disponible', siteName)} site={null} noindex>
+      <Container>
+        <h1 class="text-headline-md-mobile md:text-headline-md font-headline-md text-on-surface mb-4">Estamos teniendo problemas</h1>
+        <Notice tone="error">No pudimos cargar esta página. Inténtalo de nuevo en unos minutos.</Notice>
+      </Container>
+    </Layout>
+  ) : !page ? (
+    <Layout title={pageTitle('Página no encontrada', siteName)} site={site} noindex>
+      <Container>
+        <h1 class="text-headline-md-mobile md:text-headline-md font-headline-md text-on-surface mb-4">Página no encontrada</h1>
+        <p class="text-body-md text-secondary mb-4">La página que buscas no existe o ya no está disponible.</p>
+        <a class="text-primary font-bold hover:underline" href="/">Volver al inicio</a>
+      </Container>
+    </Layout>
+  ) : (
+    <Layout
+      title={pageTitle(seo.title ?? page.title, siteName)}
+      site={site}
+      description={seo.description}
+      canonical={seo.canonical_url}
+      noindex={seo.robots === 'noindex'}
+    >
+      <Container class="space-y-12">
+        <Blocks blocks={page.blocks} locale={page.locale} />
+      </Container>
+    </Layout>
+  )
+}

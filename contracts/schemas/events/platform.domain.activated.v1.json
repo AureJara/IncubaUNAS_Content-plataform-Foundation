@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "platform.domain.activated.v1",
+  "description": "Dueño: Equipo 1 (platform). Consumen Content y el CDN.",
+  "type": "object",
+  "allOf": [{ "$ref": "../envelope.v1.json" }],
+  "properties": {
+    "topic": { "const": "platform.domain.activated.v1" },
+    "producer": { "const": "platform" },
+    "data": {
+      "type": "object",
+      "required": ["site_id", "hostname", "primary", "activated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "site_id": { "type": "string", "format": "uuid" },
+        "hostname": { "type": "string", "maxLength": 253 },
+        "primary": { "type": "boolean" },
+        "activated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

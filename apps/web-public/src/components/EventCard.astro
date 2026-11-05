@@ -1,0 +1,53 @@
+---
+import { formatRange, formatShortDate } from '../lib/format';
+import { isCancelled, kindIcon, kindLabel, registrationBadge, registrationSentence } from '../lib/events';
+import type { PublicEventSummary } from '../lib/api';
+
+interface Props {
+  event: PublicEventSummary;
+  locale: string;
+}
+
+const { event, locale } = Astro.props;
+const cancelled = isCancelled(event);
+const badge = cancelled ? 'Cancelado' : registrationBadge(event.registration);
+const sentence = cancelled ? null : registrationSentence(event.registration);
+const badgeClass = cancelled
+  ? 'bg-error-container text-on-error-container'
+  : event.registration?.state === 'open'
+    ? 'bg-tertiary-fixed text-on-tertiary-fixed'
+    : 'bg-surface-container-lowest/90 text-on-surface';
+---
+
+<article
+  class="event-card flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-highest overflow-hidden hover:border-outline-variant hover:shadow-lg transition-all duration-200 group relative"
+  data-kind={event.kind}
+>
+  <!-- Cabecera: el diseño usa una foto; el CMS aún no expone portada por evento, así que va un degradado con el icono del tipo. -->
+  <div class="relative h-36 w-full overflow-hidden bg-gradient-to-br from-primary-fixed via-surface-container to-tertiary-fixed/50" aria-hidden="true">
+    <span class="material-symbols-outlined absolute -right-2 -bottom-4 !text-[7rem] leading-none text-primary/15 select-none">{kindIcon(event.kind)}</span>
+  </div>
+  <div class="absolute top-3 left-3 flex flex-wrap gap-2">
+    <span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-bold text-label-sm uppercase tracking-wider shadow-sm">
+      {formatShortDate(event.starts_at, event.timezone, locale)}
+    </span>
+    {badge && <span class={`px-2.5 py-1 rounded-md text-label-sm font-semibold shadow-sm ${badgeClass}`}>{badge}</span>}
+  </div>
+
+  <div class="p-5 flex flex-col flex-1 gap-3">
+    <p class="text-label-sm font-label-sm uppercase tracking-wider text-tertiary">{kindLabel(event.kind)}</p>
+    <h3 class="text-headline-sm font-headline-sm text-on-surface group-hover:text-primary transition-colors">
+      <!-- El enlace cubre toda la tarjeta (after:absolute) sin anidar elementos interactivos. -->
+      <a href={`/eventos/${event.slug}`} class="after:absolute after:inset-0 focus-visible:outline-none">{event.title}</a>
+    </h3>
+    <p class="flex items-start gap-2 text-secondary text-body-sm font-body-sm">
+      <span class="material-symbols-outlined !text-base text-primary shrink-0" aria-hidden="true">calendar_month</span>
+      <span>{formatRange(event.starts_at, event.ends_at, event.timezone, locale)}</span>
+    </p>
+    {sentence && <p class="text-body-sm font-body-sm text-secondary">{sentence}</p>}
+    <p class="mt-auto pt-4 border-t border-surface-container-highest text-primary font-bold text-label-lg font-label-lg inline-flex items-center gap-1">
+      Ver detalle
+      <span class="material-symbols-outlined !text-base" aria-hidden="true">arrow_forward</span>
+    </p>
+  </div>
+</article>
