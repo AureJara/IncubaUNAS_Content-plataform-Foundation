@@ -1,93 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import DashboardSidebar from '../../components/DashboardSidebar.astro';
 ---
 
 <Layout title="Crear Convocatoria | IncubaUNAS" activeNav="convocar">
-  <!-- Subbar with authenticated user info -->
-  <div class="bg-surface-container-low border-b border-surface-container-highest px-6 py-3">
-    <div class="max-w-7xl mx-auto flex justify-between items-center text-body-sm">
-      <div class="flex items-center gap-2 text-secondary">
-        <a href="/convocar" class="hover:text-primary transition-colors flex items-center gap-1">
-          <span class="material-symbols-outlined text-sm">arrow_back</span>
-          Convocar
-        </a>
-        <span>/</span>
-        <span class="text-on-surface font-semibold">Nueva Convocatoria</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-full bg-primary text-on-primary font-bold text-xs flex items-center justify-center">
-            CP
-          </div>
-          <span class="text-on-surface font-semibold text-xs hidden sm:inline">Carlos Pérez (Organizador)</span>
-        </div>
-        <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary font-semibold">
-          <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
-          Sesión Activa
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN CANVAS WITH SIDEBAR -->
-  <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex gap-8 items-start">
-    <!-- ASIDE SIDEBAR -->
-    <aside class="hidden lg:flex flex-col w-64 shrink-0 bg-surface-container-lowest rounded-xl border border-surface-container-highest p-4 sticky top-24 shadow-sm space-y-6">
-      <div class="space-y-1">
-        <div class="px-3 py-2 text-xs font-bold text-secondary uppercase tracking-wider">Gestión UNAS</div>
-        <nav class="space-y-1">
-          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container text-label-lg font-label-lg transition-colors" href="#">
-            <span class="material-symbols-outlined text-xl">dashboard</span>
-            <span>Panel Principal</span>
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container text-label-lg font-label-lg transition-colors" href="/eventos">
-            <span class="material-symbols-outlined text-xl">event</span>
-            <span>Mis Convocatorias</span>
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-on-primary text-label-lg font-label-lg font-bold shadow-sm" href="/convocar/crear">
-            <span class="material-symbols-outlined text-xl">add_circle</span>
-            <span>Crear Convocatoria</span>
-          </a>
-          <a class="flex items-center justify-between px-3 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container text-label-lg font-label-lg transition-colors" href="#">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-xl">how_to_reg</span>
-              <span>Postulantes</span>
-            </div>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container">14</span>
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container text-label-lg font-label-lg transition-colors" href="/nosotros">
-            <span class="material-symbols-outlined text-xl">group</span>
-            <span>Equipo & Mentores</span>
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container text-label-lg font-label-lg transition-colors" href="/portafolio">
-            <span class="material-symbols-outlined text-xl">emoji_events</span>
-            <span>Participaciones</span>
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container text-label-lg font-label-lg transition-colors" href="#">
-            <span class="material-symbols-outlined text-xl">settings</span>
-            <span>Configuración</span>
-          </a>
-        </nav>
-      </div>
-
-      <div class="pt-4 border-t border-surface-container-highest">
-        <div class="p-3 rounded-lg bg-surface-container-low/70 border border-surface-container-highest flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center text-xs">CU</div>
-            <div class="flex flex-col">
-              <span class="text-xs font-semibold text-on-surface">IncubaUNAS Hub</span>
-              <span class="text-[11px] text-tertiary font-medium">Online</span>
-            </div>
-          </div>
-          <a href="/acceder" class="text-secondary hover:text-error transition-colors p-1" title="Cerrar sesión">
-            <span class="material-symbols-outlined text-lg">logout</span>
-          </a>
-        </div>
-      </div>
-    </aside>
+  <!-- main canvas with sidebar -->
+  <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8 items-start">
+    <DashboardSidebar activeItem="crear" />
 
     <!-- MAIN FORM COLUMN -->
-    <div class="flex-1 min-w-0">
+    <div class="flex-1 min-w-0 w-full">
       <!-- Title & Status row -->
       <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">

@@ -1,0 +1,296 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DashboardSidebar from '../../components/DashboardSidebar.astro';
+---
+
+<Layout title="Configuración | IncubaUNAS" activeNav="convocar">
+  <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8 items-start">
+    <DashboardSidebar activeItem="configuracion" />
+
+    <!-- MAIN CONFIGURACION COLUMN -->
+    <div class="flex-1 min-w-0 w-full space-y-8">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+            Configuración del Hub
+          </h1>
+          <p class="font-body-md text-body-md text-secondary mt-1">
+            Administra los parámetros institucionales de IncubaUNAS, credenciales y opciones operativas.
+          </p>
+        </div>
+
+        <button
+          id="saveGlobalSettingsBtn"
+          class="self-start sm:self-auto px-6 py-2.5 rounded-lg bg-primary hover:bg-surface-tint text-on-primary font-label-lg text-label-lg font-bold shadow-sm transition-all duration-150 active:scale-95 flex items-center gap-2"
+          type="button"
+        >
+          <span class="material-symbols-outlined text-lg">save</span>
+          <span>Guardar Cambios</span>
+        </button>
+      </div>
+
+      <!-- Settings Sections Form -->
+      <form class="space-y-6" id="settingsForm" onsubmit="event.preventDefault();">
+        <!-- 1. Perfil del Organizador -->
+        <section class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs">
+          <div class="flex items-center gap-3 pb-4 border-b border-surface-container mb-5">
+            <span class="w-8 h-8 rounded-lg bg-primary-fixed text-primary flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg">badge</span>
+            </span>
+            <div>
+              <h2 class="font-title text-title font-bold text-on-surface">Perfil del Coordinador / Administrador</h2>
+              <p class="text-body-sm text-secondary">Datos de la persona encargada de la gestión del hub en la plataforma.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-on-surface mb-1.5">Nombre Completo</label>
+              <input
+                type="text"
+                value="Carlos Pérez Gómez"
+                class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-on-surface mb-1.5">Cargo Institucional</label>
+              <input
+                type="text"
+                value="Coordinador de Incubación y Emprendimiento - DITT UNAS"
+                class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-on-surface mb-1.5">Correo Electrónico Oficial UNAS</label>
+              <input
+                type="email"
+                value="carlos.perez@unas.edu.pe"
+                class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-on-surface mb-1.5">Teléfono Institucional / WhatsApp</label>
+              <input
+                type="text"
+                value="+51 962 458 120"
+                class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Parámetros de la Entidad Convocante -->
+        <section class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs">
+          <div class="flex items-center gap-3 pb-4 border-b border-surface-container mb-5">
+            <span class="w-8 h-8 rounded-lg bg-tertiary-fixed text-tertiary flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg">account_balance</span>
+            </span>
+            <div>
+              <h2 class="font-title text-title font-bold text-on-surface">Datos Institucionales de IncubaUNAS</h2>
+              <p class="text-body-sm text-secondary">Identidad de la institución convocante que figura en las bases y certificados.</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1.5">Entidad Matriz</label>
+                <input
+                  type="text"
+                  value="Universidad Nacional Agraria de la Selva (UNAS)"
+                  class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1.5">RUC Institucional</label>
+                <input
+                  type="text"
+                  value="20172671520"
+                  class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-on-surface mb-1.5">Dirección de Campus Central</label>
+              <input
+                type="text"
+                value="Carretera Central Km 1.21, Tingo María, Rupa Rupa, Huánuco, Perú"
+                class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-on-surface mb-1.5">Resolución Rectoral de Creación</label>
+              <input
+                type="text"
+                value="Resolución Rectoral N° 084-2019-UNAS (DITT)"
+                class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3.5 py-2.5 text-body-sm text-on-surface focus:border-primary outline-none"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Parámetros de Rúbrica Predeterminada -->
+        <section class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs">
+          <div class="flex items-center gap-3 pb-4 border-b border-surface-container mb-5">
+            <span class="w-8 h-8 rounded-lg bg-secondary-fixed text-secondary flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg">tune</span>
+            </span>
+            <div>
+              <h2 class="font-title text-title font-bold text-on-surface">Ponderación de Rúbrica para Convocatorias</h2>
+              <p class="text-body-sm text-secondary">Criterios de evaluación técnicos precargados al crear nuevos programas.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-3.5 bg-surface-bright border border-surface-container-highest rounded-lg">
+              <div class="text-xs text-secondary font-semibold mb-1">Innovación & Valor Diferencial</div>
+              <div class="text-2xl font-bold text-primary">30%</div>
+              <div class="text-[11px] text-secondary mt-1">Grado de novedad y tecnología</div>
+            </div>
+
+            <div class="p-3.5 bg-surface-bright border border-surface-container-highest rounded-lg">
+              <div class="text-xs text-secondary font-semibold mb-1">Viabilidad Técnica & Prototipo</div>
+              <div class="text-2xl font-bold text-primary">30%</div>
+              <div class="text-[11px] text-secondary mt-1">Nivel de madurez TRL inicial</div>
+            </div>
+
+            <div class="p-3.5 bg-surface-bright border border-surface-container-highest rounded-lg">
+              <div class="text-xs text-secondary font-semibold mb-1">Impacto Selva Central / Amazonía</div>
+              <div class="text-2xl font-bold text-primary">25%</div>
+              <div class="text-[11px] text-secondary mt-1">Beneficio agrario o ecológico</div>
+            </div>
+
+            <div class="p-3.5 bg-surface-bright border border-surface-container-highest rounded-lg">
+              <div class="text-xs text-secondary font-semibold mb-1">Equipo Multidisciplinario UNAS</div>
+              <div class="text-2xl font-bold text-primary">15%</div>
+              <div class="text-[11px] text-secondary mt-1">Alumnos, egresados y docentes</div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-surface-container space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer text-body-sm text-on-surface">
+              <input type="checkbox" checked class="rounded text-primary focus:ring-primary h-4 w-4 border-outline-variant" />
+              <span>Exigir obligatoriamente al menos un integrante con código de estudiante o docente UNAS</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-body-sm text-on-surface">
+              <input type="checkbox" checked class="rounded text-primary focus:ring-primary h-4 w-4 border-outline-variant" />
+              <span>Requerir pitch deck en formato PDF (máximo 10 diapositivas) en el formulario de postulación</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- 4. Notificaciones & Alertas -->
+        <section class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs">
+          <div class="flex items-center gap-3 pb-4 border-b border-surface-container mb-5">
+            <span class="w-8 h-8 rounded-lg bg-surface-container text-on-surface flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg">notifications_active</span>
+            </span>
+            <div>
+              <h2 class="font-title text-title font-bold text-on-surface">Notificaciones por Correo Electrónico</h2>
+              <p class="text-body-sm text-secondary">Configura las alertas automáticas del sistema para organizadores y jurados.</p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <label class="flex items-start gap-3 p-3 rounded-lg bg-surface-bright border border-surface-container-highest cursor-pointer">
+              <input type="checkbox" checked class="rounded text-primary focus:ring-primary h-4 w-4 mt-0.5 border-outline-variant" />
+              <div>
+                <span class="font-label-lg text-label-lg font-semibold text-on-surface block">Alerta inmediata por nueva postulación</span>
+                <span class="text-body-sm text-secondary text-xs">Enviar un email a la coordinación cada vez que un equipo complete el registro.</span>
+              </div>
+            </label>
+
+            <label class="flex items-start gap-3 p-3 rounded-lg bg-surface-bright border border-surface-container-highest cursor-pointer">
+              <input type="checkbox" checked class="rounded text-primary focus:ring-primary h-4 w-4 mt-0.5 border-outline-variant" />
+              <div>
+                <span class="font-label-lg text-label-lg font-semibold text-on-surface block">Recordatorio 24 horas antes de cada sesión</span>
+                <span class="text-body-sm text-secondary text-xs">Enviar recordatorio automático con enlace de Zoom/Meet y ubicación a los participantes.</span>
+              </div>
+            </label>
+
+            <label class="flex items-start gap-3 p-3 rounded-lg bg-surface-bright border border-surface-container-highest cursor-pointer">
+              <input type="checkbox" checked class="rounded text-primary focus:ring-primary h-4 w-4 mt-0.5 border-outline-variant" />
+              <div>
+                <span class="font-label-lg text-label-lg font-semibold text-on-surface block">Resumen semanal de avance</span>
+                <span class="text-body-sm text-secondary text-xs">Reporte consolidado los lunes con métricas de inscripciones y calificaciones pendientes.</span>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <!-- 5. Integraciones -->
+        <section class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs">
+          <div class="flex items-center gap-3 pb-4 border-b border-surface-container mb-5">
+            <span class="w-8 h-8 rounded-lg bg-primary-fixed text-primary flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg">integration_instructions</span>
+            </span>
+            <div>
+              <h2 class="font-title text-title font-bold text-on-surface">Servicios Institucionales Vinculados</h2>
+              <p class="text-body-sm text-secondary">Estado de las conexiones con los servicios en la nube de la UNAS.</p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3.5 rounded-lg bg-surface-bright border border-surface-container-highest">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-2xl text-primary">mail</span>
+                <div>
+                  <div class="font-semibold text-on-surface text-sm">Google Workspace UNAS</div>
+                  <div class="text-xs text-secondary">Autenticación Single Sign-On (@unas.edu.pe)</div>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-tertiary/10 text-tertiary flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Conectado
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between p-3.5 rounded-lg bg-surface-bright border border-surface-container-highest">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-2xl text-tertiary">cloud_done</span>
+                <div>
+                  <div class="font-semibold text-on-surface text-sm">Almacenamiento Cloud para Expedientes</div>
+                  <div class="text-xs text-secondary">Google Drive Institucional DITT • 150 GB disponibles</div>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-tertiary/10 text-tertiary flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Activo
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Save Button Bottom -->
+        <div class="pt-4 flex justify-end">
+          <button
+            id="saveBottomBtn"
+            class="px-8 py-3 rounded-lg bg-primary hover:bg-surface-tint text-on-primary font-bold text-sm shadow-md hover:shadow-lg transition-all"
+            type="submit"
+          >
+            Guardar Configuración
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const saveGlobalBtn = document.getElementById('saveGlobalSettingsBtn');
+    const saveBottomBtn = document.getElementById('saveBottomBtn');
+
+    function notifySaved() {
+      alert('¡Configuración de IncubaUNAS guardada con éxito!');
+    }
+
+    saveGlobalBtn?.addEventListener('click', notifySaved);
+    saveBottomBtn?.addEventListener('click', notifySaved);
+  });
+</script>

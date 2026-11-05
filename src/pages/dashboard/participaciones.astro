@@ -1,0 +1,364 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DashboardSidebar from '../../components/DashboardSidebar.astro';
+---
+
+<Layout title="Participaciones & Portafolio | IncubaUNAS" activeNav="convocar">
+  <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8 items-start">
+    <DashboardSidebar activeItem="participaciones" />
+
+    <!-- MAIN PARTICIPACIONES COLUMN -->
+    <div class="flex-1 min-w-0 w-full space-y-6">
+      <!-- Title & CTA Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+            Participaciones & Portafolio
+          </h1>
+          <p class="font-body-md text-body-md text-secondary mt-1">
+            Startups incubadas, proyectos con capital semilla y casos de éxito del ecosistema UNAS.
+          </p>
+        </div>
+
+        <button
+          id="openAddProjectModal"
+          class="self-start sm:self-auto px-5 py-2.5 rounded-lg bg-primary hover:bg-surface-tint text-on-primary font-label-lg text-label-lg font-bold shadow-sm transition-all duration-150 active:scale-95 flex items-center gap-2"
+          type="button"
+        >
+          <span class="material-symbols-outlined text-lg">emoji_events</span>
+          <span>+ Registrar Proyecto Graduado</span>
+        </button>
+      </div>
+
+      <!-- Impact Stats Bar -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4.5 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-xs">
+          <div class="text-xs text-secondary font-semibold uppercase tracking-wider mb-1">Startups en Cartera</div>
+          <div class="text-3xl font-headline-md font-bold text-on-surface">28</div>
+          <div class="text-xs text-tertiary mt-1 font-medium">85% supervivencia al año 2</div>
+        </div>
+
+        <div class="p-4.5 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-xs">
+          <div class="text-xs text-secondary font-semibold uppercase tracking-wider mb-1">Fondos Levantados</div>
+          <div class="text-3xl font-headline-md font-bold text-primary">S/ 1.45M</div>
+          <div class="text-xs text-secondary mt-1">StartUp Perú & ProInnóvate</div>
+        </div>
+
+        <div class="p-4.5 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-xs">
+          <div class="text-xs text-secondary font-semibold uppercase tracking-wider mb-1">Patentes Registradas</div>
+          <div class="text-3xl font-headline-md font-bold text-on-surface">9</div>
+          <div class="text-xs text-tertiary mt-1 font-medium">INDECOPI Tingo María</div>
+        </div>
+
+        <div class="p-4.5 rounded-xl bg-surface-container-lowest border border-surface-container-highest shadow-xs">
+          <div class="text-xs text-secondary font-semibold uppercase tracking-wider mb-1">Empleos Verdes</div>
+          <div class="text-3xl font-headline-md font-bold text-on-surface">64</div>
+          <div class="text-xs text-secondary mt-1">Egresados y agricultores locales</div>
+        </div>
+      </div>
+
+      <!-- Filters Toolbar -->
+      <div class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 shadow-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+          <div class="sm:col-span-5 relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg pointer-events-none">search</span>
+            <input
+              id="portfolioSearchInput"
+              type="text"
+              placeholder="Buscar por nombre, fondo o tecnología..."
+              class="w-full bg-surface-container-low border border-surface-container-highest rounded-lg pl-9 pr-3 py-2 text-body-sm text-on-surface placeholder:text-outline focus:border-primary outline-none"
+            />
+          </div>
+
+          <div class="sm:col-span-4">
+            <select id="portfolioStatusFilter" class="w-full bg-surface-container-low border border-surface-container-highest rounded-lg px-3 py-2 text-body-sm text-on-surface focus:border-primary outline-none">
+              <option value="all">Todos los estados</option>
+              <option value="Graduado">Graduados / Comercializando</option>
+              <option value="Incubación">En Incubación Activa</option>
+              <option value="Pre-incubación">En Pre-incubación</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-3">
+            <select id="portfolioSectorFilter" class="w-full bg-surface-container-low border border-surface-container-highest rounded-lg px-3 py-2 text-body-sm text-on-surface focus:border-primary outline-none">
+              <option value="all">Todos los sectores</option>
+              <option value="Bioeconomía">Bioeconomía & Alimentos</option>
+              <option value="AgTech">AgTech & Sensores</option>
+              <option value="Circular">Economía Circular</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portfolio Grid Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="portfolioCardsGrid">
+        <!-- Project 1 -->
+        <div class="portfolio-card bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs hover:border-primary/50 transition-all flex flex-col justify-between" data-status="Graduado" data-sector="Bioeconomía">
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-tertiary-fixed text-tertiary font-bold flex items-center justify-center text-xl">
+                  🌱
+                </div>
+                <div>
+                  <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">AmazonBioTech</h2>
+                  <span class="text-xs text-secondary">Cohorte 2024-I • Recursos Naturales UNAS</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-tertiary/10 text-tertiary">
+                Graduado
+              </span>
+            </div>
+
+            <p class="text-body-sm font-body-sm text-secondary mb-4 leading-relaxed">
+              Bioplaguicidas y biofertilizantes formulados con cepas nativas del valle del Huallaga para control biológico en cafetales y cacao.
+            </p>
+
+            <div class="p-3 bg-surface-container-low rounded-lg mb-4 text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Fondo Obtenido:</span>
+                <span class="font-bold text-tertiary">StartUp Perú 9G (S/ 67,000)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Impacto en Campo:</span>
+                <span class="font-semibold text-on-surface">18 cooperativas clientes</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-surface-container flex items-center justify-between text-xs">
+            <span class="text-secondary">Mentor: Ing. Manuel Rodríguez</span>
+            <button class="text-primary hover:underline font-semibold flex items-center gap-1 view-detail-btn" data-name="AmazonBioTech" type="button">
+              <span>Ver Ficha Técnica</span>
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="portfolio-card bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs hover:border-primary/50 transition-all flex flex-col justify-between" data-status="Incubación" data-sector="AgTech">
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-primary-fixed text-primary font-bold flex items-center justify-center text-xl">
+                  🍫
+                </div>
+                <div>
+                  <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">CacaoSelva Tech</h2>
+                  <span class="text-xs text-secondary">Cohorte 2024-II • Ing. Informática + Agronomía</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary">
+                En Incubación Activa
+              </span>
+            </div>
+
+            <p class="text-body-sm font-body-sm text-secondary mb-4 leading-relaxed">
+              Dispositivos IoT con sondas sumergibles para curvas de fermentación y control de secado solar del cacao fino de aroma.
+            </p>
+
+            <div class="p-3 bg-surface-container-low rounded-lg mb-4 text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Fase Actual:</span>
+                <span class="font-bold text-primary">Validación con 120 agricultores</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Premio:</span>
+                <span class="font-semibold text-on-surface">1er Puesto Hackathon Selva 2024</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-surface-container flex items-center justify-between text-xs">
+            <span class="text-secondary">Mentor: Dra. Lucía Mendoza</span>
+            <button class="text-primary hover:underline font-semibold flex items-center gap-1 view-detail-btn" data-name="CacaoSelva Tech" type="button">
+              <span>Ver Ficha Técnica</span>
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="portfolio-card bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs hover:border-primary/50 transition-all flex flex-col justify-between" data-status="Incubación" data-sector="Bioeconomía">
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-secondary-fixed text-secondary font-bold flex items-center justify-center text-xl">
+                  🌴
+                </div>
+                <div>
+                  <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">RupaRupa AgroEco</h2>
+                  <span class="text-xs text-secondary">Cohorte 2024-II • Industrias Alimentarias</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary">
+                En Incubación Activa
+              </span>
+            </div>
+
+            <p class="text-body-sm font-body-sm text-secondary mb-4 leading-relaxed">
+              Harinas funcionales libres de gluten a partir de frutos y palmeras de la Amazonía peruana (chonta, pijuayo y aguaje).
+            </p>
+
+            <div class="p-3 bg-surface-container-low rounded-lg mb-4 text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Certificación:</span>
+                <span class="font-bold text-tertiary">Registro Sanitario DIGESA concedido</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Puntos de Venta:</span>
+                <span class="font-semibold text-on-surface">Mercados saludables Lima y Huánuco</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-surface-container flex items-center justify-between text-xs">
+            <span class="text-secondary">Mentora: Lic. Karen Alvarado</span>
+            <button class="text-primary hover:underline font-semibold flex items-center gap-1 view-detail-btn" data-name="RupaRupa AgroEco" type="button">
+              <span>Ver Ficha Técnica</span>
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="portfolio-card bg-surface-container-lowest border border-surface-container-highest rounded-xl p-6 shadow-xs hover:border-primary/50 transition-all flex flex-col justify-between" data-status="Pre-incubación" data-sector="AgTech">
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-surface-container text-on-surface font-bold flex items-center justify-center text-xl">
+                  🛰️
+                </div>
+                <div>
+                  <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">SelvaDrone UNAS</h2>
+                  <span class="text-xs text-secondary">Cohorte 2025-I • Círculo de Robótica & Informática</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-surface-container text-secondary">
+                Pre-incubación
+              </span>
+            </div>
+
+            <p class="text-body-sm font-body-sm text-secondary mb-4 leading-relaxed">
+              Monitoreo aéreo multiespectral para mapeo de nitrógeno en suelos y detección temprana de plagas en parcelas de café de ladera.
+            </p>
+
+            <div class="p-3 bg-surface-container-low rounded-lg mb-4 text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Fase Actual:</span>
+                <span class="font-bold text-on-surface">Calibración de algoritmos de visión</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-secondary font-medium">Parcela Piloto:</span>
+                <span class="font-semibold text-on-surface">Fundo La Perla UNAS</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-surface-container flex items-center justify-between text-xs">
+            <span class="text-secondary">Mentor: Dr. Walter Quispe</span>
+            <button class="text-primary hover:underline font-semibold flex items-center gap-1 view-detail-btn" data-name="SelvaDrone UNAS" type="button">
+              <span>Ver Ficha Técnica</span>
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="projectDetailModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-on-surface/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest border border-surface-container-highest rounded-2xl max-w-lg w-full shadow-2xl p-6">
+      <div class="flex items-center justify-between pb-4 border-b border-surface-container mb-4">
+        <div>
+          <span class="text-xs text-primary font-bold uppercase tracking-wider">Ficha Técnica de Incubación</span>
+          <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="detailModalTitle">AmazonBioTech</h3>
+        </div>
+        <button id="closeProjectDetailModal" type="button" class="p-1 rounded-lg hover:bg-surface-container text-secondary hover:text-on-surface">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-body-sm text-secondary leading-relaxed">
+        <p>
+          Este emprendimiento forma parte del portafolio oficial de IncubaUNAS, avalado por la Dirección de Innovación y Transferencia Tecnológica de la Universidad Nacional Agraria de la Selva.
+        </p>
+        <div class="p-3 bg-surface-container-low rounded-lg space-y-2 text-xs">
+          <div class="flex justify-between">
+            <span class="font-semibold text-on-surface">Resolución de Reconocimiento:</span>
+            <span>R.D. DITT-UNAS N° 042-2024</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-semibold text-on-surface">Sede del Laboratorio:</span>
+            <span>Pabellón de Innovación, 2do Piso</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-semibold text-on-surface">Contacto Directo:</span>
+            <span>contacto@incubaunas.edu.pe</span>
+          </div>
+        </div>
+        <div class="pt-3 border-t border-surface-container flex justify-end">
+          <button id="closeModalOkBtn" class="px-5 py-2 rounded-lg bg-primary text-on-primary font-bold text-xs shadow-xs" type="button">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('portfolioSearchInput') as HTMLInputElement | null;
+    const statusFilter = document.getElementById('portfolioStatusFilter') as HTMLSelectElement | null;
+    const sectorFilter = document.getElementById('portfolioSectorFilter') as HTMLSelectElement | null;
+    const cards = document.querySelectorAll<HTMLElement>('.portfolio-card');
+
+    function filterPortfolio() {
+      const q = (searchInput?.value || '').trim().toLowerCase();
+      const st = statusFilter?.value || 'all';
+      const sec = sectorFilter?.value || 'all';
+
+      cards.forEach((card) => {
+        const text = card.textContent?.toLowerCase() || '';
+        const cardSt = card.getAttribute('data-status') || '';
+        const cardSec = card.getAttribute('data-sector') || '';
+
+        const matchQ = !q || text.includes(q);
+        const matchSt = st === 'all' || cardSt.includes(st);
+        const matchSec = sec === 'all' || cardSec.includes(sec);
+
+        if (matchQ && matchSt && matchSec) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    searchInput?.addEventListener('input', filterPortfolio);
+    statusFilter?.addEventListener('change', filterPortfolio);
+    sectorFilter?.addEventListener('change', filterPortfolio);
+
+    const modal = document.getElementById('projectDetailModal');
+    const closeBtn = document.getElementById('closeProjectDetailModal');
+    const okBtn = document.getElementById('closeModalOkBtn');
+    const modalTitle = document.getElementById('detailModalTitle');
+
+    document.querySelectorAll('.view-detail-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const name = btn.getAttribute('data-name') || '';
+        if (modalTitle) modalTitle.textContent = name;
+        modal?.classList.remove('hidden');
+      });
+    });
+
+    closeBtn?.addEventListener('click', () => modal?.classList.add('hidden'));
+    okBtn?.addEventListener('click', () => modal?.classList.add('hidden'));
+
+    document.getElementById('openAddProjectModal')?.addEventListener('click', () => {
+      alert('Abriendo formulario de registro de proyecto graduado / egresado de IncubaUNAS.');
+    });
+  });
+</script>
