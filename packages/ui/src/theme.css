@@ -1,0 +1,152 @@
+/*
+ * Design tokens "Nexus Horizon", el diseño del integrante de frontend (acuerdo C-09, ítem F0-15). Es la fuente única de
+ * colores, tipografía, espaciado y elevación para web-public y admin-shell, que lo importan después de Tailwind 4:
+ *
+ *   @import 'tailwindcss';
+ *   @import '@incuba/ui/theme.css';
+ *
+ * Las fuentes van autoalojadas desde npm (SEC-13): ninguna página carga fuentes, íconos ni estilos de otro origen.
+ * `test/contrast.test.ts` comprueba que los pares de texto y fondo cumplen WCAG 2.2 AA.
+ */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/plus-jakarta-sans';
+
+@theme {
+  /* Colores (DESIGN.md) */
+  --color-surface: #f7fafd;
+  --color-surface-dim: #d7dadd;
+  --color-surface-bright: #f7fafd;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f4f7;
+  --color-surface-container: #ebeef1;
+  --color-surface-container-high: #e5e8eb;
+  --color-surface-container-highest: #e0e3e6;
+  --color-surface-variant: #e0e3e6;
+  --color-on-surface: #181c1e;
+  --color-on-surface-variant: #414754;
+  --color-inverse-surface: #2d3133;
+  --color-inverse-on-surface: #eef1f4;
+  --color-outline: #727785;
+  --color-outline-variant: #c1c6d6;
+  --color-surface-tint: #005bc0;
+  --color-background: #f7fafd;
+  --color-on-background: #181c1e;
+
+  --color-primary: #005bbf;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1a73e8;
+  --color-on-primary-container: #ffffff;
+  --color-inverse-primary: #adc7ff;
+  --color-primary-fixed: #d8e2ff;
+  --color-primary-fixed-dim: #adc7ff;
+  --color-on-primary-fixed: #001a41;
+  --color-on-primary-fixed-variant: #004493;
+
+  --color-secondary: #525f71;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d3e1f6;
+  --color-on-secondary-container: #566475;
+  --color-secondary-fixed: #d6e4f9;
+  --color-secondary-fixed-dim: #bac8dc;
+  --color-on-secondary-fixed: #0f1c2c;
+  --color-on-secondary-fixed-variant: #3a4859;
+
+  --color-tertiary: #006c49;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #00885c;
+  --color-on-tertiary-container: #000703;
+  --color-tertiary-fixed: #70fbbd;
+  --color-tertiary-fixed-dim: #4fdea2;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* Familias: títulos en Plus Jakarta Sans y texto en Inter */
+  --font-heading: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading);
+  --font-headline-lg: var(--font-heading);
+  --font-headline-md: var(--font-heading);
+  --font-headline-sm: var(--font-heading);
+  --font-title: var(--font-heading);
+  --font-body-lg: var(--font-body);
+  --font-body-md: var(--font-body);
+  --font-body-sm: var(--font-body);
+  --font-label-lg: var(--font-body);
+  --font-label-md: var(--font-body);
+  --font-label-sm: var(--font-body);
+
+  /* Escala tipográfica */
+  --text-display: 56px;
+  --text-display--line-height: 64px;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 800;
+  --text-display-mobile: 36px;
+  --text-display-mobile--line-height: 44px;
+  --text-display-mobile--letter-spacing: -0.02em;
+  --text-display-mobile--font-weight: 800;
+  --text-headline-lg: 40px;
+  --text-headline-lg--line-height: 48px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 700;
+  --text-headline-lg-mobile: 28px;
+  --text-headline-lg-mobile--line-height: 36px;
+  --text-headline-lg-mobile--letter-spacing: -0.01em;
+  --text-headline-lg-mobile--font-weight: 700;
+  --text-headline-md: 28px;
+  --text-headline-md--line-height: 36px;
+  --text-headline-md--letter-spacing: -0.015em;
+  --text-headline-md--font-weight: 700;
+  --text-headline-md-mobile: 22px;
+  --text-headline-md-mobile--line-height: 30px;
+  --text-headline-md-mobile--letter-spacing: -0.01em;
+  --text-headline-md-mobile--font-weight: 700;
+  --text-headline-sm: 20px;
+  --text-headline-sm--line-height: 28px;
+  --text-headline-sm--letter-spacing: -0.01em;
+  --text-headline-sm--font-weight: 600;
+  --text-title: 16px;
+  --text-title--line-height: 24px;
+  --text-title--letter-spacing: -0.005em;
+  --text-title--font-weight: 600;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-md: 15px;
+  --text-body-md--line-height: 24px;
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 20px;
+  --text-label-lg: 14px;
+  --text-label-lg--line-height: 20px;
+  --text-label-lg--letter-spacing: 0.01em;
+  --text-label-lg--font-weight: 600;
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.02em;
+  --text-label-md--font-weight: 600;
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 14px;
+  --text-label-sm--letter-spacing: 0.04em;
+  --text-label-sm--font-weight: 700;
+
+  /* Espaciado: modelo de 8 puntos */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2rem;
+  --spacing-gutter-sm: 1rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-gutter-lg: 2rem;
+  --spacing-margin-sm: 1rem;
+  --spacing-margin: 1.5rem;
+  --spacing-margin-lg: 3rem;
+
+  /* Elevación (niveles 1 a 3 de DESIGN.md) */
+  --shadow-level-1: 0 1px 3px rgb(13 27 42 / 0.04), 0 4px 12px rgb(13 27 42 / 0.03);
+  --shadow-level-2: 0 4px 6px -1px rgb(13 27 42 / 0.06), 0 12px 24px -4px rgb(13 27 42 / 0.08);
+  --shadow-level-3: 0 16px 32px -4px rgb(13 27 42 / 0.12), 0 24px 48px -8px rgb(13 27 42 / 0.08);
+}

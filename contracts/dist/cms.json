@@ -1282,9 +1282,9 @@
       },
       "Link": {
         "type": "string",
-        "description": "Solo relativo o `https:` (RN-18).",
+        "description": "Solo una ruta del mismo sitio (`/…`, nunca `//…`) o `https:` (RN-18).",
         "maxLength": 2048,
-        "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+        "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$"
       },
       "HexColor": {
         "type": "string",
@@ -1579,7 +1579,7 @@
         }
       },
       "Block": {
-        "description": "Bloque tipado; cada tipo valida contra su JSON Schema versionado (PF-031).",
+        "description": "Bloque tipado; cada tipo valida contra su JSON Schema versionado (PF-031). Lo distinguen las constantes `type` y `version` de cada schema, sin `discriminator`: el implícito tomaría el nombre del schema (`hero.v1`) en vez del valor de `type` (`hero`), y un mismo `type` puede tener varias versiones.",
         "oneOf": [
           {
             "$ref": "#/components/schemas/hero.v1"
@@ -1599,10 +1599,7 @@
           {
             "$ref": "#/components/schemas/agenda.v1"
           }
-        ],
-        "discriminator": {
-          "propertyName": "type"
-        }
+        ]
       },
       "Blocks": {
         "type": "array",
@@ -2406,7 +2403,7 @@
                   "href": {
                     "type": "string",
                     "maxLength": 2048,
-                    "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                    "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$"
                   }
                 }
               }
@@ -2506,7 +2503,7 @@
                           "href": {
                             "type": "string",
                             "maxLength": 2048,
-                            "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                            "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$"
                           }
                         }
                       }

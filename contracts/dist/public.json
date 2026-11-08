@@ -912,7 +912,7 @@
                 },
                 "href": {
                   "type": "string",
-                  "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                  "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$"
                 }
               }
             }
@@ -920,6 +920,7 @@
         }
       },
       "Block": {
+        "description": "Bloque publicado. Lo distinguen las constantes `type` y `version` de cada schema (ver `Block` en cms.yaml).",
         "oneOf": [
           {
             "$ref": "#/components/schemas/hero.v1"
@@ -939,10 +940,7 @@
           {
             "$ref": "#/components/schemas/agenda.v1"
           }
-        ],
-        "discriminator": {
-          "propertyName": "type"
-        }
+        ]
       },
       "Seo": {
         "type": "object",
@@ -1503,7 +1501,7 @@
                   "href": {
                     "type": "string",
                     "maxLength": 2048,
-                    "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                    "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$"
                   }
                 }
               }
@@ -1603,7 +1601,7 @@
                           "href": {
                             "type": "string",
                             "maxLength": 2048,
-                            "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                            "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$"
                           }
                         }
                       }

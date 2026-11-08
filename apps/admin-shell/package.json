@@ -1,0 +1,30 @@
+{
+  "name": "@incuba/admin-shell",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shell administrativo: SPA con React Router 8 en modo datos (spec 3.7, PF-044)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@incuba/api-client": "workspace:*",
+    "@incuba/ui": "workspace:*",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
+    "react-router": "8.5.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
+    "@types/react": "19.2.9",
+    "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "6.1.2",
+    "tailwindcss": "4.3.3",
+    "vite": "8.3.5"
+  }
+}

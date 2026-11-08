@@ -283,7 +283,7 @@ export interface components {
         SiteState: "draft" | "live" | "archived";
         /** @description Ruta de la página, en minúsculas; `/` es la portada. */
         PagePath: string;
-        /** @description Solo relativo o `https:` (RN-18). */
+        /** @description Solo una ruta del mismo sitio (`/…`, nunca `//…`) o `https:` (RN-18). */
         Link: string;
         HexColor: string;
         ThemeTokens: {
@@ -354,7 +354,7 @@ export interface components {
             items: components["schemas"]["SiteSummary"][];
             next_cursor: components["schemas"]["NextCursor"];
         };
-        /** @description Bloque tipado; cada tipo valida contra su JSON Schema versionado (PF-031). */
+        /** @description Bloque tipado; cada tipo valida contra su JSON Schema versionado (PF-031). Lo distinguen las constantes `type` y `version` de cada schema, sin `discriminator`: el implícito tomaría el nombre del schema (`hero.v1`) en vez del valor de `type` (`hero`), y un mismo `type` puede tener varias versiones. */
         Block: components["schemas"]["hero.v1"] | components["schemas"]["rich_text.v1"] | components["schemas"]["image.v1"] | components["schemas"]["event_catalog.v1"] | components["schemas"]["featured_event.v1"] | components["schemas"]["agenda.v1"];
         Blocks: components["schemas"]["Block"][];
         Seo: {
@@ -557,11 +557,8 @@ export interface components {
         "hero.v1": {
             /** Format: uuid */
             id: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "hero.v1";
+            /** @constant */
+            type: "hero";
             /** @constant */
             version: 1;
             data: {
@@ -583,11 +580,8 @@ export interface components {
         "rich_text.v1": {
             /** Format: uuid */
             id: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "rich_text.v1";
+            /** @constant */
+            type: "rich_text";
             /** @constant */
             version: 1;
             data: {
@@ -610,11 +604,8 @@ export interface components {
         "image.v1": {
             /** Format: uuid */
             id: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "image.v1";
+            /** @constant */
+            type: "image";
             /** @constant */
             version: 1;
             data: {
@@ -631,11 +622,8 @@ export interface components {
         "event_catalog.v1": {
             /** Format: uuid */
             id: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "event_catalog.v1";
+            /** @constant */
+            type: "event_catalog";
             /** @constant */
             version: 1;
             data: {
@@ -659,11 +647,8 @@ export interface components {
         "featured_event.v1": {
             /** Format: uuid */
             id: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "featured_event.v1";
+            /** @constant */
+            type: "featured_event";
             /** @constant */
             version: 1;
             data: {
@@ -680,11 +665,8 @@ export interface components {
         "agenda.v1": {
             /** Format: uuid */
             id: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "agenda.v1";
+            /** @constant */
+            type: "agenda";
             /** @constant */
             version: 1;
             data: {

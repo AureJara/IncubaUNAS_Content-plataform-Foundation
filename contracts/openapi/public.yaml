@@ -328,8 +328,10 @@ components:
             required: [label, href]
             properties:
               label: { type: string }
-              href: { type: string, pattern: '^(/[^\s]*|https://[^\s]+)$' }
+              href: { type: string, pattern: '^(/(?![/\\])[^\s]*|https://[^\s]+)$' }
     Block:
+      description: >-
+        Bloque publicado. Lo distinguen las constantes `type` y `version` de cada schema (ver `Block` en cms.yaml).
       oneOf:
         - $ref: '../schemas/blocks/hero.v1.json'
         - $ref: '../schemas/blocks/rich_text.v1.json'
@@ -337,8 +339,6 @@ components:
         - $ref: '../schemas/blocks/event_catalog.v1.json'
         - $ref: '../schemas/blocks/featured_event.v1.json'
         - $ref: '../schemas/blocks/agenda.v1.json'
-      discriminator:
-        propertyName: type
     Seo:
       type: object
       additionalProperties: false

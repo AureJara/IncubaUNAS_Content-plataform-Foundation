@@ -3,7 +3,8 @@
 Qué está hecho, a medias o pendiente, y en qué estado responde cada operación (spec 3.8). Se actualiza en cada cambio
 (CLAUDE.md, DoD de la sección 7).
 
-Última actualización: 2026-11-08, Sprint 0, solo backend (la UI no se tocó).
+Última actualización: 2026-11-08, Sprint 0: backend en mock y los dos frontends (`web-public` y `admin-shell`) leyendo
+esos mocks.
 
 ## Resumen
 
@@ -11,8 +12,10 @@ Qué está hecho, a medias o pendiente, y en qué estado responde cada operació
   adaptador en memoria (`memory`) y 8 son reales: los health.
 - **Ninguna historia funcional está hecha.** Un mock no es trabajo terminado (MOCK-07): las historias de las fases 1–5
   siguen pendientes hasta que sus operaciones estén en `real`.
-- `pnpm check` está en verde: lint de contratos, `contracts:check`, ESLint, Prettier, `tsc` y 54 pruebas en 7 archivos.
-- Nada está en git todavía: `D:\incubaunas` no es un repositorio.
+- Los frontends existen pero solo muestran datos de prueba: el sitio público pinta lo que devuelve la Public Read API en
+  mock y el shell, la sesión de prueba del gateway. Los dos lo avisan en pantalla. Ver [Frontends](#frontends).
+- `pnpm check` está en verde: lint de contratos, `contracts:check`, ESLint, Prettier, `tsc` y 125 pruebas en 11
+  archivos.
 
 ## Estados
 
@@ -41,12 +44,51 @@ operaciones. Con `APP_ENV=staging` o `production` ningún servicio arranca mient
 | F0-09 | Pendiente | —                                                                                                         | `events`, outbox relay, inbox, `EventBus` |
 | F0-10 | Pendiente | Adelanto: el logger redacta `Authorization`, cookies, `Set-Cookie`, tokens en la URL y `code`/`state` en la query | OpenTelemetry; la prueba que busca tokens y correos en los logs |
 | F0-11 | Parcial   | Configuración tipada que junta todos los errores y no arranca si falta una variable; `live` y `ready` en cada servicio; cierre con `SIGTERM` y 503 mientras cierra | Prueba del drenaje; los checks de `ready` de cada dependencia real a medida que existan |
-| F0-12 | Parcial   | `gateway`, `platform-api`, `content-api` (procesos `cms` y `public-read`) arrancan, exponen health y validan contra su contrato | El proceso `projector`; `web-public` y `admin-shell` (UI, fuera de este cambio); medir el JavaScript inicial en CI |
+| F0-12 | Parcial   | `gateway`, `platform-api`, `content-api` (procesos `cms` y `public-read`) arrancan, exponen health y validan contra su contrato. `web-public` (SSR) y `admin-shell` (modo datos) leen las APIs en mock con el `api-client` desde sus loaders; los dos compilan y se probaron en el navegador bajo su CSP real | El proceso `projector`; medir el JavaScript inicial en CI (a mano, la portada carga hoy 7 archivos y 109,7 KB gzip) |
 | F0-13 | Pendiente | `contracts:check` busca secretos conocidos (PEM, JWT, AWS, GitHub, Stripe, Slack) en el repositorio       | Pipeline de CI, gitleaks, SBOM, Trivy, imágenes sin root, `main` protegida |
 | F0-14 | Pendiente | Este archivo                                                                                              | Seed de demo y `pnpm seed` |
-| F0-15 | Pendiente | —                                                                                                         | Tokens de diseño y kit `ui` (UI) |
+| F0-15 | Parcial   | `packages/ui`: tokens Nexus Horizon del diseño de Stitch en el `@theme` de Tailwind 4, Inter y Plus Jakarta Sans autoalojadas (Fontsource), íconos de Material Symbols copiados como SVG en línea (Apache 2.0). `packages/ui/test/contrast.test.ts` comprueba AA (4,5:1) en los 16 pares de texto y fondo que se usan | Cerrar C-09 con el integrante de frontend; el logo oficial (hoy es un logo de texto); el tema por sitio (ver [Frontends](#frontends)) |
 | F0-16 | Parcial   | Mock de contrato en `http-kit`, `Prefer: example=`, `X-Mock`, `DATA_SOURCE`, estados en `ready` y aquí; un servicio con mocks no arranca en staging (probado) | Prueba HTTP de las 68 operaciones (hoy se valida cada ejemplo contra su schema, no la respuesta servida); que la CI confirme que la imagen de producción no lleva mocks; los adaptadores en memoria llegan con cada caso de uso |
 | F0-17 | Parcial   | El gateway emite un token interno ES256 con una clave de desarrollo, para el usuario ficticio y el rol de `MOCK_ROLE`; platform-api y el CMS lo validan con `authz` y aplican los scopes (prueba de integración). En staging no arranca | El usuario ficticio está fijo en `services/gateway/src/infrastructure/test-session.ts` hasta que exista el seed (F0-14) |
+
+## Frontends
+
+Los dos usan React Router 8.5.1 sin APIs `unstable_`, React Router como única capa de datos (ESLint prohíbe TanStack,
+SWR, Redux y axios) y los tokens de `packages/ui`. Ninguno escribe HTML crudo ni carga nada de otro origen: fuentes e
+íconos son locales y los enlaces del CMS pasan por `safeHref` (solo `/…` del mismo sitio o `https:` sin credenciales).
+
+### `web-public` (puerto 3000)
+
+| Qué                                                                                                                         | Estado  |
+| --------------------------------------------------------------------------------------------------------------------------- | ------- |
+| SSR en modo framework; un middleware de servidor resuelve el host con `resolveSite` y guarda el sitio en el contexto | Hecho   |
+| Rutas `/`, `/eventos/:eventSlug` y `/*` (página del CMS); una ruta con mayúsculas o `//` da 404 sin llamar a la API       | Hecho   |
+| Bloques `hero`, `rich_text`, `event_catalog` y `featured_event`, con una llamada a eventos por bloque de catálogo          | Hecho   |
+| Bloques `image` y `agenda`: no se pintan (no hay assets ni sesiones en el mock)                                            | Pendiente |
+| `Cache-Control` del recurso principal y unión de `Surrogate-Key`; todo error sale con `no-store` y sin claves              | Hecho   |
+| CSP con el hash sha256 de cada script en línea, sin `unsafe-inline` en producción; `nosniff`, `Referrer-Policy`, COOP      | Hecho   |
+| Detalle de evento con descripción, agenda y programas; la inscripción es un aviso hasta la isla del Equipo 3              | Parcial |
+| Tema por sitio (`theme` de `PublicSite`): hoy se ignora; aplicarlo con estilos en línea rompería la CSP                    | Pendiente |
+| `/preview/[token]`, `/eventos` (listado), pre-render de la landing, eventos cancelados (F2-12)                             | Pendiente |
+
+`server.ts` sirve la compilación con Express: `/assets` con caché inmutable de un año, el resto de archivos con una hora
+y nunca el código fuente (`/.env` y `/server.ts` dan 404).
+
+### `admin-shell` (puerto 5173)
+
+| Qué                                                                                                                       | Estado    |
+| ------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Marco del diseño (cabecera, menú lateral y móvil, pie) con `getMe`; el aviso "Datos de prueba" sale cuando hay `X-Mock`  | Hecho     |
+| Middleware de sesión en la raíz: 401 → `/auth/login?return_to=…` con recarga completa                                     | Hecho     |
+| Organización activa en la URL (`/o/{slug}`); otra organización da 404; capability por ruta (`sites:write` → 403 sin llamar al CMS) | Hecho |
+| Panel principal y Sitios web (`listSites`)                                                                                | Hecho     |
+| Módulos de otros equipos (convocatorias, crear convocatoria, postulantes, participaciones) y los de fases futuras: pantalla "Módulo aún no montado" | Hecho |
+| Errores: solo el `request_id`, nunca el detalle del Problem                                                               | Hecho     |
+| Logout y CSRF (el botón está deshabilitado), cambio de organización, breadcrumbs (F1-10)                                  | Pendiente |
+| Que el gateway sirva el shell compilado; hoy Vite reenvía `/auth`, `/platform/v1`, `/cms/v1` y `/.well-known` al gateway | Pendiente |
+
+La CSP del shell (`script-src 'self'`, sin nada en línea) solo se aplica en `vite preview`; en producción la pondrá
+quien sirva los archivos. El formulario de convocatoria del diseño de Stitch es del Equipo 2 y no se montó.
 
 ## Estado por operación
 
@@ -156,6 +198,13 @@ Además el gateway reenvía, con la sesión de prueba y un token interno para la
 - **Seguridad opcional**: si un contrato declara una alternativa vacía en `security`, `http-kit` trata la operación como
   anónima y no lee el token aunque llegue. Hoy ninguna operación combina las dos cosas.
 - **Public Read API**: el gateway no la reenvía; en local se llama directo (puerto 8083), como hará la CDN.
+- **Cambios de contrato hechos al conectar los frontends** (contrato primero, `contracts:lint` y `contracts:build`):
+  - Los `href` de `Link` (cms.yaml), la navegación (public.yaml) y los bloques `hero` y `rich_text` ya no aceptan
+    `//host` ni `/\host`: el patrón anterior (`^/…`) dejaba pasar enlaces a otro dominio relativos al protocolo.
+  - `Block` (en cms.yaml y en public.yaml) ya no declara `discriminator`: el implícito tomaba el nombre del schema (`hero.v1`) en vez
+    del valor de `type` (`hero`) y los tipos generados no servían. Los distinguen las constantes `type` y `version`.
+- **`Surrogate-Key` sin ejemplo**: `components/headers/SurrogateKey` (common.yaml) no tiene ejemplo, así que el mock no
+  la envía y el sitio público hoy no propaga ninguna clave. El formato de las claves queda para F2-12; no se inventó.
 - **Excepciones de Redocly** (`contracts/.redocly.lint-ignore.yaml`): los health no tienen respuestas 4XX y el login y
   el callback responden 302 sin 2XX. Revisadas a mano.
 
@@ -185,3 +234,16 @@ pnpm dev:public
 
 `GET http://localhost:8080/health/ready` lista el estado de cada operación del gateway; cada servicio hace lo mismo en
 su puerto. Por el gateway, `GET http://localhost:8080/platform/v1/me` responde el mock con la sesión de prueba.
+
+Con las APIs levantadas, los frontends:
+
+```bash
+pnpm dev:web
+```
+
+```bash
+pnpm dev:admin
+```
+
+El sitio público queda en `http://localhost:3000` y el shell en `http://localhost:5173` (redirige a
+`/o/incubaunas-demo`).
