@@ -1,0 +1,144 @@
+# Ejemplos de la Public Read API (spec 3.8, MOCK-01). Datos ficticios: el repositorio es público.
+# Cada entrada es un Example Object de OpenAPI que referencia public.yaml.
+
+site_resolution:
+  summary: Host resuelto a su sitio
+  value:
+    site_id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    slug: congreso-demo
+    locale: es-PE
+
+public_site:
+  summary: Sitio demo con tema y navegación
+  value:
+    site_id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    slug: congreso-demo
+    name: Congreso Demo
+    kind: demo
+    locale: es-PE
+    theme:
+      color_primary: '#1d4ed8'
+      color_on_primary: '#ffffff'
+      color_background: '#ffffff'
+      color_text: '#111827'
+      font_family: humanist
+      radius: small
+    navigation:
+      - label: Inicio
+        href: /
+      - label: Guía del congreso
+        href: /guia
+
+published_pages:
+  summary: Rutas publicadas
+  value:
+    items:
+      - path: /
+        locale: es-PE
+        published_at: '2026-11-04T10:00:00Z'
+      - path: /guia
+        locale: es-PE
+        published_at: '2026-11-07T15:00:00Z'
+    next_cursor: null
+
+public_page:
+  summary: Página publicada
+  value: &public_page
+    site_id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    page_id: 01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b
+    publication_id: 01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f
+    path: /guia
+    locale: es-PE
+    title: Guía del congreso
+    seo: &seo
+      title: Guía del Congreso Demo
+      description: Fechas, sedes y cómo inscribirte.
+      canonical: https://congreso-demo.example.com/guia
+    blocks: &blocks
+      - id: 01933f52-5e6f-7a71-8b8c-9d0e1f2a3b4c
+        type: hero
+        version: 1
+        data:
+          heading: Congreso Demo 2026
+          subheading: Tres días de ponencias y talleres en Tingo María.
+          cta:
+            label: Ver la agenda
+            href: /guia#agenda
+      - id: 01933f52-7a81-7c93-8dae-1f2a3b4c5d6e
+        type: featured_event
+        version: 1
+        data:
+          event_id: 01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c
+          publication_id: 01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d
+    content_hash: sha256:9f2c4e1a7b3d5f6e8a0c2b4d6f8e0a1c3b5d7f9e1a3c5b7d9f1e3a5c7b9d1f3e
+    published_at: '2026-11-07T15:00:00Z'
+
+public_events:
+  summary: Catálogo del sitio
+  value:
+    items:
+      - &event_summary
+        event_id: 01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c
+        publication_id: 01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d
+        slug: congreso-demo-2026
+        title: Congreso Demo 2026
+        summary: Ponencias y talleres sobre innovación agroindustrial.
+        state: scheduled
+        modality: in_person
+        starts_at: '2026-12-01T14:00:00Z'
+        ends_at: '2026-12-03T23:00:00Z'
+        timezone: America/Lima
+        venue_name: Auditorio principal
+        registration:
+          status: open
+          as_of: '2026-11-08T15:00:00Z'
+    next_cursor: null
+
+public_event:
+  summary: Release activo del evento
+  value: &public_event
+    <<: *event_summary
+    description:
+      - Tres días de ponencias, talleres y una feria de proyectos.
+      - La inscripción es gratuita y tiene cupos limitados.
+    sessions:
+      - id: 01933f72-7a81-7c93-8dae-2f3a4b5c6d7e
+        title: Inauguración
+        starts_at: '2026-12-01T14:00:00Z'
+        ends_at: '2026-12-01T15:00:00Z'
+        location: Auditorio principal
+    programs:
+      - id: 01933f73-8b92-7da4-9ebf-3a4b5c6d7e8f
+        name: Innovación agroindustrial
+
+public_event_cancelled:
+  summary: Evento cancelado
+  value:
+    <<: *public_event
+    state: cancelled
+    registration:
+      status: closed
+      as_of: '2026-11-08T15:00:00Z'
+
+preview:
+  summary: Borrador en vista previa
+  value:
+    site_id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    page_id: 01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b
+    revision: 4
+    path: /guia
+    locale: es-PE
+    title: Guía del congreso (borrador)
+    seo: *seo
+    blocks: *blocks
+    expires_at: '2026-11-08T15:15:00Z'
+
+preview_expired:
+  summary: Vista previa vencida o usada
+  value:
+    type: https://errors.example.pe/preview-expired
+    title: Preview expired
+    status: 404
+    code: preview_expired
+    detail: La vista previa venció o ya se usó. Genera una nueva desde el editor.
+    request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b

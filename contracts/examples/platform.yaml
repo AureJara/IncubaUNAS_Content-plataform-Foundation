@@ -1,0 +1,379 @@
+# Ejemplos de la Platform API (spec 3.8, MOCK-01). Datos ficticios: el repositorio es público.
+# Cada entrada es un Example Object de OpenAPI que referencia platform.yaml.
+
+me:
+  summary: Editor con su organización activa
+  value:
+    user_id: 01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a
+    display_name: Editora de prueba
+    active_organization:
+      id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+      slug: incubaunas-demo
+      display_name: IncubaUNAS Demo
+    membership_id: 01933f41-2b3c-7d4e-9f50-6b7c8d9e0f1a
+    roles: [site_editor]
+    capabilities: ['sites:write', 'sites:publish']
+    amr: [pwd, mfa]
+    auth_time: '2026-11-08T14:50:00Z'
+
+capabilities:
+  summary: Permisos efectivos del editor
+  value:
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    roles: [site_editor]
+    scopes: ['sites:write', 'sites:publish']
+    restrictions: []
+
+my_sessions:
+  summary: Sesiones del usuario, enmascaradas
+  value:
+    items:
+      - id: 01933f5e-9d3b-7a01-8c22-4b5c6d7e8f90
+        user_id: 01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a
+        state: active
+        current: true
+        ip_hint: 203.0.113.x
+        user_agent_family: Firefox en Windows
+        created_at: '2026-11-08T14:50:00Z'
+        last_seen_at: '2026-11-08T15:05:00Z'
+        expires_at: '2026-12-08T14:50:00Z'
+    next_cursor: null
+
+organization:
+  summary: Organización activa
+  value: &organization
+    id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    slug: incubaunas-demo
+    legal_name: IncubaUNAS Demo S.A.C.
+    display_name: IncubaUNAS Demo
+    timezone: America/Lima
+    locale: es-PE
+    state: active
+    revision: 3
+    created_at: '2026-11-01T13:00:00Z'
+    updated_at: '2026-11-07T16:20:00Z'
+
+organization_create:
+  summary: Alta de una organización con su primer owner
+  value:
+    slug: incubaunas-demo
+    legal_name: IncubaUNAS Demo S.A.C.
+    display_name: IncubaUNAS Demo
+    timezone: America/Lima
+    locale: es-PE
+    owner_identity:
+      issuer: https://idp.example.com/realms/incubaunas
+      subject: 8f14e45f-ea2c-4b6e-9b1a-1c2d3e4f5a6b
+
+organization_patch:
+  summary: Cambiar el nombre visible
+  value:
+    display_name: IncubaUNAS Demo (Tingo María)
+
+organization_suspended:
+  summary: Organización suspendida
+  value:
+    <<: *organization
+    state: suspended
+    revision: 4
+    updated_at: '2026-11-08T15:10:00Z'
+
+reason:
+  summary: Motivo
+  value:
+    reason: Solicitud de la institución
+
+memberships:
+  summary: Miembros de la organización
+  value:
+    items:
+      - &membership
+        id: 01933f41-2b3c-7d4e-9f50-6b7c8d9e0f1a
+        organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+        user_id: 01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a
+        display_name: Editora de prueba
+        roles: [site_editor]
+        state: active
+        revision: 2
+        created_at: '2026-11-02T10:00:00Z'
+        updated_at: '2026-11-03T09:30:00Z'
+    next_cursor: null
+
+membership:
+  summary: Membresía activa
+  value: *membership
+
+membership_patch:
+  summary: Cambiar roles
+  value:
+    roles: [site_editor, report_viewer]
+
+invitation_create:
+  summary: Invitar a un editor
+  value:
+    email: nueva.editora@example.com
+    roles: [site_editor]
+    expires_at: '2026-11-15T15:00:00Z'
+
+invitation:
+  summary: Invitación pendiente (nunca incluye el token)
+  value: &invitation
+    id: 01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    membership_id: 01933f41-3c4d-7e5f-8a61-7c8d9e0f1a2b
+    email_hint: n***@example.com
+    roles: [site_editor]
+    state: pending
+    expires_at: '2026-11-15T15:00:00Z'
+    revision: 1
+    created_at: '2026-11-08T15:00:00Z'
+    updated_at: '2026-11-08T15:00:00Z'
+
+invitations:
+  summary: Invitaciones de la organización
+  value:
+    items:
+      - *invitation
+    next_cursor: null
+
+invitation_revoked:
+  summary: Invitación revocada
+  value:
+    <<: *invitation
+    state: revoked
+    revision: 2
+    updated_at: '2026-11-08T15:20:00Z'
+
+invitation_expired:
+  summary: Invitación vencida
+  value:
+    type: https://errors.example.pe/invitation-expired
+    title: Invitation expired
+    status: 409
+    code: invitation_expired
+    detail: La invitación venció. Pide una nueva.
+    request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+
+invitation_accepted:
+  summary: Membresía activada al aceptar
+  value:
+    <<: *membership
+    id: 01933f41-3c4d-7e5f-8a61-7c8d9e0f1a2b
+    user_id: 01933f42-4d5e-7f60-8b71-8c9d0e1f2a3b
+    display_name: Nueva editora
+    revision: 2
+
+invitation_declined:
+  summary: Invitación rechazada
+  value:
+    invitation_id: 01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c
+    state: declined
+
+last_owner:
+  summary: Quitar al último owner
+  value:
+    type: https://errors.example.pe/last-owner
+    title: Last owner
+    status: 409
+    code: last_owner
+    detail: La organización debe conservar al menos un owner activo.
+    request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+
+my_organizations:
+  summary: Organizaciones del usuario
+  value:
+    items:
+      - organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+        slug: incubaunas-demo
+        display_name: IncubaUNAS Demo
+        membership_id: 01933f41-2b3c-7d4e-9f50-6b7c8d9e0f1a
+        roles: [site_editor]
+        state: active
+      - organization_id: 01933f40-2b3c-7d4e-9f50-6a7b8c9d0e1f
+        slug: congreso-agro-demo
+        display_name: Congreso Agro Demo
+        membership_id: 01933f41-4d5e-7f60-9b72-8d9e0f1a2b3c
+        roles: [report_viewer]
+        state: active
+    next_cursor: null
+
+session_context_request:
+  summary: Cambiar a otra organización
+  value:
+    organization_id: 01933f40-2b3c-7d4e-9f50-6a7b8c9d0e1f
+
+session_context:
+  summary: Contexto nuevo de la sesión
+  value:
+    organization_id: 01933f40-2b3c-7d4e-9f50-6a7b8c9d0e1f
+    membership_id: 01933f41-4d5e-7f60-9b72-8d9e0f1a2b3c
+    roles: [report_viewer]
+    scopes: ['reports:read']
+
+service_account_create:
+  summary: Service account del Equipo 2
+  value:
+    name: event-configuration-sync
+    auth_method: client_secret
+    scopes: ['events:read']
+    audiences: [platform-api]
+    expires_at: '2027-11-08T00:00:00Z'
+
+service_account:
+  summary: Service account activa
+  value: &service_account
+    id: 01933f46-5e6f-7a71-8c83-9e0f1a2b3c4d
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    name: event-configuration-sync
+    client_id: sa_01933f465e6f7a718c839e0f1a2b3c4d
+    auth_method: client_secret
+    scopes: ['events:read']
+    audiences: [platform-api]
+    state: active
+    expires_at: '2027-11-08T00:00:00Z'
+    revision: 1
+    created_at: '2026-11-08T15:30:00Z'
+    updated_at: '2026-11-08T15:30:00Z'
+
+service_account_created:
+  summary: Secreto mostrado una sola vez (valor ficticio)
+  value:
+    service_account: *service_account
+    client_secret: not-a-real-secret-example-0000000000000000
+
+service_accounts:
+  summary: Service accounts de la organización
+  value:
+    items:
+      - *service_account
+    next_cursor: null
+
+rotation_request:
+  summary: Rotar con solapamiento de un día
+  value:
+    expires_at: '2028-11-08T00:00:00Z'
+    overlap_seconds: 86400
+
+rotation:
+  summary: Credencial nueva (valor ficticio)
+  value:
+    credential_id: 01933f47-6f70-7b82-9d94-0f1a2b3c4d5e
+    client_secret: not-a-real-secret-rotated-000000000000000
+    expires_at: '2028-11-08T00:00:00Z'
+    previous_expires_at: '2026-11-09T15:40:00Z'
+
+service_account_revoked:
+  summary: Service account revocada
+  value:
+    <<: *service_account
+    state: revoked
+    revision: 2
+    updated_at: '2026-11-08T15:50:00Z'
+
+domain_create:
+  summary: Asociar un dominio propio
+  value:
+    hostname: eventos.example.com
+
+domain:
+  summary: Dominio pendiente de verificación
+  value: &domain
+    id: 01933f48-7a81-7c93-8ea5-1a2b3c4d5e6f
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    site_id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    hostname: eventos.example.com
+    primary: false
+    state: pending
+    verification:
+      method: dns_txt
+      record_name: _incuba-challenge.eventos.example.com
+      record_value: incuba-verify=example-challenge-value
+    revision: 1
+    created_at: '2026-11-08T16:00:00Z'
+    updated_at: '2026-11-08T16:00:00Z'
+
+domain_active:
+  summary: Dominio verificado y activo
+  value:
+    <<: *domain
+    state: active
+    primary: true
+    revision: 3
+    updated_at: '2026-11-08T16:10:00Z'
+
+domains:
+  summary: Dominios del sitio
+  value:
+    items:
+      - *domain
+    next_cursor: null
+
+hostname_taken:
+  summary: El hostname ya está en uso
+  value:
+    type: https://errors.example.pe/hostname-taken
+    title: Hostname taken
+    status: 409
+    code: hostname_taken
+    detail: Ese dominio ya está asociado a otro sitio.
+    request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+
+roles:
+  summary: Catálogo de roles
+  value:
+    items:
+      - role: org_owner
+        description: Configuración institucional, miembros, dominios y toda capacidad operativa
+        scopes: ['organizations:admin', 'sites:write', 'sites:publish', 'events:write', 'events:publish']
+      - role: site_editor
+        description: Sitios, CMS, medios y publicación de páginas
+        scopes: ['sites:write', 'sites:publish']
+    next_cursor: null
+
+organization_sessions:
+  summary: Sesiones de los miembros
+  value:
+    items:
+      - id: 01933f5e-9d3b-7a01-8c22-4b5c6d7e8f90
+        user_id: 01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a
+        state: active
+        current: false
+        ip_hint: 203.0.113.x
+        user_agent_family: Firefox en Windows
+        created_at: '2026-11-08T14:50:00Z'
+        last_seen_at: '2026-11-08T15:05:00Z'
+        expires_at: '2026-12-08T14:50:00Z'
+    next_cursor: null
+
+audit_events:
+  summary: Eventos de auditoría
+  value:
+    items:
+      - id: 01933f49-8b92-7da4-9fb6-2b3c4d5e6f70
+        organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+        occurred_at: '2026-11-08T15:20:00Z'
+        actor: { type: user, id: 01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a }
+        action: invitation.revoked
+        target: { type: invitation, id: 01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c }
+        outcome: success
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+    next_cursor: null
+
+lead_request:
+  summary: Solicitud de demo (datos ficticios)
+  value:
+    name: Persona de prueba
+    email: prospecto@example.com
+    organization_name: Universidad de prueba
+    message: Queremos ver la demo de convocatorias.
+    consent: true
+    challenge_token: example-challenge-token
+    website: ''
+
+lead_receipt:
+  summary: Solicitud recibida
+  value:
+    id: 01933f4a-9ca3-7eb5-80c7-3c4d5e6f7081
+    state: received
+    created_at: '2026-11-08T16:30:00Z'

@@ -1,0 +1,22 @@
+{
+  "title": "Bloque de imagen, versión 1",
+  "description": "Imagen de la biblioteca de medios. El texto alternativo es obligatorio (RN-17).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "version", "data"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "type": { "type": "string", "const": "image" },
+    "version": { "type": "integer", "const": 1 },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["media_id", "alt"],
+      "properties": {
+        "media_id": { "type": "string", "format": "uuid" },
+        "alt": { "type": "string", "minLength": 1, "maxLength": 250 },
+        "caption": { "type": "string", "maxLength": 300 }
+      }
+    }
+  }
+}

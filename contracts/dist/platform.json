@@ -1,0 +1,4352 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Platform API (Equipo 1)",
+    "version": "1.0.0",
+    "description": "Identidad, organizaciones, membresías, invitaciones, sesiones, service accounts, dominios y auditoría (spec 9.2, 9.3 y 9.6). El navegador la llama a través del gateway con la cookie de sesión y el token CSRF; el gateway la reenvía con un token interno de audience `platform-api`.\n\nExtensiones: `x-required-scope` (scope del token), `x-required-role` (rol exigido) y `x-recent-mfa` (MFA reciente).",
+    "license": {
+      "name": "Propietario (IncubaUNAS)",
+      "identifier": "LicenseRef-IncubaUNAS"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Gateway local"
+    }
+  ],
+  "security": [
+    {
+      "internalToken": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "me",
+      "description": "Identidad, sesiones y organización activa de quien llama."
+    },
+    {
+      "name": "organizations",
+      "description": "Alta, configuración y ciclo de vida de la organización."
+    },
+    {
+      "name": "memberships",
+      "description": "Miembros, roles y sesiones de los miembros."
+    },
+    {
+      "name": "invitations",
+      "description": "Invitaciones de un solo uso."
+    },
+    {
+      "name": "service-accounts",
+      "description": "Clients de servicio con scopes mínimos."
+    },
+    {
+      "name": "domains",
+      "description": "Dominios propios y su verificación."
+    },
+    {
+      "name": "audit",
+      "description": "Auditoría de identidad y autorización."
+    },
+    {
+      "name": "leads",
+      "description": "Solicitudes de demo de la landing comercial."
+    },
+    {
+      "name": "health",
+      "description": "Vida y disponibilidad del servicio."
+    }
+  ],
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "getHealthLive",
+        "summary": "Health de vida",
+        "tags": [
+          "health"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/HealthLive"
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "getHealthReady",
+        "summary": "Health de disponibilidad",
+        "tags": [
+          "health"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/HealthReady"
+          },
+          "503": {
+            "$ref": "#/components/responses/HealthNotReady"
+          }
+        }
+      }
+    },
+    "/platform/v1/me": {
+      "get": {
+        "operationId": "getMe",
+        "summary": "Identidad, organización activa, roles y capabilities",
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Identidad de la sesión.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                },
+                "examples": {
+                  "me": {
+                    "$ref": "#/components/examples/me"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/platform/v1/me/capabilities": {
+      "get": {
+        "operationId": "getMyCapabilities",
+        "summary": "Permisos efectivos y restricciones",
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permisos efectivos.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                },
+                "examples": {
+                  "capabilities": {
+                    "$ref": "#/components/examples/capabilities"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/platform/v1/me/sessions": {
+      "get": {
+        "operationId": "listMySessions",
+        "summary": "Sesiones propias, enmascaradas",
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sesiones del usuario; nunca incluye refresh ni tokens.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCollection"
+                },
+                "examples": {
+                  "sessions": {
+                    "$ref": "#/components/examples/my_sessions"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/platform/v1/me/sessions/{id}": {
+      "delete": {
+        "operationId": "revokeSession",
+        "summary": "Revocar una sesión propia (o de un miembro, si es admin)",
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Sesión revocada. Repetir la llamada también responde 204."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/platform/v1/me/organizations": {
+      "get": {
+        "operationId": "listMyOrganizations",
+        "summary": "Membresías activas del usuario",
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organizaciones donde el usuario tiene membresía activa.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyOrganizationCollection"
+                },
+                "examples": {
+                  "organizations": {
+                    "$ref": "#/components/examples/my_organizations"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/platform/v1/session-context": {
+      "post": {
+        "operationId": "switchSessionContext",
+        "summary": "Cambiar la organización activa de la sesión",
+        "description": "Solo se acepta si el usuario tiene una membresía activa en esa organización (spec 9.3).",
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionContextRequest"
+              },
+              "examples": {
+                "switch": {
+                  "$ref": "#/components/examples/session_context_request"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contexto nuevo; el gateway reemite la sesión.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionContext"
+                },
+                "examples": {
+                  "context": {
+                    "$ref": "#/components/examples/session_context"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/platform/v1/roles": {
+      "get": {
+        "operationId": "listRoles",
+        "summary": "Catálogo de roles y sus scopes",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Roles del contrato de autorización.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleCollection"
+                },
+                "examples": {
+                  "roles": {
+                    "$ref": "#/components/examples/roles"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations": {
+      "post": {
+        "operationId": "createOrganization",
+        "summary": "Alta de una organización con su primer owner",
+        "tags": [
+          "organizations"
+        ],
+        "x-required-role": "platform_admin",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationCreate"
+              },
+              "examples": {
+                "create": {
+                  "$ref": "#/components/examples/organization_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Organización activa con su membresía owner.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Location": {
+                "$ref": "#/components/headers/Location"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                },
+                "examples": {
+                  "organization": {
+                    "$ref": "#/components/examples/organization"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "get": {
+        "operationId": "getOrganization",
+        "summary": "Configuración de la organización",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organización.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                },
+                "examples": {
+                  "organization": {
+                    "$ref": "#/components/examples/organization"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateOrganization",
+        "summary": "Configurar la organización",
+        "tags": [
+          "organizations"
+        ],
+        "x-required-scope": "organizations:admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationPatch"
+              },
+              "examples": {
+                "patch": {
+                  "$ref": "#/components/examples/organization_patch"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organización actualizada.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                },
+                "examples": {
+                  "organization": {
+                    "$ref": "#/components/examples/organization"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}/suspensions": {
+      "post": {
+        "operationId": "suspendOrganization",
+        "summary": "Suspender una organización y sus sesiones",
+        "tags": [
+          "organizations"
+        ],
+        "x-required-role": "platform_admin",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reason"
+              },
+              "examples": {
+                "reason": {
+                  "$ref": "#/components/examples/reason"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organización suspendida.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                },
+                "examples": {
+                  "suspended": {
+                    "$ref": "#/components/examples/organization_suspended"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}/reactivations": {
+      "post": {
+        "operationId": "reactivateOrganization",
+        "summary": "Volver de suspended a active",
+        "tags": [
+          "organizations"
+        ],
+        "x-required-role": "platform_admin",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reason"
+              },
+              "examples": {
+                "reason": {
+                  "$ref": "#/components/examples/reason"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organización activa de nuevo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                },
+                "examples": {
+                  "organization": {
+                    "$ref": "#/components/examples/organization"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}/memberships": {
+      "get": {
+        "operationId": "listMemberships",
+        "summary": "Miembros, roles y estado",
+        "tags": [
+          "memberships"
+        ],
+        "x-required-scope": "organizations:admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/MembershipState"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Miembros.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipCollection"
+                },
+                "examples": {
+                  "memberships": {
+                    "$ref": "#/components/examples/memberships"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/platform/v1/memberships/{id}": {
+      "patch": {
+        "operationId": "updateMembership",
+        "summary": "Cambiar roles, suspender o revocar un miembro",
+        "tags": [
+          "memberships"
+        ],
+        "x-required-scope": "organizations:admin",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MembershipPatch"
+              },
+              "examples": {
+                "patch": {
+                  "$ref": "#/components/examples/membership_patch"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Membresía actualizada; si aplica, sus sesiones se revocan.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Membership"
+                },
+                "examples": {
+                  "membership": {
+                    "$ref": "#/components/examples/membership"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Transición inválida o último owner.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "last_owner": {
+                    "$ref": "#/components/examples/last_owner"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}/invitations": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "post": {
+        "operationId": "createInvitation",
+        "summary": "Invitar a una persona",
+        "tags": [
+          "invitations"
+        ],
+        "x-required-scope": "organizations:admin",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationCreate"
+              },
+              "examples": {
+                "create": {
+                  "$ref": "#/components/examples/invitation_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invitación pendiente. La respuesta nunca incluye el token.",
+            "headers": {
+              "Location": {
+                "$ref": "#/components/headers/Location"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invitation"
+                },
+                "examples": {
+                  "invitation": {
+                    "$ref": "#/components/examples/invitation"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listInvitations",
+        "summary": "Invitaciones de la organización",
+        "tags": [
+          "invitations"
+        ],
+        "x-required-scope": "organizations:admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitaciones.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationCollection"
+                },
+                "examples": {
+                  "invitations": {
+                    "$ref": "#/components/examples/invitations"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/platform/v1/invitations/{id}/revocations": {
+      "post": {
+        "operationId": "revokeInvitation",
+        "summary": "Revocar una invitación pendiente",
+        "tags": [
+          "invitations"
+        ],
+        "x-required-scope": "organizations:admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitación revocada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invitation"
+                },
+                "examples": {
+                  "revoked": {
+                    "$ref": "#/components/examples/invitation_revoked"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/public/v1/invitations/{token}/acceptance": {
+      "post": {
+        "operationId": "acceptInvitation",
+        "summary": "Aceptar una invitación con la sesión OIDC",
+        "tags": [
+          "invitations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/InvitationToken"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Membresía activa.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Membership"
+                },
+                "examples": {
+                  "accepted": {
+                    "$ref": "#/components/examples/invitation_accepted"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Invitación vencida, usada o revocada.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "invitation_expired": {
+                    "$ref": "#/components/examples/invitation_expired"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/invitations/{token}/declination": {
+      "post": {
+        "operationId": "declineInvitation",
+        "summary": "Rechazar una invitación",
+        "tags": [
+          "invitations"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/InvitationToken"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitación rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationOutcome"
+                },
+                "examples": {
+                  "declined": {
+                    "$ref": "#/components/examples/invitation_declined"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Invitación vencida, usada o revocada.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "invitation_expired": {
+                    "$ref": "#/components/examples/invitation_expired"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}/sessions": {
+      "get": {
+        "operationId": "listOrganizationSessions",
+        "summary": "Sesiones de los miembros",
+        "tags": [
+          "memberships"
+        ],
+        "x-required-scope": "organizations:admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sesiones con IP seudonimizada; nunca tokens.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCollection"
+                },
+                "examples": {
+                  "sessions": {
+                    "$ref": "#/components/examples/organization_sessions"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}/service-accounts": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "post": {
+        "operationId": "createServiceAccount",
+        "summary": "Crear una service account",
+        "tags": [
+          "service-accounts"
+        ],
+        "x-required-role": "security_admin",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceAccountCreate"
+              },
+              "examples": {
+                "create": {
+                  "$ref": "#/components/examples/service_account_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Service account creada. El secreto se muestra solo en esta respuesta.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAccountCreated"
+                },
+                "examples": {
+                  "created": {
+                    "$ref": "#/components/examples/service_account_created"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listServiceAccounts",
+        "summary": "Service accounts de la organización",
+        "tags": [
+          "service-accounts"
+        ],
+        "x-required-role": "security_admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service accounts, sin secretos.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAccountCollection"
+                },
+                "examples": {
+                  "service_accounts": {
+                    "$ref": "#/components/examples/service_accounts"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/platform/v1/service-accounts/{id}/rotations": {
+      "post": {
+        "operationId": "rotateServiceAccount",
+        "summary": "Rotar la credencial con solapamiento",
+        "tags": [
+          "service-accounts"
+        ],
+        "x-required-role": "security_admin",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RotationRequest"
+              },
+              "examples": {
+                "rotation": {
+                  "$ref": "#/components/examples/rotation_request"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Credencial nueva; la anterior vence al terminar el solapamiento.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rotation"
+                },
+                "examples": {
+                  "rotation": {
+                    "$ref": "#/components/examples/rotation"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/platform/v1/service-accounts/{id}/revocations": {
+      "post": {
+        "operationId": "revokeServiceAccount",
+        "summary": "Revocar una service account de inmediato",
+        "tags": [
+          "service-accounts"
+        ],
+        "x-required-role": "security_admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reason"
+              },
+              "examples": {
+                "reason": {
+                  "$ref": "#/components/examples/reason"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Service account revocada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAccount"
+                },
+                "examples": {
+                  "revoked": {
+                    "$ref": "#/components/examples/service_account_revoked"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/platform/v1/sites/{id}/domains": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "post": {
+        "operationId": "createDomain",
+        "summary": "Asociar un dominio propio a un sitio",
+        "tags": [
+          "domains"
+        ],
+        "x-required-role": "org_owner",
+        "x-recent-mfa": true,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainCreate"
+              },
+              "examples": {
+                "create": {
+                  "$ref": "#/components/examples/domain_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Dominio pendiente, con su challenge de verificación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Domain"
+                },
+                "examples": {
+                  "domain": {
+                    "$ref": "#/components/examples/domain"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "El hostname ya está en uso.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "hostname_taken": {
+                    "$ref": "#/components/examples/hostname_taken"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listDomains",
+        "summary": "Dominios del sitio",
+        "tags": [
+          "domains"
+        ],
+        "x-required-role": "org_owner",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dominios.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainCollection"
+                },
+                "examples": {
+                  "domains": {
+                    "$ref": "#/components/examples/domains"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/platform/v1/domains/{id}/verifications": {
+      "post": {
+        "operationId": "verifyDomain",
+        "summary": "Verificar el challenge del dominio",
+        "tags": [
+          "domains"
+        ],
+        "x-required-role": "org_owner",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dominio `active` (con TLS) o `failed`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Domain"
+                },
+                "examples": {
+                  "active": {
+                    "$ref": "#/components/examples/domain_active"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/platform/v1/organizations/{id}/audit-events": {
+      "get": {
+        "operationId": "listAuditEvents",
+        "summary": "Consultar la auditoría",
+        "tags": [
+          "audit"
+        ],
+        "x-required-scope": "organizations:admin",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Timestamp"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Timestamp"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]+(\\.[a-z_]+)*$",
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eventos de auditoría, del más reciente al más antiguo.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditEventCollection"
+                },
+                "examples": {
+                  "audit": {
+                    "$ref": "#/components/examples/audit_events"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{slug}/leads": {
+      "post": {
+        "operationId": "createLead",
+        "summary": "Solicitud de demo",
+        "description": "Anti-spam con honeypot (`website` vacío), challenge y rate limit. Dónde se guardan los datos lo fija el acuerdo C-13 (spec 13 #6); el evento interno no lleva datos personales.",
+        "tags": [
+          "leads"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Slug"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadRequest"
+              },
+              "examples": {
+                "lead": {
+                  "$ref": "#/components/examples/lead_request"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Solicitud recibida.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadReceipt"
+                },
+                "examples": {
+                  "receipt": {
+                    "$ref": "#/components/examples/lead_receipt"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "internalToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token interno que emite el gateway a partir de la sesión del navegador (cookie + CSRF). Audience exacta del servicio, TTL de 5 minutos (spec 3.6 flujo B). El navegador nunca lo ve."
+      }
+    },
+    "parameters": {
+      "InvitationToken": {
+        "name": "token",
+        "in": "path",
+        "required": true,
+        "description": "Token de la invitación (se guarda solo como hash).",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{32,128}$"
+        }
+      },
+      "RequestId": {
+        "name": "X-Request-Id",
+        "in": "header",
+        "required": false,
+        "description": "Se acepta si es válido; si no, se genera. Siempre se devuelve.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9-]{8,128}$"
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "description": "Cursor opaco devuelto en `next_cursor`.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "IdPath": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Obligatorio en los POST de comando; se retiene al menos 24 h (spec 9.1).",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "ETag de la revisión que se modifica. Si no coincide → 412; si falta → 428.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "schemas": {
+      "OrganizationState": {
+        "type": "string",
+        "enum": [
+          "provisioning",
+          "active",
+          "suspended",
+          "archived"
+        ]
+      },
+      "MembershipState": {
+        "type": "string",
+        "enum": [
+          "invited",
+          "active",
+          "suspended",
+          "revoked",
+          "expired"
+        ]
+      },
+      "InvitationState": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "accepted",
+          "declined",
+          "expired",
+          "revoked"
+        ]
+      },
+      "DomainState": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "verifying",
+          "active",
+          "failed",
+          "suspended",
+          "released"
+        ]
+      },
+      "Timezone": {
+        "type": "string",
+        "description": "Zona IANA.",
+        "pattern": "^[A-Za-z_]+(/[A-Za-z0-9_+-]+)*$",
+        "maxLength": 64
+      },
+      "Me": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "user_id",
+          "display_name",
+          "active_organization",
+          "membership_id",
+          "roles",
+          "capabilities",
+          "amr",
+          "auth_time"
+        ],
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "active_organization": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "slug",
+              "display_name"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              "slug": {
+                "$ref": "#/components/schemas/Slug"
+              },
+              "display_name": {
+                "type": "string"
+              }
+            }
+          },
+          "membership_id": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Scope"
+            }
+          },
+          "amr": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "auth_time": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "Capabilities": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organization_id",
+          "roles",
+          "scopes",
+          "restrictions"
+        ],
+        "properties": {
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Scope"
+            }
+          },
+          "restrictions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "id"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "event",
+                    "venue"
+                  ]
+                },
+                "id": {
+                  "$ref": "#/components/schemas/Uuid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "user_id",
+          "state",
+          "current",
+          "created_at",
+          "last_seen_at",
+          "expires_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked",
+              "expired"
+            ]
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "ip_hint": {
+            "type": "string",
+            "description": "IP seudonimizada."
+          },
+          "user_agent_family": {
+            "type": "string"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "last_seen_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "SessionCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Session"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "MyOrganization": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organization_id",
+          "slug",
+          "display_name",
+          "membership_id",
+          "roles",
+          "state"
+        ],
+        "properties": {
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "membership_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "state": {
+            "$ref": "#/components/schemas/MembershipState"
+          }
+        }
+      },
+      "MyOrganizationCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MyOrganization"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "SessionContextRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organization_id"
+        ],
+        "properties": {
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      },
+      "SessionContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organization_id",
+          "membership_id",
+          "roles",
+          "scopes"
+        ],
+        "properties": {
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "membership_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Scope"
+            }
+          }
+        }
+      },
+      "RoleDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "description",
+          "scopes"
+        ],
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "description": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Scope"
+            }
+          }
+        }
+      },
+      "RoleCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoleDefinition"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "Organization": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "slug",
+          "legal_name",
+          "display_name",
+          "timezone",
+          "locale",
+          "state",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "legal_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "timezone": {
+            "$ref": "#/components/schemas/Timezone"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "state": {
+            "$ref": "#/components/schemas/OrganizationState"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "OrganizationCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slug",
+          "legal_name",
+          "display_name",
+          "timezone",
+          "locale",
+          "owner_identity"
+        ],
+        "properties": {
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "legal_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "timezone": {
+            "$ref": "#/components/schemas/Timezone"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "owner_identity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "issuer",
+              "subject"
+            ],
+            "properties": {
+              "issuer": {
+                "type": "string",
+                "format": "uri"
+              },
+              "subject": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              }
+            }
+          }
+        }
+      },
+      "OrganizationPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "legal_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "timezone": {
+            "$ref": "#/components/schemas/Timezone"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          }
+        }
+      },
+      "Membership": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "user_id",
+          "display_name",
+          "roles",
+          "state",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "state": {
+            "$ref": "#/components/schemas/MembershipState"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "MembershipCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Membership"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "MembershipPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "suspended",
+              "revoked"
+            ]
+          }
+        }
+      },
+      "InvitationCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "roles"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp",
+            "description": "Como máximo 7 días después de crearla."
+          }
+        }
+      },
+      "Invitation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "membership_id",
+          "email_hint",
+          "roles",
+          "state",
+          "expires_at",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "membership_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "email_hint": {
+            "type": "string",
+            "description": "Correo enmascarado."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "state": {
+            "$ref": "#/components/schemas/InvitationState"
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "InvitationCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invitation"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "InvitationOutcome": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "invitation_id",
+          "state"
+        ],
+        "properties": {
+          "invitation_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "state": {
+            "$ref": "#/components/schemas/InvitationState"
+          }
+        }
+      },
+      "ServiceAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "name",
+          "client_id",
+          "auth_method",
+          "scopes",
+          "audiences",
+          "state",
+          "expires_at",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{3,63}$"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "auth_method": {
+            "type": "string",
+            "enum": [
+              "client_secret",
+              "private_key_jwt"
+            ]
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Scope"
+            }
+          },
+          "audiences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked",
+              "expired"
+            ]
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "ServiceAccountCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "auth_method",
+          "scopes",
+          "audiences",
+          "expires_at"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{3,63}$"
+          },
+          "auth_method": {
+            "type": "string",
+            "enum": [
+              "client_secret",
+              "private_key_jwt"
+            ]
+          },
+          "scopes": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/Scope"
+            }
+          },
+          "audiences": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,63}$"
+            }
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "public_key_jwk": {
+            "type": "object",
+            "description": "Clave pública si `auth_method` es `private_key_jwt`."
+          }
+        }
+      },
+      "ServiceAccountCreated": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "service_account"
+        ],
+        "properties": {
+          "service_account": {
+            "$ref": "#/components/schemas/ServiceAccount"
+          },
+          "client_secret": {
+            "type": "string",
+            "description": "Solo con `client_secret`; se muestra una vez y se guarda como hash."
+          }
+        }
+      },
+      "ServiceAccountCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceAccount"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "RotationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expires_at"
+        ],
+        "properties": {
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "overlap_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 604800
+          },
+          "public_key_jwk": {
+            "type": "object"
+          }
+        }
+      },
+      "Rotation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "credential_id",
+          "expires_at",
+          "previous_expires_at"
+        ],
+        "properties": {
+          "credential_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "client_secret": {
+            "type": "string"
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "previous_expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "Hostname": {
+        "type": "string",
+        "format": "hostname",
+        "maxLength": 253
+      },
+      "DomainCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hostname"
+        ],
+        "properties": {
+          "hostname": {
+            "$ref": "#/components/schemas/Hostname"
+          }
+        }
+      },
+      "Domain": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "site_id",
+          "hostname",
+          "primary",
+          "state",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "site_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "hostname": {
+            "$ref": "#/components/schemas/Hostname"
+          },
+          "primary": {
+            "type": "boolean"
+          },
+          "state": {
+            "$ref": "#/components/schemas/DomainState"
+          },
+          "verification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "method",
+              "record_name",
+              "record_value"
+            ],
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "dns_txt",
+                  "http"
+                ]
+              },
+              "record_name": {
+                "type": "string"
+              },
+              "record_value": {
+                "type": "string"
+              }
+            }
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "DomainCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Domain"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "AuditEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "occurred_at",
+          "actor",
+          "action",
+          "target",
+          "outcome",
+          "request_id"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "occurred_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/Actor"
+          },
+          "action": {
+            "type": "string"
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "id": {
+                "$ref": "#/components/schemas/Uuid"
+              }
+            }
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "success",
+              "denied"
+            ]
+          },
+          "request_id": {
+            "type": "string"
+          }
+        }
+      },
+      "AuditEventCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditEvent"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "LeadRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "email",
+          "organization_name",
+          "consent",
+          "challenge_token"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "organization_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "consent": {
+            "type": "boolean",
+            "const": true
+          },
+          "challenge_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "website": {
+            "type": "string",
+            "maxLength": 0,
+            "description": "Honeypot; debe llegar vacío."
+          }
+        }
+      },
+      "LeadReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "state": {
+            "type": "string",
+            "const": "received"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "HealthLive": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          }
+        }
+      },
+      "HealthReady": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "environment",
+          "checks",
+          "operations"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "not_ready"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "local",
+              "ci",
+              "staging",
+              "production"
+            ]
+          },
+          "checks": {
+            "type": "object",
+            "description": "Estado de cada dependencia.",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "failing",
+                "not_configured"
+              ]
+            }
+          },
+          "operations": {
+            "type": "object",
+            "description": "Estado de cada operación del contrato (MOCK-04).",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "example",
+                "memory",
+                "real"
+              ]
+            }
+          }
+        }
+      },
+      "Uuid": {
+        "type": "string",
+        "format": "uuid",
+        "description": "UUIDv7 generado por la aplicación."
+      },
+      "Slug": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+        "minLength": 2,
+        "maxLength": 63
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "org_owner",
+          "security_admin",
+          "site_editor",
+          "event_manager",
+          "application_reviewer",
+          "checkin_staff",
+          "checkin_supervisor",
+          "report_viewer"
+        ]
+      },
+      "Scope": {
+        "type": "string",
+        "pattern": "^[a-z_]+:[a-z_]+$",
+        "examples": [
+          "sites:write"
+        ]
+      },
+      "Timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Fecha UTC en RFC 3339."
+      },
+      "ProblemError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pointer",
+          "detail"
+        ],
+        "properties": {
+          "pointer": {
+            "type": "string",
+            "description": "JSON Pointer del campo con error."
+          },
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "request_id"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z_]+$",
+            "description": "Código estable (spec 9.7)."
+          },
+          "detail": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemError"
+            }
+          }
+        }
+      },
+      "NextCursor": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Cursor para la página siguiente, o `null` si no hay más."
+      },
+      "Locale": {
+        "type": "string",
+        "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+        "examples": [
+          "es-PE"
+        ]
+      },
+      "Revision": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "Reason": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        }
+      },
+      "Actor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "id"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "service",
+              "system"
+            ]
+          },
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      }
+    },
+    "responses": {
+      "HealthLive": {
+        "description": "El proceso está vivo.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthLive"
+            },
+            "examples": {
+              "ok": {
+                "summary": "Vivo",
+                "value": {
+                  "status": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "HealthReady": {
+        "description": "Estado de las dependencias y de cada operación.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthReady"
+            },
+            "examples": {
+              "ready": {
+                "summary": "Listo, con operaciones en mock",
+                "value": {
+                  "status": "ready",
+                  "environment": "local",
+                  "checks": {
+                    "contract": "ok"
+                  },
+                  "operations": {
+                    "getMe": "example"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HealthNotReady": {
+        "description": "Alguna dependencia falla.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthReady"
+            },
+            "examples": {
+              "not_ready": {
+                "summary": "Una dependencia falla",
+                "value": {
+                  "status": "not_ready",
+                  "environment": "local",
+                  "checks": {
+                    "database": "failing"
+                  },
+                  "operations": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Sin sesión o con un token inválido.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "unauthorized": {
+                "$ref": "#/components/examples/problem_unauthorized"
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Parámetros o headers inválidos.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "bad_request": {
+                "summary": "Header o parámetro inválido",
+                "value": {
+                  "type": "https://errors.example.pe/bad-request",
+                  "title": "Bad request",
+                  "status": 400,
+                  "code": "bad_request",
+                  "detail": "El parámetro `limit` debe estar entre 1 y 100.",
+                  "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b",
+                  "errors": [
+                    {
+                      "pointer": "/query/limit",
+                      "detail": "debe ser <= 100"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Falta un scope, un rol o MFA reciente.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "forbidden": {
+                "$ref": "#/components/examples/problem_forbidden"
+              },
+              "recent_auth_required": {
+                "$ref": "#/components/examples/problem_mfa_required"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "No existe o no es visible para quien llama.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "not_found": {
+                "$ref": "#/components/examples/problem_not_found"
+              }
+            }
+          }
+        }
+      },
+      "ValidationFailed": {
+        "description": "El cuerpo no cumple el contrato.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "validation_failed": {
+                "$ref": "#/components/examples/problem_validation_failed"
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflicto de estado, de unicidad o de idempotencia.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "invalid_state_transition": {
+                "$ref": "#/components/examples/problem_conflict"
+              }
+            }
+          }
+        }
+      },
+      "PreconditionFailed": {
+        "description": "El `If-Match` no coincide con la revisión actual.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "stale_revision": {
+                "$ref": "#/components/examples/problem_stale_revision"
+              }
+            }
+          }
+        }
+      },
+      "PreconditionRequired": {
+        "description": "Falta el header `If-Match`.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "precondition_required": {
+                "summary": "Falta If-Match",
+                "value": {
+                  "type": "https://errors.example.pe/precondition-required",
+                  "title": "Precondition required",
+                  "status": 428,
+                  "code": "precondition_required",
+                  "detail": "Envía el ETag de la revisión en `If-Match`.",
+                  "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Se superó el límite de solicitudes.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "rate_limited": {
+                "$ref": "#/components/examples/problem_rate_limited"
+              }
+            }
+          }
+        }
+      }
+    },
+    "headers": {
+      "RequestId": {
+        "description": "Identificador del request (el recibido si era válido, o uno nuevo).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "NoStore": {
+        "description": "Las respuestas privadas no se cachean.",
+        "schema": {
+          "type": "string",
+          "const": "no-store"
+        }
+      },
+      "ETag": {
+        "description": "Revisión del recurso. Se envía en `If-Match` para modificarlo.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Location": {
+        "description": "Destino de la redirección.",
+        "schema": {
+          "type": "string",
+          "format": "uri-reference"
+        }
+      },
+      "RetryAfter": {
+        "description": "Segundos que hay que esperar antes de reintentar.",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "examples": {
+      "me": {
+        "summary": "Editor con su organización activa",
+        "value": {
+          "user_id": "01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a",
+          "display_name": "Editora de prueba",
+          "active_organization": {
+            "id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+            "slug": "incubaunas-demo",
+            "display_name": "IncubaUNAS Demo"
+          },
+          "membership_id": "01933f41-2b3c-7d4e-9f50-6b7c8d9e0f1a",
+          "roles": [
+            "site_editor"
+          ],
+          "capabilities": [
+            "sites:write",
+            "sites:publish"
+          ],
+          "amr": [
+            "pwd",
+            "mfa"
+          ],
+          "auth_time": "2026-11-08T14:50:00Z"
+        }
+      },
+      "problem_unauthorized": {
+        "summary": "Sin sesión o token inválido",
+        "value": {
+          "type": "https://errors.example.pe/unauthorized",
+          "title": "Unauthorized",
+          "status": 401,
+          "code": "unauthorized",
+          "detail": "Se necesita una sesión válida.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "capabilities": {
+        "summary": "Permisos efectivos del editor",
+        "value": {
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "roles": [
+            "site_editor"
+          ],
+          "scopes": [
+            "sites:write",
+            "sites:publish"
+          ],
+          "restrictions": []
+        }
+      },
+      "my_sessions": {
+        "summary": "Sesiones del usuario, enmascaradas",
+        "value": {
+          "items": [
+            {
+              "id": "01933f5e-9d3b-7a01-8c22-4b5c6d7e8f90",
+              "user_id": "01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a",
+              "state": "active",
+              "current": true,
+              "ip_hint": "203.0.113.x",
+              "user_agent_family": "Firefox en Windows",
+              "created_at": "2026-11-08T14:50:00Z",
+              "last_seen_at": "2026-11-08T15:05:00Z",
+              "expires_at": "2026-12-08T14:50:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "problem_forbidden": {
+        "summary": "Falta un scope o un rol",
+        "value": {
+          "type": "https://errors.example.pe/forbidden",
+          "title": "Forbidden",
+          "status": 403,
+          "code": "forbidden",
+          "detail": "No tienes permiso para esta operación.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "problem_mfa_required": {
+        "summary": "Falta MFA reciente",
+        "value": {
+          "type": "https://errors.example.pe/recent-auth-required",
+          "title": "Recent authentication required",
+          "status": 403,
+          "code": "recent_auth_required",
+          "detail": "Vuelve a autenticarte con MFA para continuar.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "problem_not_found": {
+        "summary": "No existe o no es visible",
+        "value": {
+          "type": "https://errors.example.pe/not-found",
+          "title": "Not found",
+          "status": 404,
+          "code": "not_found",
+          "detail": "El recurso no existe.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "my_organizations": {
+        "summary": "Organizaciones del usuario",
+        "value": {
+          "items": [
+            {
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "slug": "incubaunas-demo",
+              "display_name": "IncubaUNAS Demo",
+              "membership_id": "01933f41-2b3c-7d4e-9f50-6b7c8d9e0f1a",
+              "roles": [
+                "site_editor"
+              ],
+              "state": "active"
+            },
+            {
+              "organization_id": "01933f40-2b3c-7d4e-9f50-6a7b8c9d0e1f",
+              "slug": "congreso-agro-demo",
+              "display_name": "Congreso Agro Demo",
+              "membership_id": "01933f41-4d5e-7f60-9b72-8d9e0f1a2b3c",
+              "roles": [
+                "report_viewer"
+              ],
+              "state": "active"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "session_context_request": {
+        "summary": "Cambiar a otra organización",
+        "value": {
+          "organization_id": "01933f40-2b3c-7d4e-9f50-6a7b8c9d0e1f"
+        }
+      },
+      "session_context": {
+        "summary": "Contexto nuevo de la sesión",
+        "value": {
+          "organization_id": "01933f40-2b3c-7d4e-9f50-6a7b8c9d0e1f",
+          "membership_id": "01933f41-4d5e-7f60-9b72-8d9e0f1a2b3c",
+          "roles": [
+            "report_viewer"
+          ],
+          "scopes": [
+            "reports:read"
+          ]
+        }
+      },
+      "problem_validation_failed": {
+        "summary": "Cuerpo inválido",
+        "value": {
+          "type": "https://errors.example.pe/validation-failed",
+          "title": "Validation failed",
+          "status": 422,
+          "code": "validation_failed",
+          "detail": "El cuerpo no cumple el contrato.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b",
+          "errors": [
+            {
+              "pointer": "/slug",
+              "detail": "debe cumplir el patrón '^[a-z0-9]+(-[a-z0-9]+)*$'"
+            }
+          ]
+        }
+      },
+      "roles": {
+        "summary": "Catálogo de roles",
+        "value": {
+          "items": [
+            {
+              "role": "org_owner",
+              "description": "Configuración institucional, miembros, dominios y toda capacidad operativa",
+              "scopes": [
+                "organizations:admin",
+                "sites:write",
+                "sites:publish",
+                "events:write",
+                "events:publish"
+              ]
+            },
+            {
+              "role": "site_editor",
+              "description": "Sitios, CMS, medios y publicación de páginas",
+              "scopes": [
+                "sites:write",
+                "sites:publish"
+              ]
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "organization_create": {
+        "summary": "Alta de una organización con su primer owner",
+        "value": {
+          "slug": "incubaunas-demo",
+          "legal_name": "IncubaUNAS Demo S.A.C.",
+          "display_name": "IncubaUNAS Demo",
+          "timezone": "America/Lima",
+          "locale": "es-PE",
+          "owner_identity": {
+            "issuer": "https://idp.example.com/realms/incubaunas",
+            "subject": "8f14e45f-ea2c-4b6e-9b1a-1c2d3e4f5a6b"
+          }
+        }
+      },
+      "organization": {
+        "summary": "Organización activa",
+        "value": {
+          "id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "slug": "incubaunas-demo",
+          "legal_name": "IncubaUNAS Demo S.A.C.",
+          "display_name": "IncubaUNAS Demo",
+          "timezone": "America/Lima",
+          "locale": "es-PE",
+          "state": "active",
+          "revision": 3,
+          "created_at": "2026-11-01T13:00:00Z",
+          "updated_at": "2026-11-07T16:20:00Z"
+        }
+      },
+      "problem_conflict": {
+        "summary": "Transición no permitida",
+        "value": {
+          "type": "https://errors.example.pe/invalid-state-transition",
+          "title": "Invalid state transition",
+          "status": 409,
+          "code": "invalid_state_transition",
+          "detail": "La transición no está permitida desde el estado actual.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "organization_patch": {
+        "summary": "Cambiar el nombre visible",
+        "value": {
+          "display_name": "IncubaUNAS Demo (Tingo María)"
+        }
+      },
+      "problem_stale_revision": {
+        "summary": "If-Match no coincide",
+        "value": {
+          "type": "https://errors.example.pe/stale-revision",
+          "title": "Stale revision",
+          "status": 412,
+          "code": "stale_revision",
+          "detail": "El recurso cambió desde que lo abriste. Recarga y vuelve a aplicar tus cambios.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b",
+          "errors": []
+        }
+      },
+      "reason": {
+        "summary": "Motivo",
+        "value": {
+          "reason": "Solicitud de la institución"
+        }
+      },
+      "organization_suspended": {
+        "summary": "Organización suspendida",
+        "value": {
+          "id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "slug": "incubaunas-demo",
+          "legal_name": "IncubaUNAS Demo S.A.C.",
+          "display_name": "IncubaUNAS Demo",
+          "timezone": "America/Lima",
+          "locale": "es-PE",
+          "state": "suspended",
+          "revision": 4,
+          "created_at": "2026-11-01T13:00:00Z",
+          "updated_at": "2026-11-08T15:10:00Z"
+        }
+      },
+      "memberships": {
+        "summary": "Miembros de la organización",
+        "value": {
+          "items": [
+            {
+              "id": "01933f41-2b3c-7d4e-9f50-6b7c8d9e0f1a",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "user_id": "01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a",
+              "display_name": "Editora de prueba",
+              "roles": [
+                "site_editor"
+              ],
+              "state": "active",
+              "revision": 2,
+              "created_at": "2026-11-02T10:00:00Z",
+              "updated_at": "2026-11-03T09:30:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "membership_patch": {
+        "summary": "Cambiar roles",
+        "value": {
+          "roles": [
+            "site_editor",
+            "report_viewer"
+          ]
+        }
+      },
+      "membership": {
+        "summary": "Membresía activa",
+        "value": {
+          "id": "01933f41-2b3c-7d4e-9f50-6b7c8d9e0f1a",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "user_id": "01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a",
+          "display_name": "Editora de prueba",
+          "roles": [
+            "site_editor"
+          ],
+          "state": "active",
+          "revision": 2,
+          "created_at": "2026-11-02T10:00:00Z",
+          "updated_at": "2026-11-03T09:30:00Z"
+        }
+      },
+      "last_owner": {
+        "summary": "Quitar al último owner",
+        "value": {
+          "type": "https://errors.example.pe/last-owner",
+          "title": "Last owner",
+          "status": 409,
+          "code": "last_owner",
+          "detail": "La organización debe conservar al menos un owner activo.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "invitations": {
+        "summary": "Invitaciones de la organización",
+        "value": {
+          "items": [
+            {
+              "id": "01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "membership_id": "01933f41-3c4d-7e5f-8a61-7c8d9e0f1a2b",
+              "email_hint": "n***@example.com",
+              "roles": [
+                "site_editor"
+              ],
+              "state": "pending",
+              "expires_at": "2026-11-15T15:00:00Z",
+              "revision": 1,
+              "created_at": "2026-11-08T15:00:00Z",
+              "updated_at": "2026-11-08T15:00:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "invitation_create": {
+        "summary": "Invitar a un editor",
+        "value": {
+          "email": "nueva.editora@example.com",
+          "roles": [
+            "site_editor"
+          ],
+          "expires_at": "2026-11-15T15:00:00Z"
+        }
+      },
+      "invitation": {
+        "summary": "Invitación pendiente (nunca incluye el token)",
+        "value": {
+          "id": "01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "membership_id": "01933f41-3c4d-7e5f-8a61-7c8d9e0f1a2b",
+          "email_hint": "n***@example.com",
+          "roles": [
+            "site_editor"
+          ],
+          "state": "pending",
+          "expires_at": "2026-11-15T15:00:00Z",
+          "revision": 1,
+          "created_at": "2026-11-08T15:00:00Z",
+          "updated_at": "2026-11-08T15:00:00Z"
+        }
+      },
+      "invitation_revoked": {
+        "summary": "Invitación revocada",
+        "value": {
+          "id": "01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "membership_id": "01933f41-3c4d-7e5f-8a61-7c8d9e0f1a2b",
+          "email_hint": "n***@example.com",
+          "roles": [
+            "site_editor"
+          ],
+          "state": "revoked",
+          "expires_at": "2026-11-15T15:00:00Z",
+          "revision": 2,
+          "created_at": "2026-11-08T15:00:00Z",
+          "updated_at": "2026-11-08T15:20:00Z"
+        }
+      },
+      "invitation_accepted": {
+        "summary": "Membresía activada al aceptar",
+        "value": {
+          "id": "01933f41-3c4d-7e5f-8a61-7c8d9e0f1a2b",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "user_id": "01933f42-4d5e-7f60-8b71-8c9d0e1f2a3b",
+          "display_name": "Nueva editora",
+          "roles": [
+            "site_editor"
+          ],
+          "state": "active",
+          "revision": 2,
+          "created_at": "2026-11-02T10:00:00Z",
+          "updated_at": "2026-11-03T09:30:00Z"
+        }
+      },
+      "invitation_expired": {
+        "summary": "Invitación vencida",
+        "value": {
+          "type": "https://errors.example.pe/invitation-expired",
+          "title": "Invitation expired",
+          "status": 409,
+          "code": "invitation_expired",
+          "detail": "La invitación venció. Pide una nueva.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "invitation_declined": {
+        "summary": "Invitación rechazada",
+        "value": {
+          "invitation_id": "01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c",
+          "state": "declined"
+        }
+      },
+      "organization_sessions": {
+        "summary": "Sesiones de los miembros",
+        "value": {
+          "items": [
+            {
+              "id": "01933f5e-9d3b-7a01-8c22-4b5c6d7e8f90",
+              "user_id": "01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a",
+              "state": "active",
+              "current": false,
+              "ip_hint": "203.0.113.x",
+              "user_agent_family": "Firefox en Windows",
+              "created_at": "2026-11-08T14:50:00Z",
+              "last_seen_at": "2026-11-08T15:05:00Z",
+              "expires_at": "2026-12-08T14:50:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "service_accounts": {
+        "summary": "Service accounts de la organización",
+        "value": {
+          "items": [
+            {
+              "id": "01933f46-5e6f-7a71-8c83-9e0f1a2b3c4d",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "name": "event-configuration-sync",
+              "client_id": "sa_01933f465e6f7a718c839e0f1a2b3c4d",
+              "auth_method": "client_secret",
+              "scopes": [
+                "events:read"
+              ],
+              "audiences": [
+                "platform-api"
+              ],
+              "state": "active",
+              "expires_at": "2027-11-08T00:00:00Z",
+              "revision": 1,
+              "created_at": "2026-11-08T15:30:00Z",
+              "updated_at": "2026-11-08T15:30:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "service_account_create": {
+        "summary": "Service account del Equipo 2",
+        "value": {
+          "name": "event-configuration-sync",
+          "auth_method": "client_secret",
+          "scopes": [
+            "events:read"
+          ],
+          "audiences": [
+            "platform-api"
+          ],
+          "expires_at": "2027-11-08T00:00:00Z"
+        }
+      },
+      "service_account_created": {
+        "summary": "Secreto mostrado una sola vez (valor ficticio)",
+        "value": {
+          "service_account": {
+            "id": "01933f46-5e6f-7a71-8c83-9e0f1a2b3c4d",
+            "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+            "name": "event-configuration-sync",
+            "client_id": "sa_01933f465e6f7a718c839e0f1a2b3c4d",
+            "auth_method": "client_secret",
+            "scopes": [
+              "events:read"
+            ],
+            "audiences": [
+              "platform-api"
+            ],
+            "state": "active",
+            "expires_at": "2027-11-08T00:00:00Z",
+            "revision": 1,
+            "created_at": "2026-11-08T15:30:00Z",
+            "updated_at": "2026-11-08T15:30:00Z"
+          },
+          "client_secret": "not-a-real-secret-example-0000000000000000"
+        }
+      },
+      "rotation_request": {
+        "summary": "Rotar con solapamiento de un día",
+        "value": {
+          "expires_at": "2028-11-08T00:00:00Z",
+          "overlap_seconds": 86400
+        }
+      },
+      "rotation": {
+        "summary": "Credencial nueva (valor ficticio)",
+        "value": {
+          "credential_id": "01933f47-6f70-7b82-9d94-0f1a2b3c4d5e",
+          "client_secret": "not-a-real-secret-rotated-000000000000000",
+          "expires_at": "2028-11-08T00:00:00Z",
+          "previous_expires_at": "2026-11-09T15:40:00Z"
+        }
+      },
+      "service_account_revoked": {
+        "summary": "Service account revocada",
+        "value": {
+          "id": "01933f46-5e6f-7a71-8c83-9e0f1a2b3c4d",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "name": "event-configuration-sync",
+          "client_id": "sa_01933f465e6f7a718c839e0f1a2b3c4d",
+          "auth_method": "client_secret",
+          "scopes": [
+            "events:read"
+          ],
+          "audiences": [
+            "platform-api"
+          ],
+          "state": "revoked",
+          "expires_at": "2027-11-08T00:00:00Z",
+          "revision": 2,
+          "created_at": "2026-11-08T15:30:00Z",
+          "updated_at": "2026-11-08T15:50:00Z"
+        }
+      },
+      "domains": {
+        "summary": "Dominios del sitio",
+        "value": {
+          "items": [
+            {
+              "id": "01933f48-7a81-7c93-8ea5-1a2b3c4d5e6f",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+              "hostname": "eventos.example.com",
+              "primary": false,
+              "state": "pending",
+              "verification": {
+                "method": "dns_txt",
+                "record_name": "_incuba-challenge.eventos.example.com",
+                "record_value": "incuba-verify=example-challenge-value"
+              },
+              "revision": 1,
+              "created_at": "2026-11-08T16:00:00Z",
+              "updated_at": "2026-11-08T16:00:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "domain_create": {
+        "summary": "Asociar un dominio propio",
+        "value": {
+          "hostname": "eventos.example.com"
+        }
+      },
+      "domain": {
+        "summary": "Dominio pendiente de verificación",
+        "value": {
+          "id": "01933f48-7a81-7c93-8ea5-1a2b3c4d5e6f",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "hostname": "eventos.example.com",
+          "primary": false,
+          "state": "pending",
+          "verification": {
+            "method": "dns_txt",
+            "record_name": "_incuba-challenge.eventos.example.com",
+            "record_value": "incuba-verify=example-challenge-value"
+          },
+          "revision": 1,
+          "created_at": "2026-11-08T16:00:00Z",
+          "updated_at": "2026-11-08T16:00:00Z"
+        }
+      },
+      "hostname_taken": {
+        "summary": "El hostname ya está en uso",
+        "value": {
+          "type": "https://errors.example.pe/hostname-taken",
+          "title": "Hostname taken",
+          "status": 409,
+          "code": "hostname_taken",
+          "detail": "Ese dominio ya está asociado a otro sitio.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "domain_active": {
+        "summary": "Dominio verificado y activo",
+        "value": {
+          "id": "01933f48-7a81-7c93-8ea5-1a2b3c4d5e6f",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "hostname": "eventos.example.com",
+          "primary": true,
+          "state": "active",
+          "verification": {
+            "method": "dns_txt",
+            "record_name": "_incuba-challenge.eventos.example.com",
+            "record_value": "incuba-verify=example-challenge-value"
+          },
+          "revision": 3,
+          "created_at": "2026-11-08T16:00:00Z",
+          "updated_at": "2026-11-08T16:10:00Z"
+        }
+      },
+      "audit_events": {
+        "summary": "Eventos de auditoría",
+        "value": {
+          "items": [
+            {
+              "id": "01933f49-8b92-7da4-9fb6-2b3c4d5e6f70",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "occurred_at": "2026-11-08T15:20:00Z",
+              "actor": {
+                "type": "user",
+                "id": "01933f42-3c4d-7e5f-8a60-7b8c9d0e1f2a"
+              },
+              "action": "invitation.revoked",
+              "target": {
+                "type": "invitation",
+                "id": "01933f43-4d5e-7f60-9b72-8d9e0f1a2b3c"
+              },
+              "outcome": "success",
+              "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "lead_request": {
+        "summary": "Solicitud de demo (datos ficticios)",
+        "value": {
+          "name": "Persona de prueba",
+          "email": "prospecto@example.com",
+          "organization_name": "Universidad de prueba",
+          "message": "Queremos ver la demo de convocatorias.",
+          "consent": true,
+          "challenge_token": "example-challenge-token",
+          "website": ""
+        }
+      },
+      "lead_receipt": {
+        "summary": "Solicitud recibida",
+        "value": {
+          "id": "01933f4a-9ca3-7eb5-80c7-3c4d5e6f7081",
+          "state": "received",
+          "created_at": "2026-11-08T16:30:00Z"
+        }
+      },
+      "problem_rate_limited": {
+        "summary": "Límite superado",
+        "value": {
+          "type": "https://errors.example.pe/rate-limited",
+          "title": "Too many requests",
+          "status": 429,
+          "code": "rate_limited",
+          "detail": "Demasiadas solicitudes. Intenta más tarde.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      }
+    }
+  }
+}

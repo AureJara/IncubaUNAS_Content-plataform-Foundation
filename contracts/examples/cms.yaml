@@ -1,0 +1,328 @@
+# Ejemplos de la CMS API (spec 3.8, MOCK-01). Datos ficticios: el repositorio es público.
+# Cada entrada es un Example Object de OpenAPI que referencia cms.yaml.
+
+theme:
+  summary: Tema vigente
+  value: &theme
+    revision: 2
+    tokens: &theme_tokens
+      color_primary: '#1d4ed8'
+      color_on_primary: '#ffffff'
+      color_background: '#ffffff'
+      color_text: '#111827'
+      font_family: humanist
+      radius: small
+    updated_at: '2026-11-05T12:00:00Z'
+
+theme_input:
+  summary: Tokens nuevos
+  value:
+    tokens: *theme_tokens
+
+navigation:
+  summary: Navegación vigente
+  value: &navigation
+    revision: 1
+    items:
+      - label: Inicio
+        href: /
+      - label: Guía del congreso
+        href: /guia
+      - label: Universidad
+        href: https://www.example.com
+    updated_at: '2026-11-05T12:00:00Z'
+
+navigation_input:
+  summary: Navegación nueva
+  value:
+    items:
+      - label: Inicio
+        href: /
+      - label: Guía del congreso
+        href: /guia
+
+site:
+  summary: Sitio publicado
+  value: &site
+    id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    slug: congreso-demo
+    name: Congreso Demo
+    kind: demo
+    locale: es-PE
+    state: live
+    theme: *theme
+    navigation: *navigation
+    revision: 4
+    created_at: '2026-11-02T10:00:00Z'
+    updated_at: '2026-11-05T12:00:00Z'
+
+site_draft:
+  summary: Sitio recién creado
+  value:
+    <<: *site
+    state: draft
+    theme:
+      <<: *theme
+      revision: 1
+    navigation:
+      revision: 1
+      items: []
+      updated_at: '2026-11-02T10:00:00Z'
+    revision: 1
+    updated_at: '2026-11-02T10:00:00Z'
+
+site_create:
+  summary: Crear el sitio del congreso
+  value:
+    slug: congreso-demo
+    name: Congreso Demo
+    kind: demo
+    locale: es-PE
+
+site_patch:
+  summary: Cambiar el nombre
+  value:
+    name: Congreso Demo 2026
+
+sites:
+  summary: Sitios de la organización
+  value:
+    items:
+      - id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+        slug: congreso-demo
+        name: Congreso Demo
+        kind: demo
+        locale: es-PE
+        state: live
+        updated_at: '2026-11-05T12:00:00Z'
+    next_cursor: null
+
+slug_taken:
+  summary: El slug ya existe
+  value:
+    type: https://errors.example.pe/slug-taken
+    title: Slug taken
+    status: 409
+    code: slug_taken
+    detail: Ya hay un sitio con ese slug en la organización.
+    request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+
+page:
+  summary: Página con su borrador
+  value: &page
+    id: 01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    site_id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    path: /guia
+    locale: es-PE
+    title: Guía del congreso
+    seo: &seo
+      title: Guía del Congreso Demo
+      description: Fechas, sedes y cómo inscribirte.
+      canonical: https://congreso-demo.example.com/guia
+    blocks: &blocks
+      - id: 01933f52-5e6f-7a71-8b8c-9d0e1f2a3b4c
+        type: hero
+        version: 1
+        data:
+          heading: Congreso Demo 2026
+          subheading: Tres días de ponencias y talleres en Tingo María.
+          image_media_id: 01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b
+          image_alt: Auditorio con asistentes
+          cta:
+            label: Ver la agenda
+            href: /guia#agenda
+      - id: 01933f52-6f70-7b82-8c9d-0e1f2a3b4c5d
+        type: rich_text
+        version: 1
+        data:
+          nodes:
+            - kind: heading
+              level: 2
+              spans:
+                - text: Cómo llegar
+            - kind: paragraph
+              spans:
+                - text: 'Las sedes están a 10 minutos del centro. '
+                - text: Revisa el mapa
+                  marks: [bold]
+                  href: https://www.example.com/mapa
+      - id: 01933f52-7a81-7c93-8dae-1f2a3b4c5d6e
+        type: featured_event
+        version: 1
+        data:
+          event_id: 01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c
+          publication_id: 01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d
+    state: published
+    current_publication_id: 01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f
+    revision: 3
+    created_at: '2026-11-03T09:00:00Z'
+    updated_at: '2026-11-07T14:55:00Z'
+
+page_draft:
+  summary: Página recién creada
+  value:
+    <<: *page
+    state: draft
+    current_publication_id: null
+    revision: 1
+    updated_at: '2026-11-03T09:00:00Z'
+
+page_create:
+  summary: Crear la guía
+  value:
+    path: /guia
+    locale: es-PE
+    title: Guía del congreso
+    seo: *seo
+    blocks: *blocks
+
+page_patch:
+  summary: Cambiar el título
+  value:
+    title: Guía del Congreso Demo 2026
+
+pages:
+  summary: Páginas del sitio
+  value:
+    items:
+      - id: 01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b
+        path: /guia
+        locale: es-PE
+        title: Guía del congreso
+        state: published
+        current_publication_id: 01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f
+        revision: 3
+        updated_at: '2026-11-07T14:55:00Z'
+    next_cursor: null
+
+preview_token_create:
+  summary: Vista previa de 15 minutos
+  value:
+    ttl_seconds: 900
+
+preview_token:
+  summary: URL de vista previa (token ficticio)
+  value:
+    url: http://localhost:5173/preview/example-preview-token-000000000000
+    expires_at: '2026-11-08T15:15:00Z'
+
+publication_create:
+  summary: Publicar la revisión 3
+  value:
+    expected_revision: 3
+
+publication:
+  summary: Publicación vigente
+  value: &publication
+    id: 01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    site_id: 01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c
+    page_id: 01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b
+    version: 2
+    source_revision: 3
+    path: /guia
+    locale: es-PE
+    content_hash: sha256:9f2c4e1a7b3d5f6e8a0c2b4d6f8e0a1c3b5d7f9e1a3c5b7d9f1e3a5c7b9d1f3e
+    state: published
+    restored_from: null
+    published_at: '2026-11-07T15:00:00Z'
+    revision: 1
+    created_at: '2026-11-07T15:00:00Z'
+    updated_at: '2026-11-07T15:00:00Z'
+
+publication_restored:
+  summary: Publicación nueva restaurada de la versión 1
+  value:
+    <<: *publication
+    id: 01933f61-2c3d-7e4f-8a51-6c7d8e9f0a1b
+    version: 3
+    content_hash: sha256:4b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a5c7e9b1d
+    restored_from: 01933f5f-1b2c-7d3e-8f40-5b6c7d8e9f0a
+    published_at: '2026-11-08T16:00:00Z'
+    created_at: '2026-11-08T16:00:00Z'
+    updated_at: '2026-11-08T16:00:00Z'
+
+restoration_create:
+  summary: Restaurar la versión 1
+  value:
+    source_publication_id: 01933f5f-1b2c-7d3e-8f40-5b6c7d8e9f0a
+
+publications:
+  summary: Historial de la página
+  value:
+    items:
+      - *publication
+      - <<: *publication
+        id: 01933f5f-1b2c-7d3e-8f40-5b6c7d8e9f0a
+        version: 1
+        source_revision: 1
+        content_hash: sha256:4b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a5c7e9b1d
+        state: superseded
+        published_at: '2026-11-04T10:00:00Z'
+        revision: 2
+        created_at: '2026-11-04T10:00:00Z'
+        updated_at: '2026-11-07T15:00:00Z'
+    next_cursor: null
+
+media_upload_create:
+  summary: Subir una foto del auditorio
+  value:
+    name: auditorio.webp
+    mime: image/webp
+    size: 245760
+    sha256: 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b
+    alt: Auditorio con asistentes
+
+media:
+  summary: Medio listo
+  value: &media
+    id: 01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b
+    organization_id: 01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f
+    name: auditorio.webp
+    mime: image/webp
+    size: 245760
+    sha256: 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b
+    alt: Auditorio con asistentes
+    state: ready
+    url: http://localhost:9000/incuba-media/01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b.webp
+    revision: 3
+    created_at: '2026-11-03T08:00:00Z'
+    updated_at: '2026-11-03T08:01:00Z'
+
+media_upload:
+  summary: Medio pendiente y URL de subida (firma ficticia)
+  value:
+    media:
+      <<: *media
+      state: pending
+      url: null
+      revision: 1
+      updated_at: '2026-11-03T08:00:00Z'
+    upload:
+      method: PUT
+      url: http://localhost:9000/incuba-media/uploads/01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b?signature=example
+      expires_at: '2026-11-03T08:05:00Z'
+
+media_completion:
+  summary: Confirmar la subida
+  value:
+    size: 245760
+    sha256: 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b
+
+media_scanning:
+  summary: Medio en antivirus
+  value:
+    <<: *media
+    state: scanning
+    url: null
+    revision: 2
+    updated_at: '2026-11-03T08:00:30Z'
+
+media_list:
+  summary: Biblioteca de medios
+  value:
+    items:
+      - *media
+    next_cursor: null

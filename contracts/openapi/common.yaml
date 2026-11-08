@@ -1,0 +1,510 @@
+# Componentes compartidos por los cuatro contratos (spec 9.1). No es una API: solo se referencia.
+openapi: 3.1.0
+info:
+  title: Componentes comunes del Equipo 1
+  version: 1.0.0
+  description: Esquemas, parámetros, headers y respuestas de error compartidos por auth, platform, cms y public.
+  license:
+    name: Propietario (IncubaUNAS)
+    identifier: LicenseRef-IncubaUNAS
+paths: {}
+components:
+  securitySchemes:
+    internalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        Token interno que emite el gateway a partir de la sesión del navegador (cookie + CSRF). Audience exacta del
+        servicio, TTL de 5 minutos (spec 3.6 flujo B). El navegador nunca lo ve.
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: __Host-sid
+      description: Cookie de sesión opaca del BFF.
+    csrfToken:
+      type: apiKey
+      in: header
+      name: X-CSRF-Token
+      description: Token CSRF obligatorio en métodos que cambian estado.
+  parameters:
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      description: Se acepta si es válido; si no, se genera. Siempre se devuelve.
+      schema:
+        type: string
+        pattern: '^[A-Za-z0-9-]{8,128}$'
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Obligatorio en los POST de comando; se retiene al menos 24 h (spec 9.1).
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+        pattern: '^[A-Za-z0-9_-]+$'
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag de la revisión que se modifica. Si no coincide → 412; si falta → 428.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: Cursor opaco devuelto en `next_cursor`.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 512
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Uuid'
+  headers:
+    RequestId:
+      description: Identificador del request (el recibido si era válido, o uno nuevo).
+      schema:
+        type: string
+    ETag:
+      description: Revisión del recurso. Se envía en `If-Match` para modificarlo.
+      schema:
+        type: string
+    NoStore:
+      description: Las respuestas privadas no se cachean.
+      schema:
+        type: string
+        const: no-store
+    PublicCacheControl:
+      description: Caché pública por defecto (spec 9.5).
+      schema:
+        type: string
+      example: public, max-age=60, stale-while-revalidate=300
+    SurrogateKey:
+      description: Claves para purgar el CDN por sitio, página, publicación o evento.
+      schema:
+        type: string
+    RetryAfter:
+      description: Segundos que hay que esperar antes de reintentar.
+      schema:
+        type: integer
+    Location:
+      description: Destino de la redirección.
+      schema:
+        type: string
+        format: uri-reference
+  schemas:
+    Uuid:
+      type: string
+      format: uuid
+      description: UUIDv7 generado por la aplicación.
+    Timestamp:
+      type: string
+      format: date-time
+      description: Fecha UTC en RFC 3339.
+    Locale:
+      type: string
+      pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+      examples: [es-PE]
+    Slug:
+      type: string
+      pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
+      minLength: 2
+      maxLength: 63
+    NextCursor:
+      type: [string, 'null']
+      description: Cursor para la página siguiente, o `null` si no hay más.
+    Revision:
+      type: integer
+      minimum: 1
+    Role:
+      type: string
+      enum:
+        - org_owner
+        - security_admin
+        - site_editor
+        - event_manager
+        - application_reviewer
+        - checkin_staff
+        - checkin_supervisor
+        - report_viewer
+    Scope:
+      type: string
+      pattern: '^[a-z_]+:[a-z_]+$'
+      examples: [sites:write]
+    Reason:
+      type: object
+      additionalProperties: false
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+    Actor:
+      type: object
+      additionalProperties: false
+      required: [type, id]
+      properties:
+        type:
+          type: string
+          enum: [user, service, system]
+        id:
+          $ref: '#/components/schemas/Uuid'
+    ProblemError:
+      type: object
+      additionalProperties: false
+      required: [pointer, detail]
+      properties:
+        pointer:
+          type: string
+          description: JSON Pointer del campo con error.
+        code:
+          type: string
+        detail:
+          type: string
+    Problem:
+      type: object
+      additionalProperties: false
+      required: [type, title, status, code, request_id]
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        code:
+          type: string
+          pattern: '^[a-z_]+$'
+          description: Código estable (spec 9.7).
+        detail:
+          type: string
+        request_id:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemError'
+    HealthLive:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          const: ok
+    HealthReady:
+      type: object
+      additionalProperties: false
+      required: [status, environment, checks, operations]
+      properties:
+        status:
+          type: string
+          enum: [ready, not_ready]
+        environment:
+          type: string
+          enum: [local, ci, staging, production]
+        checks:
+          type: object
+          description: Estado de cada dependencia.
+          additionalProperties:
+            type: string
+            enum: [ok, failing, not_configured]
+        operations:
+          type: object
+          description: Estado de cada operación del contrato (MOCK-04).
+          additionalProperties:
+            type: string
+            enum: [example, memory, real]
+  examples:
+    problem_validation_failed:
+      summary: Cuerpo inválido
+      value:
+        type: https://errors.example.pe/validation-failed
+        title: Validation failed
+        status: 422
+        code: validation_failed
+        detail: El cuerpo no cumple el contrato.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+        errors:
+          - pointer: /slug
+            detail: debe cumplir el patrón '^[a-z0-9]+(-[a-z0-9]+)*$'
+    problem_unauthorized:
+      summary: Sin sesión o token inválido
+      value:
+        type: https://errors.example.pe/unauthorized
+        title: Unauthorized
+        status: 401
+        code: unauthorized
+        detail: Se necesita una sesión válida.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+    problem_forbidden:
+      summary: Falta un scope o un rol
+      value:
+        type: https://errors.example.pe/forbidden
+        title: Forbidden
+        status: 403
+        code: forbidden
+        detail: No tienes permiso para esta operación.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+    problem_mfa_required:
+      summary: Falta MFA reciente
+      value:
+        type: https://errors.example.pe/recent-auth-required
+        title: Recent authentication required
+        status: 403
+        code: recent_auth_required
+        detail: Vuelve a autenticarte con MFA para continuar.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+    problem_not_found:
+      summary: No existe o no es visible
+      value:
+        type: https://errors.example.pe/not-found
+        title: Not found
+        status: 404
+        code: not_found
+        detail: El recurso no existe.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+    problem_conflict:
+      summary: Transición no permitida
+      value:
+        type: https://errors.example.pe/invalid-state-transition
+        title: Invalid state transition
+        status: 409
+        code: invalid_state_transition
+        detail: La transición no está permitida desde el estado actual.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+    problem_stale_revision:
+      summary: If-Match no coincide
+      value:
+        type: https://errors.example.pe/stale-revision
+        title: Stale revision
+        status: 412
+        code: stale_revision
+        detail: El recurso cambió desde que lo abriste. Recarga y vuelve a aplicar tus cambios.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+        errors: []
+    problem_rate_limited:
+      summary: Límite superado
+      value:
+        type: https://errors.example.pe/rate-limited
+        title: Too many requests
+        status: 429
+        code: rate_limited
+        detail: Demasiadas solicitudes. Intenta más tarde.
+        request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+  responses:
+    BadRequest:
+      description: Parámetros o headers inválidos.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            bad_request:
+              summary: Header o parámetro inválido
+              value:
+                type: https://errors.example.pe/bad-request
+                title: Bad request
+                status: 400
+                code: bad_request
+                detail: El parámetro `limit` debe estar entre 1 y 100.
+                request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+                errors:
+                  - pointer: /query/limit
+                    detail: debe ser <= 100
+    Unauthorized:
+      description: Sin sesión o con un token inválido.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            unauthorized:
+              $ref: '#/components/examples/problem_unauthorized'
+    Forbidden:
+      description: Falta un scope, un rol o MFA reciente.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            forbidden:
+              $ref: '#/components/examples/problem_forbidden'
+            recent_auth_required:
+              $ref: '#/components/examples/problem_mfa_required'
+    NotFound:
+      description: No existe o no es visible para quien llama.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            not_found:
+              $ref: '#/components/examples/problem_not_found'
+    Conflict:
+      description: Conflicto de estado, de unicidad o de idempotencia.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            invalid_state_transition:
+              $ref: '#/components/examples/problem_conflict'
+    PreconditionFailed:
+      description: El `If-Match` no coincide con la revisión actual.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            stale_revision:
+              $ref: '#/components/examples/problem_stale_revision'
+    PreconditionRequired:
+      description: Falta el header `If-Match`.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            precondition_required:
+              summary: Falta If-Match
+              value:
+                type: https://errors.example.pe/precondition-required
+                title: Precondition required
+                status: 428
+                code: precondition_required
+                detail: Envía el ETag de la revisión en `If-Match`.
+                request_id: 01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b
+    ValidationFailed:
+      description: El cuerpo no cumple el contrato.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            validation_failed:
+              $ref: '#/components/examples/problem_validation_failed'
+    TooManyRequests:
+      description: Se superó el límite de solicitudes.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            rate_limited:
+              $ref: '#/components/examples/problem_rate_limited'
+    HealthLive:
+      description: El proceso está vivo.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HealthLive'
+          examples:
+            ok:
+              summary: Vivo
+              value:
+                status: ok
+    HealthReady:
+      description: Estado de las dependencias y de cada operación.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HealthReady'
+          examples:
+            ready:
+              summary: Listo, con operaciones en mock
+              value:
+                status: ready
+                environment: local
+                checks:
+                  contract: ok
+                operations:
+                  getMe: example
+    HealthNotReady:
+      description: Alguna dependencia falla.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HealthReady'
+          examples:
+            not_ready:
+              summary: Una dependencia falla
+              value:
+                status: not_ready
+                environment: local
+                checks:
+                  database: failing
+                operations: {}
+  pathItems:
+    HealthLive:
+      get:
+        operationId: getHealthLive
+        summary: Health de vida
+        tags: [health]
+        security: []
+        responses:
+          '200':
+            $ref: '#/components/responses/HealthLive'
+    HealthReady:
+      get:
+        operationId: getHealthReady
+        summary: Health de disponibilidad
+        tags: [health]
+        security: []
+        responses:
+          '200':
+            $ref: '#/components/responses/HealthReady'
+          '503':
+            $ref: '#/components/responses/HealthNotReady'

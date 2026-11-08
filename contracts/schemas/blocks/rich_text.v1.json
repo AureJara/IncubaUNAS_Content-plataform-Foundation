@@ -1,0 +1,52 @@
+{
+  "title": "Bloque de texto enriquecido, versión 1",
+  "description": "Texto estructurado en nodos y tramos. No acepta HTML (PF-031, SEC).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "version", "data"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "type": { "type": "string", "const": "rich_text" },
+    "version": { "type": "integer", "const": 1 },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodes"],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "spans"],
+            "properties": {
+              "kind": { "type": "string", "enum": ["paragraph", "heading", "list_item"] },
+              "level": { "type": "integer", "minimum": 2, "maximum": 4 },
+              "spans": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["text"],
+                  "properties": {
+                    "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+                    "marks": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": { "type": "string", "enum": ["bold", "italic", "code"] }
+                    },
+                    "href": { "type": "string", "maxLength": 2048, "pattern": "^(/[^\\s]*|https://[^\\s]+)$" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
