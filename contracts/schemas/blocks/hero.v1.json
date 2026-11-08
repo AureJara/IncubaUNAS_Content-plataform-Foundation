@@ -1,0 +1,33 @@
+{
+  "title": "Bloque hero, versión 1",
+  "description": "Encabezado de la página con imagen opcional y llamada a la acción (PF-031).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "version", "data"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "type": { "type": "string", "const": "hero" },
+    "version": { "type": "integer", "const": 1 },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading"],
+      "properties": {
+        "heading": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "subheading": { "type": "string", "maxLength": 300 },
+        "image_media_id": { "type": "string", "format": "uuid" },
+        "image_alt": { "type": "string", "minLength": 1, "maxLength": 250 },
+        "cta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["label", "href"],
+          "properties": {
+            "label": { "type": "string", "minLength": 1, "maxLength": 60 },
+            "href": { "type": "string", "maxLength": 2048, "pattern": "^(/[^\\s]*|https://[^\\s]+)$" }
+          }
+        }
+      },
+      "dependentRequired": { "image_media_id": ["image_alt"] }
+    }
+  }
+}

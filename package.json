@@ -1,0 +1,38 @@
+{
+  "name": "incubaunas-team1",
+  "private": true,
+  "type": "module",
+  "description": "Equipo 1 (Content & Platform Foundation) de la plataforma de eventos de IncubaUNAS",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "contracts:lint": "redocly lint --config contracts/redocly.yaml",
+    "contracts:build": "node scripts/contracts-build.ts",
+    "contracts:check": "node scripts/contracts-check.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "check": "pnpm contracts:lint && pnpm contracts:check && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test",
+    "dev:gateway": "pnpm --filter @incuba/gateway dev",
+    "dev:platform": "pnpm --filter @incuba/platform-api dev",
+    "dev:cms": "pnpm --filter @incuba/content-api dev:cms",
+    "dev:public": "pnpm --filter @incuba/content-api dev:public"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@redocly/cli": "2.76.0",
+    "@types/node": "22.20.5",
+    "eslint": "10.14.0",
+    "globals": "17.14.0",
+    "openapi-typescript": "7.13.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.1.0",
+    "yaml": "2.9.1"
+  }
+}

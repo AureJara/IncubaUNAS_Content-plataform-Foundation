@@ -1,0 +1,10 @@
+{
+  "name": "@incuba/shared-kernel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tipos base del Equipo 1: errores de dominio, UUIDv7 y reloj (spec 3.3)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

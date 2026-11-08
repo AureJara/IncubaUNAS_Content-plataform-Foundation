@@ -1,0 +1,17 @@
+{
+  "name": "@incuba/platform-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Identidad, organizaciones, membresías, dominios y auditoría (spec 9.3)",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=../../.env src/main.ts",
+    "start": "node src/main.ts"
+  },
+  "dependencies": {
+    "@incuba/authz": "workspace:*",
+    "@incuba/http-kit": "workspace:*",
+    "@incuba/shared-kernel": "workspace:*",
+    "fastify": "5.12.8"
+  }
+}

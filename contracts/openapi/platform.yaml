@@ -1,0 +1,1344 @@
+openapi: 3.1.0
+info:
+  title: Platform API (Equipo 1)
+  version: 1.0.0
+  description: >-
+    Identidad, organizaciones, membresías, invitaciones, sesiones, service accounts, dominios y auditoría (spec 9.2, 9.3 y
+    9.6). El navegador la llama a través del gateway con la cookie de sesión y el token CSRF; el gateway la reenvía con
+    un token interno de audience `platform-api`.
+
+
+    Extensiones: `x-required-scope` (scope del token), `x-required-role` (rol exigido) y `x-recent-mfa` (MFA reciente).
+  license:
+    name: Propietario (IncubaUNAS)
+    identifier: LicenseRef-IncubaUNAS
+servers:
+  - url: http://localhost:8080
+    description: Gateway local
+tags:
+  - name: me
+    description: Identidad, sesiones y organización activa de quien llama.
+  - name: organizations
+    description: Alta, configuración y ciclo de vida de la organización.
+  - name: memberships
+    description: Miembros, roles y sesiones de los miembros.
+  - name: invitations
+    description: Invitaciones de un solo uso.
+  - name: service-accounts
+    description: Clients de servicio con scopes mínimos.
+  - name: domains
+    description: Dominios propios y su verificación.
+  - name: audit
+    description: Auditoría de identidad y autorización.
+  - name: leads
+    description: Solicitudes de demo de la landing comercial.
+  - name: health
+    description: Vida y disponibilidad del servicio.
+security:
+  - internalToken: []
+paths:
+  /health/live:
+    $ref: './common.yaml#/components/pathItems/HealthLive'
+  /health/ready:
+    $ref: './common.yaml#/components/pathItems/HealthReady'
+
+  /platform/v1/me:
+    get:
+      operationId: getMe
+      summary: Identidad, organización activa, roles y capabilities
+      tags: [me]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Identidad de la sesión.
+          headers:
+            X-Request-Id: { $ref: './common.yaml#/components/headers/RequestId' }
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Me' }
+              examples:
+                me: { $ref: '../examples/platform.yaml#/me' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /platform/v1/me/capabilities:
+    get:
+      operationId: getMyCapabilities
+      summary: Permisos efectivos y restricciones
+      tags: [me]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Permisos efectivos.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Capabilities' }
+              examples:
+                capabilities: { $ref: '../examples/platform.yaml#/capabilities' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /platform/v1/me/sessions:
+    get:
+      operationId: listMySessions
+      summary: Sesiones propias, enmascaradas
+      tags: [me]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Sesiones del usuario; nunca incluye refresh ni tokens.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionCollection' }
+              examples:
+                sessions: { $ref: '../examples/platform.yaml#/my_sessions' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /platform/v1/me/sessions/{id}:
+    delete:
+      operationId: revokeSession
+      summary: Revocar una sesión propia (o de un miembro, si es admin)
+      tags: [me]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '204':
+          description: Sesión revocada. Repetir la llamada también responde 204.
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /platform/v1/me/organizations:
+    get:
+      operationId: listMyOrganizations
+      summary: Membresías activas del usuario
+      tags: [me]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Organizaciones donde el usuario tiene membresía activa.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MyOrganizationCollection' }
+              examples:
+                organizations: { $ref: '../examples/platform.yaml#/my_organizations' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /platform/v1/session-context:
+    post:
+      operationId: switchSessionContext
+      summary: Cambiar la organización activa de la sesión
+      description: Solo se acepta si el usuario tiene una membresía activa en esa organización (spec 9.3).
+      tags: [me]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SessionContextRequest' }
+            examples:
+              switch: { $ref: '../examples/platform.yaml#/session_context_request' }
+      responses:
+        '200':
+          description: Contexto nuevo; el gateway reemite la sesión.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionContext' }
+              examples:
+                context: { $ref: '../examples/platform.yaml#/session_context' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+
+  /platform/v1/roles:
+    get:
+      operationId: listRoles
+      summary: Catálogo de roles y sus scopes
+      tags: [organizations]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Roles del contrato de autorización.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RoleCollection' }
+              examples:
+                roles: { $ref: '../examples/platform.yaml#/roles' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /platform/v1/organizations:
+    post:
+      operationId: createOrganization
+      summary: Alta de una organización con su primer owner
+      tags: [organizations]
+      x-required-role: platform_admin
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrganizationCreate' }
+            examples:
+              create: { $ref: '../examples/platform.yaml#/organization_create' }
+      responses:
+        '201':
+          description: Organización activa con su membresía owner.
+          headers:
+            ETag: { $ref: './common.yaml#/components/headers/ETag' }
+            Location: { $ref: './common.yaml#/components/headers/Location' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+              examples:
+                organization: { $ref: '../examples/platform.yaml#/organization' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+
+  /platform/v1/organizations/{id}:
+    parameters:
+      - $ref: './common.yaml#/components/parameters/IdPath'
+    get:
+      operationId: getOrganization
+      summary: Configuración de la organización
+      tags: [organizations]
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Organización.
+          headers:
+            ETag: { $ref: './common.yaml#/components/headers/ETag' }
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+              examples:
+                organization: { $ref: '../examples/platform.yaml#/organization' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    patch:
+      operationId: updateOrganization
+      summary: Configurar la organización
+      tags: [organizations]
+      x-required-scope: organizations:admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IfMatch'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema: { $ref: '#/components/schemas/OrganizationPatch' }
+            examples:
+              patch: { $ref: '../examples/platform.yaml#/organization_patch' }
+      responses:
+        '200':
+          description: Organización actualizada.
+          headers:
+            ETag: { $ref: './common.yaml#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+              examples:
+                organization: { $ref: '../examples/platform.yaml#/organization' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '412': { $ref: './common.yaml#/components/responses/PreconditionFailed' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+        '428': { $ref: './common.yaml#/components/responses/PreconditionRequired' }
+
+  /platform/v1/organizations/{id}/suspensions:
+    post:
+      operationId: suspendOrganization
+      summary: Suspender una organización y sus sesiones
+      tags: [organizations]
+      x-required-role: platform_admin
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: './common.yaml#/components/schemas/Reason' }
+            examples:
+              reason: { $ref: '../examples/platform.yaml#/reason' }
+      responses:
+        '200':
+          description: Organización suspendida.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+              examples:
+                suspended: { $ref: '../examples/platform.yaml#/organization_suspended' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+
+  /platform/v1/organizations/{id}/reactivations:
+    post:
+      operationId: reactivateOrganization
+      summary: Volver de suspended a active
+      tags: [organizations]
+      x-required-role: platform_admin
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: './common.yaml#/components/schemas/Reason' }
+            examples:
+              reason: { $ref: '../examples/platform.yaml#/reason' }
+      responses:
+        '200':
+          description: Organización activa de nuevo.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+              examples:
+                organization: { $ref: '../examples/platform.yaml#/organization' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+
+  /platform/v1/organizations/{id}/memberships:
+    get:
+      operationId: listMemberships
+      summary: Miembros, roles y estado
+      tags: [memberships]
+      x-required-scope: organizations:admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+        - name: state
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/MembershipState' }
+        - name: role
+          in: query
+          required: false
+          schema: { $ref: './common.yaml#/components/schemas/Role' }
+      responses:
+        '200':
+          description: Miembros.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MembershipCollection' }
+              examples:
+                memberships: { $ref: '../examples/platform.yaml#/memberships' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /platform/v1/memberships/{id}:
+    patch:
+      operationId: updateMembership
+      summary: Cambiar roles, suspender o revocar un miembro
+      tags: [memberships]
+      x-required-scope: organizations:admin
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/IfMatch'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema: { $ref: '#/components/schemas/MembershipPatch' }
+            examples:
+              patch: { $ref: '../examples/platform.yaml#/membership_patch' }
+      responses:
+        '200':
+          description: Membresía actualizada; si aplica, sus sesiones se revocan.
+          headers:
+            ETag: { $ref: './common.yaml#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Membership' }
+              examples:
+                membership: { $ref: '../examples/platform.yaml#/membership' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409':
+          description: Transición inválida o último owner.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+              examples:
+                last_owner: { $ref: '../examples/platform.yaml#/last_owner' }
+        '412': { $ref: './common.yaml#/components/responses/PreconditionFailed' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+        '428': { $ref: './common.yaml#/components/responses/PreconditionRequired' }
+
+  /platform/v1/organizations/{id}/invitations:
+    parameters:
+      - $ref: './common.yaml#/components/parameters/IdPath'
+    post:
+      operationId: createInvitation
+      summary: Invitar a una persona
+      tags: [invitations]
+      x-required-scope: organizations:admin
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InvitationCreate' }
+            examples:
+              create: { $ref: '../examples/platform.yaml#/invitation_create' }
+      responses:
+        '201':
+          description: Invitación pendiente. La respuesta nunca incluye el token.
+          headers:
+            Location: { $ref: './common.yaml#/components/headers/Location' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Invitation' }
+              examples:
+                invitation: { $ref: '../examples/platform.yaml#/invitation' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+    get:
+      operationId: listInvitations
+      summary: Invitaciones de la organización
+      tags: [invitations]
+      x-required-scope: organizations:admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Invitaciones.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InvitationCollection' }
+              examples:
+                invitations: { $ref: '../examples/platform.yaml#/invitations' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /platform/v1/invitations/{id}/revocations:
+    post:
+      operationId: revokeInvitation
+      summary: Revocar una invitación pendiente
+      tags: [invitations]
+      x-required-scope: organizations:admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Invitación revocada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Invitation' }
+              examples:
+                revoked: { $ref: '../examples/platform.yaml#/invitation_revoked' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /public/v1/invitations/{token}/acceptance:
+    post:
+      operationId: acceptInvitation
+      summary: Aceptar una invitación con la sesión OIDC
+      tags: [invitations]
+      parameters:
+        - $ref: '#/components/parameters/InvitationToken'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Membresía activa.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Membership' }
+              examples:
+                accepted: { $ref: '../examples/platform.yaml#/invitation_accepted' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409':
+          description: Invitación vencida, usada o revocada.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+              examples:
+                invitation_expired: { $ref: '../examples/platform.yaml#/invitation_expired' }
+
+  /public/v1/invitations/{token}/declination:
+    post:
+      operationId: declineInvitation
+      summary: Rechazar una invitación
+      tags: [invitations]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/InvitationToken'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Invitación rechazada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InvitationOutcome' }
+              examples:
+                declined: { $ref: '../examples/platform.yaml#/invitation_declined' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409':
+          description: Invitación vencida, usada o revocada.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+              examples:
+                invitation_expired: { $ref: '../examples/platform.yaml#/invitation_expired' }
+
+  /platform/v1/organizations/{id}/sessions:
+    get:
+      operationId: listOrganizationSessions
+      summary: Sesiones de los miembros
+      tags: [memberships]
+      x-required-scope: organizations:admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Sesiones con IP seudonimizada; nunca tokens.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionCollection' }
+              examples:
+                sessions: { $ref: '../examples/platform.yaml#/organization_sessions' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /platform/v1/organizations/{id}/service-accounts:
+    parameters:
+      - $ref: './common.yaml#/components/parameters/IdPath'
+    post:
+      operationId: createServiceAccount
+      summary: Crear una service account
+      tags: [service-accounts]
+      x-required-role: security_admin
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ServiceAccountCreate' }
+            examples:
+              create: { $ref: '../examples/platform.yaml#/service_account_create' }
+      responses:
+        '201':
+          description: Service account creada. El secreto se muestra solo en esta respuesta.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ServiceAccountCreated' }
+              examples:
+                created: { $ref: '../examples/platform.yaml#/service_account_created' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+    get:
+      operationId: listServiceAccounts
+      summary: Service accounts de la organización
+      tags: [service-accounts]
+      x-required-role: security_admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Service accounts, sin secretos.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ServiceAccountCollection' }
+              examples:
+                service_accounts: { $ref: '../examples/platform.yaml#/service_accounts' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /platform/v1/service-accounts/{id}/rotations:
+    post:
+      operationId: rotateServiceAccount
+      summary: Rotar la credencial con solapamiento
+      tags: [service-accounts]
+      x-required-role: security_admin
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RotationRequest' }
+            examples:
+              rotation: { $ref: '../examples/platform.yaml#/rotation_request' }
+      responses:
+        '201':
+          description: Credencial nueva; la anterior vence al terminar el solapamiento.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Rotation' }
+              examples:
+                rotation: { $ref: '../examples/platform.yaml#/rotation' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+
+  /platform/v1/service-accounts/{id}/revocations:
+    post:
+      operationId: revokeServiceAccount
+      summary: Revocar una service account de inmediato
+      tags: [service-accounts]
+      x-required-role: security_admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: './common.yaml#/components/schemas/Reason' }
+            examples:
+              reason: { $ref: '../examples/platform.yaml#/reason' }
+      responses:
+        '200':
+          description: Service account revocada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ServiceAccount' }
+              examples:
+                revoked: { $ref: '../examples/platform.yaml#/service_account_revoked' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+
+  /platform/v1/sites/{id}/domains:
+    parameters:
+      - $ref: './common.yaml#/components/parameters/IdPath'
+    post:
+      operationId: createDomain
+      summary: Asociar un dominio propio a un sitio
+      tags: [domains]
+      x-required-role: org_owner
+      x-recent-mfa: true
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DomainCreate' }
+            examples:
+              create: { $ref: '../examples/platform.yaml#/domain_create' }
+      responses:
+        '201':
+          description: Dominio pendiente, con su challenge de verificación.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Domain' }
+              examples:
+                domain: { $ref: '../examples/platform.yaml#/domain' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409':
+          description: El hostname ya está en uso.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+              examples:
+                hostname_taken: { $ref: '../examples/platform.yaml#/hostname_taken' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+    get:
+      operationId: listDomains
+      summary: Dominios del sitio
+      tags: [domains]
+      x-required-role: org_owner
+      parameters:
+        - $ref: './common.yaml#/components/parameters/RequestId'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Dominios.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DomainCollection' }
+              examples:
+                domains: { $ref: '../examples/platform.yaml#/domains' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /platform/v1/domains/{id}/verifications:
+    post:
+      operationId: verifyDomain
+      summary: Verificar el challenge del dominio
+      tags: [domains]
+      x-required-role: org_owner
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Dominio `active` (con TLS) o `failed`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Domain' }
+              examples:
+                active: { $ref: '../examples/platform.yaml#/domain_active' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /platform/v1/organizations/{id}/audit-events:
+    get:
+      operationId: listAuditEvents
+      summary: Consultar la auditoría
+      tags: [audit]
+      x-required-scope: organizations:admin
+      parameters:
+        - $ref: './common.yaml#/components/parameters/IdPath'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+        - name: from
+          in: query
+          required: false
+          schema: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        - name: to
+          in: query
+          required: false
+          schema: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        - name: action
+          in: query
+          required: false
+          schema: { type: string, pattern: '^[a-z_]+(\.[a-z_]+)*$', maxLength: 100 }
+      responses:
+        '200':
+          description: Eventos de auditoría, del más reciente al más antiguo.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditEventCollection' }
+              examples:
+                audit: { $ref: '../examples/platform.yaml#/audit_events' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /public/v1/sites/{slug}/leads:
+    post:
+      operationId: createLead
+      summary: Solicitud de demo
+      description: >-
+        Anti-spam con honeypot (`website` vacío), challenge y rate limit. Dónde se guardan los datos lo fija el acuerdo
+        C-13 (spec 13 #6); el evento interno no lleva datos personales.
+      tags: [leads]
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { $ref: './common.yaml#/components/schemas/Slug' }
+        - $ref: './common.yaml#/components/parameters/IdempotencyKey'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeadRequest' }
+            examples:
+              lead: { $ref: '../examples/platform.yaml#/lead_request' }
+      responses:
+        '201':
+          description: Solicitud recibida.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LeadReceipt' }
+              examples:
+                receipt: { $ref: '../examples/platform.yaml#/lead_receipt' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '422': { $ref: './common.yaml#/components/responses/ValidationFailed' }
+        '429': { $ref: './common.yaml#/components/responses/TooManyRequests' }
+
+components:
+  securitySchemes:
+    internalToken: { $ref: './common.yaml#/components/securitySchemes/internalToken' }
+  parameters:
+    InvitationToken:
+      name: token
+      in: path
+      required: true
+      description: Token de la invitación (se guarda solo como hash).
+      schema:
+        type: string
+        pattern: '^[A-Za-z0-9_-]{32,128}$'
+  schemas:
+    OrganizationState:
+      type: string
+      enum: [provisioning, active, suspended, archived]
+    MembershipState:
+      type: string
+      enum: [invited, active, suspended, revoked, expired]
+    InvitationState:
+      type: string
+      enum: [pending, accepted, declined, expired, revoked]
+    DomainState:
+      type: string
+      enum: [pending, verifying, active, failed, suspended, released]
+    Timezone:
+      type: string
+      description: Zona IANA.
+      pattern: '^[A-Za-z_]+(/[A-Za-z0-9_+-]+)*$'
+      maxLength: 64
+    Me:
+      type: object
+      additionalProperties: false
+      required: [user_id, display_name, active_organization, membership_id, roles, capabilities, amr, auth_time]
+      properties:
+        user_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        display_name: { type: string, maxLength: 200 }
+        active_organization:
+          type: [object, 'null']
+          additionalProperties: false
+          required: [id, slug, display_name]
+          properties:
+            id: { $ref: './common.yaml#/components/schemas/Uuid' }
+            slug: { $ref: './common.yaml#/components/schemas/Slug' }
+            display_name: { type: string }
+        membership_id:
+          oneOf:
+            - $ref: './common.yaml#/components/schemas/Uuid'
+            - type: 'null'
+        roles:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        capabilities:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Scope' }
+        amr:
+          type: array
+          items: { type: string }
+        auth_time: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    Capabilities:
+      type: object
+      additionalProperties: false
+      required: [organization_id, roles, scopes, restrictions]
+      properties:
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        roles:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        scopes:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Scope' }
+        restrictions:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [type, id]
+            properties:
+              type: { type: string, enum: [event, venue] }
+              id: { $ref: './common.yaml#/components/schemas/Uuid' }
+    Session:
+      type: object
+      additionalProperties: false
+      required: [id, user_id, state, current, created_at, last_seen_at, expires_at]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        user_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        state: { type: string, enum: [active, revoked, expired] }
+        current: { type: boolean }
+        ip_hint: { type: string, description: IP seudonimizada. }
+        user_agent_family: { type: string }
+        created_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        last_seen_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    SessionCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Session' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    MyOrganization:
+      type: object
+      additionalProperties: false
+      required: [organization_id, slug, display_name, membership_id, roles, state]
+      properties:
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        slug: { $ref: './common.yaml#/components/schemas/Slug' }
+        display_name: { type: string }
+        membership_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        roles:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        state: { $ref: '#/components/schemas/MembershipState' }
+    MyOrganizationCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/MyOrganization' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    SessionContextRequest:
+      type: object
+      additionalProperties: false
+      required: [organization_id]
+      properties:
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+    SessionContext:
+      type: object
+      additionalProperties: false
+      required: [organization_id, membership_id, roles, scopes]
+      properties:
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        membership_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        roles:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        scopes:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Scope' }
+    RoleDefinition:
+      type: object
+      additionalProperties: false
+      required: [role, description, scopes]
+      properties:
+        role: { $ref: './common.yaml#/components/schemas/Role' }
+        description: { type: string }
+        scopes:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Scope' }
+    RoleCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/RoleDefinition' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    Organization:
+      type: object
+      additionalProperties: false
+      required:
+        [id, organization_id, slug, legal_name, display_name, timezone, locale, state, revision, created_at, updated_at]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        slug: { $ref: './common.yaml#/components/schemas/Slug' }
+        legal_name: { type: string, minLength: 2, maxLength: 200 }
+        display_name: { type: string, minLength: 2, maxLength: 120 }
+        timezone: { $ref: '#/components/schemas/Timezone' }
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+        state: { $ref: '#/components/schemas/OrganizationState' }
+        revision: { $ref: './common.yaml#/components/schemas/Revision' }
+        created_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        updated_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    OrganizationCreate:
+      type: object
+      additionalProperties: false
+      required: [slug, legal_name, display_name, timezone, locale, owner_identity]
+      properties:
+        slug: { $ref: './common.yaml#/components/schemas/Slug' }
+        legal_name: { type: string, minLength: 2, maxLength: 200 }
+        display_name: { type: string, minLength: 2, maxLength: 120 }
+        timezone: { $ref: '#/components/schemas/Timezone' }
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+        owner_identity:
+          type: object
+          additionalProperties: false
+          required: [issuer, subject]
+          properties:
+            issuer: { type: string, format: uri }
+            subject: { type: string, minLength: 1, maxLength: 255 }
+    OrganizationPatch:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        legal_name: { type: string, minLength: 2, maxLength: 200 }
+        display_name: { type: string, minLength: 2, maxLength: 120 }
+        timezone: { $ref: '#/components/schemas/Timezone' }
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+    Membership:
+      type: object
+      additionalProperties: false
+      required: [id, organization_id, user_id, display_name, roles, state, revision, created_at, updated_at]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        user_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        display_name: { type: string }
+        roles:
+          type: array
+          minItems: 1
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        state: { $ref: '#/components/schemas/MembershipState' }
+        revision: { $ref: './common.yaml#/components/schemas/Revision' }
+        created_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        updated_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    MembershipCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Membership' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    MembershipPatch:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        roles:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        state: { type: string, enum: [active, suspended, revoked] }
+    InvitationCreate:
+      type: object
+      additionalProperties: false
+      required: [email, roles]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+        roles:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        expires_at:
+          $ref: './common.yaml#/components/schemas/Timestamp'
+          description: Como máximo 7 días después de crearla.
+    Invitation:
+      type: object
+      additionalProperties: false
+      required:
+        [id, organization_id, membership_id, email_hint, roles, state, expires_at, revision, created_at, updated_at]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        membership_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        email_hint: { type: string, description: Correo enmascarado. }
+        roles:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Role' }
+        state: { $ref: '#/components/schemas/InvitationState' }
+        expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        revision: { $ref: './common.yaml#/components/schemas/Revision' }
+        created_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        updated_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    InvitationCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Invitation' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    InvitationOutcome:
+      type: object
+      additionalProperties: false
+      required: [invitation_id, state]
+      properties:
+        invitation_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        state: { $ref: '#/components/schemas/InvitationState' }
+    ServiceAccount:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          id,
+          organization_id,
+          name,
+          client_id,
+          auth_method,
+          scopes,
+          audiences,
+          state,
+          expires_at,
+          revision,
+          created_at,
+          updated_at,
+        ]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string, pattern: '^[a-z0-9-]{3,63}$' }
+        client_id: { type: string }
+        auth_method: { type: string, enum: [client_secret, private_key_jwt] }
+        scopes:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Scope' }
+        audiences:
+          type: array
+          items: { type: string }
+        state: { type: string, enum: [active, revoked, expired] }
+        expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        revision: { $ref: './common.yaml#/components/schemas/Revision' }
+        created_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        updated_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    ServiceAccountCreate:
+      type: object
+      additionalProperties: false
+      required: [name, auth_method, scopes, audiences, expires_at]
+      properties:
+        name: { type: string, pattern: '^[a-z0-9-]{3,63}$' }
+        auth_method: { type: string, enum: [client_secret, private_key_jwt] }
+        scopes:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: { $ref: './common.yaml#/components/schemas/Scope' }
+        audiences:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: { type: string, pattern: '^[a-z0-9-]{2,63}$' }
+        expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        public_key_jwk:
+          type: object
+          description: Clave pública si `auth_method` es `private_key_jwt`.
+    ServiceAccountCreated:
+      type: object
+      additionalProperties: false
+      required: [service_account]
+      properties:
+        service_account: { $ref: '#/components/schemas/ServiceAccount' }
+        client_secret:
+          type: string
+          description: Solo con `client_secret`; se muestra una vez y se guarda como hash.
+    ServiceAccountCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ServiceAccount' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    RotationRequest:
+      type: object
+      additionalProperties: false
+      required: [expires_at]
+      properties:
+        expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        overlap_seconds: { type: integer, minimum: 0, maximum: 604800 }
+        public_key_jwk: { type: object }
+    Rotation:
+      type: object
+      additionalProperties: false
+      required: [credential_id, expires_at, previous_expires_at]
+      properties:
+        credential_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        client_secret: { type: string }
+        expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        previous_expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    Hostname:
+      type: string
+      format: hostname
+      maxLength: 253
+    DomainCreate:
+      type: object
+      additionalProperties: false
+      required: [hostname]
+      properties:
+        hostname: { $ref: '#/components/schemas/Hostname' }
+    Domain:
+      type: object
+      additionalProperties: false
+      required: [id, organization_id, site_id, hostname, primary, state, revision, created_at, updated_at]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        site_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        hostname: { $ref: '#/components/schemas/Hostname' }
+        primary: { type: boolean }
+        state: { $ref: '#/components/schemas/DomainState' }
+        verification:
+          type: object
+          additionalProperties: false
+          required: [method, record_name, record_value]
+          properties:
+            method: { type: string, enum: [dns_txt, http] }
+            record_name: { type: string }
+            record_value: { type: string }
+        revision: { $ref: './common.yaml#/components/schemas/Revision' }
+        created_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        updated_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    DomainCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Domain' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    AuditEvent:
+      type: object
+      additionalProperties: false
+      required: [id, organization_id, occurred_at, actor, action, target, outcome, request_id]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        organization_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        occurred_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        actor: { $ref: './common.yaml#/components/schemas/Actor' }
+        action: { type: string }
+        target:
+          type: object
+          additionalProperties: false
+          required: [type, id]
+          properties:
+            type: { type: string }
+            id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        outcome: { type: string, enum: [success, denied] }
+        request_id: { type: string }
+    AuditEventCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/AuditEvent' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    LeadRequest:
+      type: object
+      additionalProperties: false
+      required: [name, email, organization_name, consent, challenge_token]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, format: email, maxLength: 254 }
+        organization_name: { type: string, minLength: 2, maxLength: 200 }
+        message: { type: string, maxLength: 2000 }
+        consent: { type: boolean, const: true }
+        challenge_token: { type: string, minLength: 1, maxLength: 4096 }
+        website:
+          type: string
+          maxLength: 0
+          description: Honeypot; debe llegar vacío.
+    LeadReceipt:
+      type: object
+      additionalProperties: false
+      required: [id, state, created_at]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        state: { type: string, const: received }
+        created_at: { $ref: './common.yaml#/components/schemas/Timestamp' }

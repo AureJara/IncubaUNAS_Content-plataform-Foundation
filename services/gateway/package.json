@@ -1,0 +1,19 @@
+{
+  "name": "@incuba/gateway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BFF OIDC, proxy y emisor de tokens internos (spec 3.6)",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=../../.env src/main.ts",
+    "start": "node src/main.ts"
+  },
+  "dependencies": {
+    "@fastify/reply-from": "12.8.1",
+    "@incuba/authz": "workspace:*",
+    "@incuba/http-kit": "workspace:*",
+    "@incuba/shared-kernel": "workspace:*",
+    "fastify": "5.12.8",
+    "jose": "6.2.15"
+  }
+}

@@ -1,0 +1,11 @@
+# Excepciones revisadas a mano; no se regenera este archivo con --generate-ignore-file.
+# - Los health no tienen respuestas 4XX: no reciben parámetros ni autenticación (PF-055).
+# - El login y el callback del BFF responden con redirección 302, no con 2XX (spec 9.2).
+openapi/common.yaml:
+  operation-4xx-response:
+    - '#/components/pathItems/HealthLive/get/responses'
+    - '#/components/pathItems/HealthReady/get/responses'
+openapi/auth.yaml:
+  operation-2xx-response:
+    - '#/paths/~1auth~1login/get/responses'
+    - '#/paths/~1auth~1callback/get/responses'

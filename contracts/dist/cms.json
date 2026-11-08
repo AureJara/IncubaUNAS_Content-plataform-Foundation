@@ -1,0 +1,3794 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CMS API (Equipo 1)",
+    "version": "1.0.0",
+    "description": "Sitios, tema, navegación, páginas con bloques tipados, vistas previas, publicaciones y medios (spec 9.4 y 9.6). La sirve `content-api` (proceso cms) detrás del gateway, con un token interno de audience `content-api`.\n\nExtensiones: `x-required-scope` (scope del token).",
+    "license": {
+      "name": "Propietario (IncubaUNAS)",
+      "identifier": "LicenseRef-IncubaUNAS"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Gateway local"
+    }
+  ],
+  "security": [
+    {
+      "internalToken": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "sites",
+      "description": "Sitios, tema y navegación."
+    },
+    {
+      "name": "pages",
+      "description": "Páginas con bloques tipados y vistas previas."
+    },
+    {
+      "name": "publications",
+      "description": "Versiones inmutables y restauraciones."
+    },
+    {
+      "name": "media",
+      "description": "Imágenes y documentos con antivirus."
+    },
+    {
+      "name": "health",
+      "description": "Vida y disponibilidad del servicio."
+    }
+  ],
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "getHealthLive",
+        "summary": "Health de vida",
+        "tags": [
+          "health"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/HealthLive"
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "getHealthReady",
+        "summary": "Health de disponibilidad",
+        "tags": [
+          "health"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/HealthReady"
+          },
+          "503": {
+            "$ref": "#/components/responses/HealthNotReady"
+          }
+        }
+      }
+    },
+    "/cms/v1/sites": {
+      "post": {
+        "operationId": "createSite",
+        "summary": "Crear un sitio en borrador",
+        "tags": [
+          "sites"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SiteCreate"
+              },
+              "examples": {
+                "create": {
+                  "$ref": "#/components/examples/site_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sitio en borrador.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Location": {
+                "$ref": "#/components/headers/Location"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site"
+                },
+                "examples": {
+                  "site": {
+                    "$ref": "#/components/examples/site_draft"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "description": "El slug ya existe en la organización.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "slug_taken": {
+                    "$ref": "#/components/examples/slug_taken"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listSites",
+        "summary": "Sitios de la organización",
+        "tags": [
+          "sites"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sitios.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteCollection"
+                },
+                "examples": {
+                  "sites": {
+                    "$ref": "#/components/examples/sites"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/cms/v1/sites/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "get": {
+        "operationId": "getSite",
+        "summary": "Configuración del sitio",
+        "tags": [
+          "sites"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sitio con su tema y navegación vigentes.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site"
+                },
+                "examples": {
+                  "site": {
+                    "$ref": "#/components/examples/site"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateSite",
+        "summary": "Configurar el sitio",
+        "tags": [
+          "sites"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SitePatch"
+              },
+              "examples": {
+                "patch": {
+                  "$ref": "#/components/examples/site_patch"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sitio actualizado.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site"
+                },
+                "examples": {
+                  "site": {
+                    "$ref": "#/components/examples/site"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/cms/v1/sites/{id}/theme": {
+      "put": {
+        "operationId": "putSiteTheme",
+        "summary": "Guardar una versión nueva del tema",
+        "description": "Tokens de una allowlist con contraste AA validado (PF-038, RN-18).",
+        "tags": [
+          "sites"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThemeInput"
+              },
+              "examples": {
+                "theme": {
+                  "$ref": "#/components/examples/theme_input"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tema nuevo.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Theme"
+                },
+                "examples": {
+                  "theme": {
+                    "$ref": "#/components/examples/theme"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/cms/v1/sites/{id}/navigation": {
+      "put": {
+        "operationId": "putSiteNavigation",
+        "summary": "Guardar una versión nueva de la navegación",
+        "description": "Enlaces solo relativos o `https:` (RN-18).",
+        "tags": [
+          "sites"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NavigationInput"
+              },
+              "examples": {
+                "navigation": {
+                  "$ref": "#/components/examples/navigation_input"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Navegación nueva.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Navigation"
+                },
+                "examples": {
+                  "navigation": {
+                    "$ref": "#/components/examples/navigation"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/cms/v1/sites/{id}/pages": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "post": {
+        "operationId": "createPage",
+        "summary": "Crear una página en borrador",
+        "tags": [
+          "pages"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageCreate"
+              },
+              "examples": {
+                "create": {
+                  "$ref": "#/components/examples/page_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Página en borrador.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Location": {
+                "$ref": "#/components/headers/Location"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                },
+                "examples": {
+                  "page": {
+                    "$ref": "#/components/examples/page_draft"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listPages",
+        "summary": "Páginas del sitio",
+        "tags": [
+          "pages"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Páginas, sin sus bloques.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageSummaryCollection"
+                },
+                "examples": {
+                  "pages": {
+                    "$ref": "#/components/examples/pages"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/cms/v1/pages/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "get": {
+        "operationId": "getPage",
+        "summary": "Borrador de la página y su revisión",
+        "tags": [
+          "pages"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página con su borrador.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                },
+                "examples": {
+                  "page": {
+                    "$ref": "#/components/examples/page"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePage",
+        "summary": "Guardar el borrador (revisión nueva)",
+        "description": "Autosave con control de conflicto; el 412 se muestra en la UI (PF-031).",
+        "tags": [
+          "pages"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PagePatch"
+              },
+              "examples": {
+                "patch": {
+                  "$ref": "#/components/examples/page_patch"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Revisión nueva del borrador.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                },
+                "examples": {
+                  "page": {
+                    "$ref": "#/components/examples/page"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/cms/v1/pages/{id}/preview-tokens": {
+      "post": {
+        "operationId": "createPreviewToken",
+        "summary": "Crear una vista previa corta y de un uso",
+        "tags": [
+          "pages"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewTokenCreate"
+              },
+              "examples": {
+                "create": {
+                  "$ref": "#/components/examples/preview_token_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "URL de vista previa ligada al usuario.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewToken"
+                },
+                "examples": {
+                  "preview": {
+                    "$ref": "#/components/examples/preview_token"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/cms/v1/pages/{id}/publications": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/IdPath"
+        }
+      ],
+      "post": {
+        "operationId": "publishPage",
+        "summary": "Publicar una versión inmutable",
+        "description": "Crea el snapshot con su hash, pasa la publicación anterior a `superseded` y escribe `content.page.published.v1` en el outbox (spec 3.6 flujo C).",
+        "tags": [
+          "publications"
+        ],
+        "x-required-scope": "sites:publish",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicationCreate"
+              },
+              "examples": {
+                "publish": {
+                  "$ref": "#/components/examples/publication_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Publicación vigente.",
+            "headers": {
+              "Location": {
+                "$ref": "#/components/headers/Location"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Publication"
+                },
+                "examples": {
+                  "publication": {
+                    "$ref": "#/components/examples/publication"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listPublications",
+        "summary": "Historial de publicaciones",
+        "tags": [
+          "publications"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publicaciones, de la más reciente a la más antigua.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicationCollection"
+                },
+                "examples": {
+                  "publications": {
+                    "$ref": "#/components/examples/publications"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/cms/v1/pages/{id}/restorations": {
+      "post": {
+        "operationId": "restorePublication",
+        "summary": "Restaurar una versión previa como publicación nueva",
+        "description": "El snapshot viejo nunca cambia (RN-13).",
+        "tags": [
+          "publications"
+        ],
+        "x-required-scope": "sites:publish",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestorationCreate"
+              },
+              "examples": {
+                "restore": {
+                  "$ref": "#/components/examples/restoration_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Publicación nueva basada en la elegida.",
+            "headers": {
+              "Location": {
+                "$ref": "#/components/headers/Location"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Publication"
+                },
+                "examples": {
+                  "publication": {
+                    "$ref": "#/components/examples/publication_restored"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/cms/v1/media-uploads": {
+      "post": {
+        "operationId": "createMediaUpload",
+        "summary": "Pedir una URL de subida firmada",
+        "description": "MIME de una allowlist (sin SVG), tamaño máximo y hash (PF-032).",
+        "tags": [
+          "media"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaUploadCreate"
+              },
+              "examples": {
+                "upload": {
+                  "$ref": "#/components/examples/media_upload_create"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Medio `pending` y URL de subida corta.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaUpload"
+                },
+                "examples": {
+                  "upload": {
+                    "$ref": "#/components/examples/media_upload"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/cms/v1/media/{id}/completion": {
+      "post": {
+        "operationId": "completeMediaUpload",
+        "summary": "Confirmar la subida y lanzar el antivirus",
+        "tags": [
+          "media"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaCompletion"
+              },
+              "examples": {
+                "completion": {
+                  "$ref": "#/components/examples/media_completion"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Medio en `scanning`; luego pasa a `ready` o `quarantined`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Media"
+                },
+                "examples": {
+                  "scanning": {
+                    "$ref": "#/components/examples/media_scanning"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/cms/v1/media": {
+      "get": {
+        "operationId": "listMedia",
+        "summary": "Biblioteca de medios",
+        "tags": [
+          "media"
+        ],
+        "x-required-scope": "sites:write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/MediaState"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medios.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaCollection"
+                },
+                "examples": {
+                  "media": {
+                    "$ref": "#/components/examples/media_list"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "internalToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token interno que emite el gateway a partir de la sesión del navegador (cookie + CSRF). Audience exacta del servicio, TTL de 5 minutos (spec 3.6 flujo B). El navegador nunca lo ve."
+      }
+    },
+    "schemas": {
+      "SiteKind": {
+        "type": "string",
+        "enum": [
+          "product",
+          "demo",
+          "client"
+        ]
+      },
+      "SiteState": {
+        "type": "string",
+        "description": "Estados del sitio **(propuesta)**.",
+        "enum": [
+          "draft",
+          "live",
+          "archived"
+        ]
+      },
+      "PagePath": {
+        "type": "string",
+        "description": "Ruta de la página, en minúsculas; `/` es la portada.",
+        "pattern": "^/([a-z0-9-]+(/[a-z0-9-]+)*)?$",
+        "maxLength": 255
+      },
+      "Link": {
+        "type": "string",
+        "description": "Solo relativo o `https:` (RN-18).",
+        "maxLength": 2048,
+        "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+      },
+      "HexColor": {
+        "type": "string",
+        "pattern": "^#[0-9a-f]{6}$"
+      },
+      "ThemeTokens": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "color_primary",
+          "color_on_primary",
+          "color_background",
+          "color_text",
+          "font_family",
+          "radius"
+        ],
+        "properties": {
+          "color_primary": {
+            "$ref": "#/components/schemas/HexColor"
+          },
+          "color_on_primary": {
+            "$ref": "#/components/schemas/HexColor"
+          },
+          "color_background": {
+            "$ref": "#/components/schemas/HexColor"
+          },
+          "color_text": {
+            "$ref": "#/components/schemas/HexColor"
+          },
+          "font_family": {
+            "type": "string",
+            "enum": [
+              "system",
+              "serif",
+              "humanist"
+            ]
+          },
+          "radius": {
+            "type": "string",
+            "enum": [
+              "none",
+              "small",
+              "medium"
+            ]
+          }
+        }
+      },
+      "ThemeInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tokens"
+        ],
+        "properties": {
+          "tokens": {
+            "$ref": "#/components/schemas/ThemeTokens"
+          }
+        }
+      },
+      "Theme": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "revision",
+          "tokens",
+          "updated_at"
+        ],
+        "properties": {
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "tokens": {
+            "$ref": "#/components/schemas/ThemeTokens"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "NavigationItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "href"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "href": {
+            "$ref": "#/components/schemas/Link"
+          }
+        }
+      },
+      "NavigationInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/NavigationItem"
+            }
+          }
+        }
+      },
+      "Navigation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "revision",
+          "items",
+          "updated_at"
+        ],
+        "properties": {
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NavigationItem"
+            }
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "Site": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "slug",
+          "name",
+          "kind",
+          "locale",
+          "state",
+          "theme",
+          "navigation",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SiteKind"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SiteState"
+          },
+          "theme": {
+            "$ref": "#/components/schemas/Theme"
+          },
+          "navigation": {
+            "$ref": "#/components/schemas/Navigation"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "SiteCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slug",
+          "name",
+          "kind",
+          "locale"
+        ],
+        "properties": {
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SiteKind"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          }
+        }
+      },
+      "SitePatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SiteState"
+          }
+        }
+      },
+      "SiteSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "kind",
+          "locale",
+          "state",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SiteKind"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SiteState"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "SiteCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteSummary"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "Block": {
+        "description": "Bloque tipado; cada tipo valida contra su JSON Schema versionado (PF-031).",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/hero.v1"
+          },
+          {
+            "$ref": "#/components/schemas/rich_text.v1"
+          },
+          {
+            "$ref": "#/components/schemas/image.v1"
+          },
+          {
+            "$ref": "#/components/schemas/event_catalog.v1"
+          },
+          {
+            "$ref": "#/components/schemas/featured_event.v1"
+          },
+          {
+            "$ref": "#/components/schemas/agenda.v1"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type"
+        }
+      },
+      "Blocks": {
+        "type": "array",
+        "maxItems": 50,
+        "items": {
+          "$ref": "#/components/schemas/Block"
+        }
+      },
+      "Seo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 70
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "canonical": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          }
+        }
+      },
+      "PageState": {
+        "type": "string",
+        "description": "`published` si tiene una publicación vigente; el borrador puede ser más nuevo.",
+        "enum": [
+          "draft",
+          "published"
+        ]
+      },
+      "Page": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "site_id",
+          "path",
+          "locale",
+          "title",
+          "seo",
+          "blocks",
+          "state",
+          "current_publication_id",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "site_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "seo": {
+            "$ref": "#/components/schemas/Seo"
+          },
+          "blocks": {
+            "$ref": "#/components/schemas/Blocks"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PageState"
+          },
+          "current_publication_id": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PageCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "title",
+          "blocks"
+        ],
+        "properties": {
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "seo": {
+            "$ref": "#/components/schemas/Seo"
+          },
+          "blocks": {
+            "$ref": "#/components/schemas/Blocks"
+          }
+        }
+      },
+      "PagePatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "seo": {
+            "$ref": "#/components/schemas/Seo"
+          },
+          "blocks": {
+            "$ref": "#/components/schemas/Blocks"
+          }
+        }
+      },
+      "PageSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "path",
+          "locale",
+          "title",
+          "state",
+          "current_publication_id",
+          "revision",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "title": {
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PageState"
+          },
+          "current_publication_id": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PageSummaryCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageSummary"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "PreviewTokenCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ttl_seconds"
+        ],
+        "properties": {
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 900,
+            "description": "15 minutos como máximo (PF-033)."
+          }
+        }
+      },
+      "PreviewToken": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "url",
+          "expires_at"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PublicationState": {
+        "type": "string",
+        "enum": [
+          "published",
+          "superseded"
+        ]
+      },
+      "Publication": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "site_id",
+          "page_id",
+          "version",
+          "source_revision",
+          "path",
+          "locale",
+          "content_hash",
+          "state",
+          "restored_from",
+          "published_at",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "site_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "page_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "source_revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PublicationState"
+          },
+          "restored_from": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "published_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PublicationCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_revision"
+        ],
+        "properties": {
+          "expected_revision": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        }
+      },
+      "RestorationCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_publication_id"
+        ],
+        "properties": {
+          "source_publication_id": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      },
+      "PublicationCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Publication"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "MediaState": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "scanning",
+          "ready",
+          "quarantined",
+          "retired"
+        ]
+      },
+      "MediaMime": {
+        "type": "string",
+        "description": "Allowlist; SVG no se acepta (PF-032).",
+        "enum": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/avif",
+          "application/pdf"
+        ]
+      },
+      "Sha256Hex": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "Media": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "name",
+          "mime",
+          "size",
+          "sha256",
+          "alt",
+          "state",
+          "url",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "organization_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "mime": {
+            "$ref": "#/components/schemas/MediaMime"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20971520
+          },
+          "sha256": {
+            "$ref": "#/components/schemas/Sha256Hex"
+          },
+          "alt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 250
+          },
+          "state": {
+            "$ref": "#/components/schemas/MediaState"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Solo cuando el medio está `ready` (RN-17)."
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "MediaUploadCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "mime",
+          "size",
+          "sha256"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "mime": {
+            "$ref": "#/components/schemas/MediaMime"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20971520
+          },
+          "sha256": {
+            "$ref": "#/components/schemas/Sha256Hex"
+          },
+          "alt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 250
+          }
+        }
+      },
+      "MediaUpload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "media",
+          "upload"
+        ],
+        "properties": {
+          "media": {
+            "$ref": "#/components/schemas/Media"
+          },
+          "upload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "method",
+              "url",
+              "expires_at"
+            ],
+            "properties": {
+              "method": {
+                "type": "string",
+                "const": "PUT"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "expires_at": {
+                "$ref": "#/components/schemas/Timestamp"
+              }
+            }
+          }
+        }
+      },
+      "MediaCompletion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "size",
+          "sha256"
+        ],
+        "properties": {
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20971520
+          },
+          "sha256": {
+            "$ref": "#/components/schemas/Sha256Hex"
+          }
+        }
+      },
+      "MediaCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Media"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "HealthLive": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          }
+        }
+      },
+      "HealthReady": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "environment",
+          "checks",
+          "operations"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "not_ready"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "local",
+              "ci",
+              "staging",
+              "production"
+            ]
+          },
+          "checks": {
+            "type": "object",
+            "description": "Estado de cada dependencia.",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "failing",
+                "not_configured"
+              ]
+            }
+          },
+          "operations": {
+            "type": "object",
+            "description": "Estado de cada operación del contrato (MOCK-04).",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "example",
+                "memory",
+                "real"
+              ]
+            }
+          }
+        }
+      },
+      "Uuid": {
+        "type": "string",
+        "format": "uuid",
+        "description": "UUIDv7 generado por la aplicación."
+      },
+      "Slug": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+        "minLength": 2,
+        "maxLength": 63
+      },
+      "Locale": {
+        "type": "string",
+        "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+        "examples": [
+          "es-PE"
+        ]
+      },
+      "Timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Fecha UTC en RFC 3339."
+      },
+      "NextCursor": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Cursor para la página siguiente, o `null` si no hay más."
+      },
+      "ProblemError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pointer",
+          "detail"
+        ],
+        "properties": {
+          "pointer": {
+            "type": "string",
+            "description": "JSON Pointer del campo con error."
+          },
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "request_id"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z_]+$",
+            "description": "Código estable (spec 9.7)."
+          },
+          "detail": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemError"
+            }
+          }
+        }
+      },
+      "Revision": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "hero.v1": {
+        "title": "Bloque hero, versión 1",
+        "description": "Encabezado de la página con imagen opcional y llamada a la acción (PF-031).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "hero"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "heading"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "subheading": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "image_media_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "image_alt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 250
+              },
+              "cta": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "href"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "href": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                  }
+                }
+              }
+            },
+            "dependentRequired": {
+              "image_media_id": [
+                "image_alt"
+              ]
+            }
+          }
+        }
+      },
+      "rich_text.v1": {
+        "title": "Bloque de texto enriquecido, versión 1",
+        "description": "Texto estructurado en nodos y tramos. No acepta HTML (PF-031, SEC).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "rich_text"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "nodes"
+            ],
+            "properties": {
+              "nodes": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 200,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "spans"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "paragraph",
+                        "heading",
+                        "list_item"
+                      ]
+                    },
+                    "level": {
+                      "type": "integer",
+                      "minimum": 2,
+                      "maximum": 4
+                    },
+                    "spans": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "text"
+                        ],
+                        "properties": {
+                          "text": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "marks": {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "bold",
+                                "italic",
+                                "code"
+                              ]
+                            }
+                          },
+                          "href": {
+                            "type": "string",
+                            "maxLength": 2048,
+                            "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "image.v1": {
+        "title": "Bloque de imagen, versión 1",
+        "description": "Imagen de la biblioteca de medios. El texto alternativo es obligatorio (RN-17).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "image"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "media_id",
+              "alt"
+            ],
+            "properties": {
+              "media_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 250
+              },
+              "caption": {
+                "type": "string",
+                "maxLength": 300
+              }
+            }
+          }
+        }
+      },
+      "event_catalog.v1": {
+        "title": "Bloque de catálogo de eventos, versión 1",
+        "description": "Guarda un filtro, nunca una copia de los eventos (PF-037).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "event_catalog"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "limit"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 24
+              },
+              "filter": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "modality": {
+                    "type": "string",
+                    "enum": [
+                      "in_person",
+                      "online",
+                      "hybrid"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                    "maxLength": 63
+                  },
+                  "from": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "to": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "featured_event.v1": {
+        "title": "Bloque de evento destacado, versión 1",
+        "description": "Guarda el ID del evento y la publication de su release, no una copia (PF-037).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "featured_event"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "event_id",
+              "publication_id"
+            ],
+            "properties": {
+              "event_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "publication_id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        }
+      },
+      "agenda.v1": {
+        "title": "Bloque de agenda, versión 1",
+        "description": "Agenda de un evento según la publication de su release (PF-037).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "agenda"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "event_id",
+              "publication_id"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "event_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "publication_id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "HealthLive": {
+        "description": "El proceso está vivo.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthLive"
+            },
+            "examples": {
+              "ok": {
+                "summary": "Vivo",
+                "value": {
+                  "status": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "HealthReady": {
+        "description": "Estado de las dependencias y de cada operación.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthReady"
+            },
+            "examples": {
+              "ready": {
+                "summary": "Listo, con operaciones en mock",
+                "value": {
+                  "status": "ready",
+                  "environment": "local",
+                  "checks": {
+                    "contract": "ok"
+                  },
+                  "operations": {
+                    "getMe": "example"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HealthNotReady": {
+        "description": "Alguna dependencia falla.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthReady"
+            },
+            "examples": {
+              "not_ready": {
+                "summary": "Una dependencia falla",
+                "value": {
+                  "status": "not_ready",
+                  "environment": "local",
+                  "checks": {
+                    "database": "failing"
+                  },
+                  "operations": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Parámetros o headers inválidos.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "bad_request": {
+                "summary": "Header o parámetro inválido",
+                "value": {
+                  "type": "https://errors.example.pe/bad-request",
+                  "title": "Bad request",
+                  "status": 400,
+                  "code": "bad_request",
+                  "detail": "El parámetro `limit` debe estar entre 1 y 100.",
+                  "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b",
+                  "errors": [
+                    {
+                      "pointer": "/query/limit",
+                      "detail": "debe ser <= 100"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Sin sesión o con un token inválido.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "unauthorized": {
+                "$ref": "#/components/examples/problem_unauthorized"
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Falta un scope, un rol o MFA reciente.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "forbidden": {
+                "$ref": "#/components/examples/problem_forbidden"
+              },
+              "recent_auth_required": {
+                "$ref": "#/components/examples/problem_mfa_required"
+              }
+            }
+          }
+        }
+      },
+      "ValidationFailed": {
+        "description": "El cuerpo no cumple el contrato.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "validation_failed": {
+                "$ref": "#/components/examples/problem_validation_failed"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "No existe o no es visible para quien llama.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "not_found": {
+                "$ref": "#/components/examples/problem_not_found"
+              }
+            }
+          }
+        }
+      },
+      "PreconditionFailed": {
+        "description": "El `If-Match` no coincide con la revisión actual.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "stale_revision": {
+                "$ref": "#/components/examples/problem_stale_revision"
+              }
+            }
+          }
+        }
+      },
+      "PreconditionRequired": {
+        "description": "Falta el header `If-Match`.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "precondition_required": {
+                "summary": "Falta If-Match",
+                "value": {
+                  "type": "https://errors.example.pe/precondition-required",
+                  "title": "Precondition required",
+                  "status": 428,
+                  "code": "precondition_required",
+                  "detail": "Envía el ETag de la revisión en `If-Match`.",
+                  "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflicto de estado, de unicidad o de idempotencia.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "invalid_state_transition": {
+                "$ref": "#/components/examples/problem_conflict"
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "RequestId": {
+        "name": "X-Request-Id",
+        "in": "header",
+        "required": false,
+        "description": "Se acepta si es válido; si no, se genera. Siempre se devuelve.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9-]{8,128}$"
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "description": "Cursor opaco devuelto en `next_cursor`.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Obligatorio en los POST de comando; se retiene al menos 24 h (spec 9.1).",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "IdPath": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "ETag de la revisión que se modifica. Si no coincide → 412; si falta → 428.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "headers": {
+      "NoStore": {
+        "description": "Las respuestas privadas no se cachean.",
+        "schema": {
+          "type": "string",
+          "const": "no-store"
+        }
+      },
+      "RequestId": {
+        "description": "Identificador del request (el recibido si era válido, o uno nuevo).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ETag": {
+        "description": "Revisión del recurso. Se envía en `If-Match` para modificarlo.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Location": {
+        "description": "Destino de la redirección.",
+        "schema": {
+          "type": "string",
+          "format": "uri-reference"
+        }
+      }
+    },
+    "examples": {
+      "sites": {
+        "summary": "Sitios de la organización",
+        "value": {
+          "items": [
+            {
+              "id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+              "slug": "congreso-demo",
+              "name": "Congreso Demo",
+              "kind": "demo",
+              "locale": "es-PE",
+              "state": "live",
+              "updated_at": "2026-11-05T12:00:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "problem_unauthorized": {
+        "summary": "Sin sesión o token inválido",
+        "value": {
+          "type": "https://errors.example.pe/unauthorized",
+          "title": "Unauthorized",
+          "status": 401,
+          "code": "unauthorized",
+          "detail": "Se necesita una sesión válida.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "problem_forbidden": {
+        "summary": "Falta un scope o un rol",
+        "value": {
+          "type": "https://errors.example.pe/forbidden",
+          "title": "Forbidden",
+          "status": 403,
+          "code": "forbidden",
+          "detail": "No tienes permiso para esta operación.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "problem_mfa_required": {
+        "summary": "Falta MFA reciente",
+        "value": {
+          "type": "https://errors.example.pe/recent-auth-required",
+          "title": "Recent authentication required",
+          "status": 403,
+          "code": "recent_auth_required",
+          "detail": "Vuelve a autenticarte con MFA para continuar.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "site_create": {
+        "summary": "Crear el sitio del congreso",
+        "value": {
+          "slug": "congreso-demo",
+          "name": "Congreso Demo",
+          "kind": "demo",
+          "locale": "es-PE"
+        }
+      },
+      "site_draft": {
+        "summary": "Sitio recién creado",
+        "value": {
+          "id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "slug": "congreso-demo",
+          "name": "Congreso Demo",
+          "kind": "demo",
+          "locale": "es-PE",
+          "state": "draft",
+          "theme": {
+            "revision": 1,
+            "tokens": {
+              "color_primary": "#1d4ed8",
+              "color_on_primary": "#ffffff",
+              "color_background": "#ffffff",
+              "color_text": "#111827",
+              "font_family": "humanist",
+              "radius": "small"
+            },
+            "updated_at": "2026-11-05T12:00:00Z"
+          },
+          "navigation": {
+            "revision": 1,
+            "items": [],
+            "updated_at": "2026-11-02T10:00:00Z"
+          },
+          "revision": 1,
+          "created_at": "2026-11-02T10:00:00Z",
+          "updated_at": "2026-11-02T10:00:00Z"
+        }
+      },
+      "slug_taken": {
+        "summary": "El slug ya existe",
+        "value": {
+          "type": "https://errors.example.pe/slug-taken",
+          "title": "Slug taken",
+          "status": 409,
+          "code": "slug_taken",
+          "detail": "Ya hay un sitio con ese slug en la organización.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "problem_validation_failed": {
+        "summary": "Cuerpo inválido",
+        "value": {
+          "type": "https://errors.example.pe/validation-failed",
+          "title": "Validation failed",
+          "status": 422,
+          "code": "validation_failed",
+          "detail": "El cuerpo no cumple el contrato.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b",
+          "errors": [
+            {
+              "pointer": "/slug",
+              "detail": "debe cumplir el patrón '^[a-z0-9]+(-[a-z0-9]+)*$'"
+            }
+          ]
+        }
+      },
+      "site": {
+        "summary": "Sitio publicado",
+        "value": {
+          "id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "slug": "congreso-demo",
+          "name": "Congreso Demo",
+          "kind": "demo",
+          "locale": "es-PE",
+          "state": "live",
+          "theme": {
+            "revision": 2,
+            "tokens": {
+              "color_primary": "#1d4ed8",
+              "color_on_primary": "#ffffff",
+              "color_background": "#ffffff",
+              "color_text": "#111827",
+              "font_family": "humanist",
+              "radius": "small"
+            },
+            "updated_at": "2026-11-05T12:00:00Z"
+          },
+          "navigation": {
+            "revision": 1,
+            "items": [
+              {
+                "label": "Inicio",
+                "href": "/"
+              },
+              {
+                "label": "Guía del congreso",
+                "href": "/guia"
+              },
+              {
+                "label": "Universidad",
+                "href": "https://www.example.com"
+              }
+            ],
+            "updated_at": "2026-11-05T12:00:00Z"
+          },
+          "revision": 4,
+          "created_at": "2026-11-02T10:00:00Z",
+          "updated_at": "2026-11-05T12:00:00Z"
+        }
+      },
+      "problem_not_found": {
+        "summary": "No existe o no es visible",
+        "value": {
+          "type": "https://errors.example.pe/not-found",
+          "title": "Not found",
+          "status": 404,
+          "code": "not_found",
+          "detail": "El recurso no existe.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "site_patch": {
+        "summary": "Cambiar el nombre",
+        "value": {
+          "name": "Congreso Demo 2026"
+        }
+      },
+      "problem_stale_revision": {
+        "summary": "If-Match no coincide",
+        "value": {
+          "type": "https://errors.example.pe/stale-revision",
+          "title": "Stale revision",
+          "status": 412,
+          "code": "stale_revision",
+          "detail": "El recurso cambió desde que lo abriste. Recarga y vuelve a aplicar tus cambios.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b",
+          "errors": []
+        }
+      },
+      "theme_input": {
+        "summary": "Tokens nuevos",
+        "value": {
+          "tokens": {
+            "color_primary": "#1d4ed8",
+            "color_on_primary": "#ffffff",
+            "color_background": "#ffffff",
+            "color_text": "#111827",
+            "font_family": "humanist",
+            "radius": "small"
+          }
+        }
+      },
+      "theme": {
+        "summary": "Tema vigente",
+        "value": {
+          "revision": 2,
+          "tokens": {
+            "color_primary": "#1d4ed8",
+            "color_on_primary": "#ffffff",
+            "color_background": "#ffffff",
+            "color_text": "#111827",
+            "font_family": "humanist",
+            "radius": "small"
+          },
+          "updated_at": "2026-11-05T12:00:00Z"
+        }
+      },
+      "navigation_input": {
+        "summary": "Navegación nueva",
+        "value": {
+          "items": [
+            {
+              "label": "Inicio",
+              "href": "/"
+            },
+            {
+              "label": "Guía del congreso",
+              "href": "/guia"
+            }
+          ]
+        }
+      },
+      "navigation": {
+        "summary": "Navegación vigente",
+        "value": {
+          "revision": 1,
+          "items": [
+            {
+              "label": "Inicio",
+              "href": "/"
+            },
+            {
+              "label": "Guía del congreso",
+              "href": "/guia"
+            },
+            {
+              "label": "Universidad",
+              "href": "https://www.example.com"
+            }
+          ],
+          "updated_at": "2026-11-05T12:00:00Z"
+        }
+      },
+      "pages": {
+        "summary": "Páginas del sitio",
+        "value": {
+          "items": [
+            {
+              "id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+              "path": "/guia",
+              "locale": "es-PE",
+              "title": "Guía del congreso",
+              "state": "published",
+              "current_publication_id": "01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f",
+              "revision": 3,
+              "updated_at": "2026-11-07T14:55:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "page_create": {
+        "summary": "Crear la guía",
+        "value": {
+          "path": "/guia",
+          "locale": "es-PE",
+          "title": "Guía del congreso",
+          "seo": {
+            "title": "Guía del Congreso Demo",
+            "description": "Fechas, sedes y cómo inscribirte.",
+            "canonical": "https://congreso-demo.example.com/guia"
+          },
+          "blocks": [
+            {
+              "id": "01933f52-5e6f-7a71-8b8c-9d0e1f2a3b4c",
+              "type": "hero",
+              "version": 1,
+              "data": {
+                "heading": "Congreso Demo 2026",
+                "subheading": "Tres días de ponencias y talleres en Tingo María.",
+                "image_media_id": "01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b",
+                "image_alt": "Auditorio con asistentes",
+                "cta": {
+                  "label": "Ver la agenda",
+                  "href": "/guia#agenda"
+                }
+              }
+            },
+            {
+              "id": "01933f52-6f70-7b82-8c9d-0e1f2a3b4c5d",
+              "type": "rich_text",
+              "version": 1,
+              "data": {
+                "nodes": [
+                  {
+                    "kind": "heading",
+                    "level": 2,
+                    "spans": [
+                      {
+                        "text": "Cómo llegar"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paragraph",
+                    "spans": [
+                      {
+                        "text": "Las sedes están a 10 minutos del centro. "
+                      },
+                      {
+                        "text": "Revisa el mapa",
+                        "marks": [
+                          "bold"
+                        ],
+                        "href": "https://www.example.com/mapa"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "01933f52-7a81-7c93-8dae-1f2a3b4c5d6e",
+              "type": "featured_event",
+              "version": 1,
+              "data": {
+                "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+                "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d"
+              }
+            }
+          ]
+        }
+      },
+      "page_draft": {
+        "summary": "Página recién creada",
+        "value": {
+          "id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "path": "/guia",
+          "locale": "es-PE",
+          "title": "Guía del congreso",
+          "seo": {
+            "title": "Guía del Congreso Demo",
+            "description": "Fechas, sedes y cómo inscribirte.",
+            "canonical": "https://congreso-demo.example.com/guia"
+          },
+          "blocks": [
+            {
+              "id": "01933f52-5e6f-7a71-8b8c-9d0e1f2a3b4c",
+              "type": "hero",
+              "version": 1,
+              "data": {
+                "heading": "Congreso Demo 2026",
+                "subheading": "Tres días de ponencias y talleres en Tingo María.",
+                "image_media_id": "01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b",
+                "image_alt": "Auditorio con asistentes",
+                "cta": {
+                  "label": "Ver la agenda",
+                  "href": "/guia#agenda"
+                }
+              }
+            },
+            {
+              "id": "01933f52-6f70-7b82-8c9d-0e1f2a3b4c5d",
+              "type": "rich_text",
+              "version": 1,
+              "data": {
+                "nodes": [
+                  {
+                    "kind": "heading",
+                    "level": 2,
+                    "spans": [
+                      {
+                        "text": "Cómo llegar"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paragraph",
+                    "spans": [
+                      {
+                        "text": "Las sedes están a 10 minutos del centro. "
+                      },
+                      {
+                        "text": "Revisa el mapa",
+                        "marks": [
+                          "bold"
+                        ],
+                        "href": "https://www.example.com/mapa"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "01933f52-7a81-7c93-8dae-1f2a3b4c5d6e",
+              "type": "featured_event",
+              "version": 1,
+              "data": {
+                "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+                "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d"
+              }
+            }
+          ],
+          "state": "draft",
+          "current_publication_id": null,
+          "revision": 1,
+          "created_at": "2026-11-03T09:00:00Z",
+          "updated_at": "2026-11-03T09:00:00Z"
+        }
+      },
+      "problem_conflict": {
+        "summary": "Transición no permitida",
+        "value": {
+          "type": "https://errors.example.pe/invalid-state-transition",
+          "title": "Invalid state transition",
+          "status": 409,
+          "code": "invalid_state_transition",
+          "detail": "La transición no está permitida desde el estado actual.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "page": {
+        "summary": "Página con su borrador",
+        "value": {
+          "id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "path": "/guia",
+          "locale": "es-PE",
+          "title": "Guía del congreso",
+          "seo": {
+            "title": "Guía del Congreso Demo",
+            "description": "Fechas, sedes y cómo inscribirte.",
+            "canonical": "https://congreso-demo.example.com/guia"
+          },
+          "blocks": [
+            {
+              "id": "01933f52-5e6f-7a71-8b8c-9d0e1f2a3b4c",
+              "type": "hero",
+              "version": 1,
+              "data": {
+                "heading": "Congreso Demo 2026",
+                "subheading": "Tres días de ponencias y talleres en Tingo María.",
+                "image_media_id": "01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b",
+                "image_alt": "Auditorio con asistentes",
+                "cta": {
+                  "label": "Ver la agenda",
+                  "href": "/guia#agenda"
+                }
+              }
+            },
+            {
+              "id": "01933f52-6f70-7b82-8c9d-0e1f2a3b4c5d",
+              "type": "rich_text",
+              "version": 1,
+              "data": {
+                "nodes": [
+                  {
+                    "kind": "heading",
+                    "level": 2,
+                    "spans": [
+                      {
+                        "text": "Cómo llegar"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paragraph",
+                    "spans": [
+                      {
+                        "text": "Las sedes están a 10 minutos del centro. "
+                      },
+                      {
+                        "text": "Revisa el mapa",
+                        "marks": [
+                          "bold"
+                        ],
+                        "href": "https://www.example.com/mapa"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "01933f52-7a81-7c93-8dae-1f2a3b4c5d6e",
+              "type": "featured_event",
+              "version": 1,
+              "data": {
+                "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+                "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d"
+              }
+            }
+          ],
+          "state": "published",
+          "current_publication_id": "01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f",
+          "revision": 3,
+          "created_at": "2026-11-03T09:00:00Z",
+          "updated_at": "2026-11-07T14:55:00Z"
+        }
+      },
+      "page_patch": {
+        "summary": "Cambiar el título",
+        "value": {
+          "title": "Guía del Congreso Demo 2026"
+        }
+      },
+      "preview_token_create": {
+        "summary": "Vista previa de 15 minutos",
+        "value": {
+          "ttl_seconds": 900
+        }
+      },
+      "preview_token": {
+        "summary": "URL de vista previa (token ficticio)",
+        "value": {
+          "url": "http://localhost:5173/preview/example-preview-token-000000000000",
+          "expires_at": "2026-11-08T15:15:00Z"
+        }
+      },
+      "publications": {
+        "summary": "Historial de la página",
+        "value": {
+          "items": [
+            {
+              "id": "01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+              "page_id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+              "version": 2,
+              "source_revision": 3,
+              "path": "/guia",
+              "locale": "es-PE",
+              "content_hash": "sha256:9f2c4e1a7b3d5f6e8a0c2b4d6f8e0a1c3b5d7f9e1a3c5b7d9f1e3a5c7b9d1f3e",
+              "state": "published",
+              "restored_from": null,
+              "published_at": "2026-11-07T15:00:00Z",
+              "revision": 1,
+              "created_at": "2026-11-07T15:00:00Z",
+              "updated_at": "2026-11-07T15:00:00Z"
+            },
+            {
+              "id": "01933f5f-1b2c-7d3e-8f40-5b6c7d8e9f0a",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+              "page_id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+              "version": 1,
+              "source_revision": 1,
+              "path": "/guia",
+              "locale": "es-PE",
+              "content_hash": "sha256:4b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a5c7e9b1d",
+              "state": "superseded",
+              "restored_from": null,
+              "published_at": "2026-11-04T10:00:00Z",
+              "revision": 2,
+              "created_at": "2026-11-04T10:00:00Z",
+              "updated_at": "2026-11-07T15:00:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "publication_create": {
+        "summary": "Publicar la revisión 3",
+        "value": {
+          "expected_revision": 3
+        }
+      },
+      "publication": {
+        "summary": "Publicación vigente",
+        "value": {
+          "id": "01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "page_id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "version": 2,
+          "source_revision": 3,
+          "path": "/guia",
+          "locale": "es-PE",
+          "content_hash": "sha256:9f2c4e1a7b3d5f6e8a0c2b4d6f8e0a1c3b5d7f9e1a3c5b7d9f1e3a5c7b9d1f3e",
+          "state": "published",
+          "restored_from": null,
+          "published_at": "2026-11-07T15:00:00Z",
+          "revision": 1,
+          "created_at": "2026-11-07T15:00:00Z",
+          "updated_at": "2026-11-07T15:00:00Z"
+        }
+      },
+      "restoration_create": {
+        "summary": "Restaurar la versión 1",
+        "value": {
+          "source_publication_id": "01933f5f-1b2c-7d3e-8f40-5b6c7d8e9f0a"
+        }
+      },
+      "publication_restored": {
+        "summary": "Publicación nueva restaurada de la versión 1",
+        "value": {
+          "id": "01933f61-2c3d-7e4f-8a51-6c7d8e9f0a1b",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "page_id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "version": 3,
+          "source_revision": 3,
+          "path": "/guia",
+          "locale": "es-PE",
+          "content_hash": "sha256:4b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a5c7e9b1d",
+          "state": "published",
+          "restored_from": "01933f5f-1b2c-7d3e-8f40-5b6c7d8e9f0a",
+          "published_at": "2026-11-08T16:00:00Z",
+          "revision": 1,
+          "created_at": "2026-11-08T16:00:00Z",
+          "updated_at": "2026-11-08T16:00:00Z"
+        }
+      },
+      "media_upload_create": {
+        "summary": "Subir una foto del auditorio",
+        "value": {
+          "name": "auditorio.webp",
+          "mime": "image/webp",
+          "size": 245760,
+          "sha256": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b",
+          "alt": "Auditorio con asistentes"
+        }
+      },
+      "media_upload": {
+        "summary": "Medio pendiente y URL de subida (firma ficticia)",
+        "value": {
+          "media": {
+            "id": "01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b",
+            "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+            "name": "auditorio.webp",
+            "mime": "image/webp",
+            "size": 245760,
+            "sha256": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b",
+            "alt": "Auditorio con asistentes",
+            "state": "pending",
+            "url": null,
+            "revision": 1,
+            "created_at": "2026-11-03T08:00:00Z",
+            "updated_at": "2026-11-03T08:00:00Z"
+          },
+          "upload": {
+            "method": "PUT",
+            "url": "http://localhost:9000/incuba-media/uploads/01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b?signature=example",
+            "expires_at": "2026-11-03T08:05:00Z"
+          }
+        }
+      },
+      "media_completion": {
+        "summary": "Confirmar la subida",
+        "value": {
+          "size": 245760,
+          "sha256": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b"
+        }
+      },
+      "media_scanning": {
+        "summary": "Medio en antivirus",
+        "value": {
+          "id": "01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b",
+          "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+          "name": "auditorio.webp",
+          "mime": "image/webp",
+          "size": 245760,
+          "sha256": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b",
+          "alt": "Auditorio con asistentes",
+          "state": "scanning",
+          "url": null,
+          "revision": 2,
+          "created_at": "2026-11-03T08:00:00Z",
+          "updated_at": "2026-11-03T08:00:30Z"
+        }
+      },
+      "media_list": {
+        "summary": "Biblioteca de medios",
+        "value": {
+          "items": [
+            {
+              "id": "01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b",
+              "organization_id": "01933f40-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+              "name": "auditorio.webp",
+              "mime": "image/webp",
+              "size": 245760,
+              "sha256": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b",
+              "alt": "Auditorio con asistentes",
+              "state": "ready",
+              "url": "http://localhost:9000/incuba-media/01933f51-4d5e-7f60-8a7b-8c9d0e1f2a3b.webp",
+              "revision": 3,
+              "created_at": "2026-11-03T08:00:00Z",
+              "updated_at": "2026-11-03T08:01:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    }
+  }
+}

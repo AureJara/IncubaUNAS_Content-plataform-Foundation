@@ -1,0 +1,22 @@
+{
+  "title": "Bloque de agenda, versión 1",
+  "description": "Agenda de un evento según la publication de su release (PF-037).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "version", "data"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "type": { "type": "string", "const": "agenda" },
+    "version": { "type": "integer", "const": 1 },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "publication_id"],
+      "properties": {
+        "heading": { "type": "string", "maxLength": 120 },
+        "event_id": { "type": "string", "format": "uuid" },
+        "publication_id": { "type": "string", "format": "uuid" }
+      }
+    }
+  }
+}

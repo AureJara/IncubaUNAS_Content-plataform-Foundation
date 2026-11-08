@@ -1,0 +1,13 @@
+{
+  "name": "@incuba/authz",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Verificación de tokens internos, claims, roles y scopes (spec 1.6, 3.6 y 9.9). Lo usan los equipos 2–4",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "jose": "6.2.15"
+  }
+}

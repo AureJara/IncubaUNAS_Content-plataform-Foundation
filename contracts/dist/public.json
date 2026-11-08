@@ -1,0 +1,2100 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Public Read API (Equipo 1)",
+    "version": "1.0.0",
+    "description": "Lectura pública de sitios, páginas publicadas, catálogo y releases de eventos (spec 9.5 y 9.6). La sirve `content-api` (proceso public-read) solo desde proyecciones: una visita nunca llama a otro servicio (RN-20). La llaman los loaders de servidor de `web-public`.\n\nLas respuestas llevan `ETag`, `Cache-Control` público y `Surrogate-Key`, y nunca `Set-Cookie`.",
+    "license": {
+      "name": "Propietario (IncubaUNAS)",
+      "identifier": "LicenseRef-IncubaUNAS"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8083",
+      "description": "Public Read API local"
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "sites",
+      "description": "Resolución de host, sitio y páginas publicadas."
+    },
+    {
+      "name": "events",
+      "description": "Catálogo y releases públicos de eventos."
+    },
+    {
+      "name": "previews",
+      "description": "Vistas previas de un solo uso."
+    },
+    {
+      "name": "health",
+      "description": "Vida y disponibilidad del servicio."
+    }
+  ],
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "getHealthLive",
+        "summary": "Health de vida",
+        "tags": [
+          "health"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/HealthLive"
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "getHealthReady",
+        "summary": "Health de disponibilidad",
+        "tags": [
+          "health"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/HealthReady"
+          },
+          "503": {
+            "$ref": "#/components/responses/HealthNotReady"
+          }
+        }
+      }
+    },
+    "/public/v1/site-resolutions": {
+      "get": {
+        "operationId": "resolveSite",
+        "summary": "Resolver host → sitio",
+        "description": "El host se canoniza (minúsculas, sin puerto, IDN a punycode, sin punto final) y solo se resuelven dominios `active`. Devuelve IDs opacos (PF-022).",
+        "tags": [
+          "sites"
+        ],
+        "parameters": [
+          {
+            "name": "host",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253
+            }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sitio del host.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PublicCacheControl"
+              },
+              "Surrogate-Key": {
+                "$ref": "#/components/headers/SurrogateKey"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResolution"
+                },
+                "examples": {
+                  "resolution": {
+                    "$ref": "#/components/examples/site_resolution"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{slug}": {
+      "get": {
+        "operationId": "getPublicSite",
+        "summary": "Snapshot público del sitio",
+        "tags": [
+          "sites"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SiteSlug"
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sitio con tema y navegación publicados.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/PublicCacheControl"
+              },
+              "Surrogate-Key": {
+                "$ref": "#/components/headers/SurrogateKey"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/Vary"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSite"
+                },
+                "examples": {
+                  "site": {
+                    "$ref": "#/components/examples/public_site"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{slug}/pages": {
+      "get": {
+        "operationId": "listPublishedPages",
+        "summary": "Rutas publicadas, para el sitemap",
+        "tags": [
+          "sites"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SiteSlug"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Páginas con publicación vigente.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PublicCacheControl"
+              },
+              "Surrogate-Key": {
+                "$ref": "#/components/headers/SurrogateKey"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishedPageCollection"
+                },
+                "examples": {
+                  "pages": {
+                    "$ref": "#/components/examples/published_pages"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{slug}/pages/{path}": {
+      "get": {
+        "operationId": "getPublicPage",
+        "summary": "Página publicada",
+        "tags": [
+          "sites"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SiteSlug"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "description": "Ruta de la página codificada como un solo segmento (`encodeURIComponent`): `/guia` se envía como `%2Fguia` y la portada como `%2F`.",
+            "schema": {
+              "$ref": "#/components/schemas/PagePath"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Locale"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Snapshot de la publicación vigente.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/PublicCacheControl"
+              },
+              "Surrogate-Key": {
+                "$ref": "#/components/headers/SurrogateKey"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/Vary"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicPage"
+                },
+                "examples": {
+                  "page": {
+                    "$ref": "#/components/examples/public_page"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{slug}/events": {
+      "get": {
+        "operationId": "listPublicEvents",
+        "summary": "Catálogo proyectado",
+        "description": "Solo releases `active` (RN-14).",
+        "tags": [
+          "events"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SiteSlug"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "modality",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Modality"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Slug"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eventos del sitio.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PublicCacheControl"
+              },
+              "Surrogate-Key": {
+                "$ref": "#/components/headers/SurrogateKey"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicEventCollection"
+                },
+                "examples": {
+                  "events": {
+                    "$ref": "#/components/examples/public_events"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{slug}/events/{event_slug}": {
+      "get": {
+        "operationId": "getPublicEvent",
+        "summary": "Release público coherente",
+        "description": "Todo lo que devuelve sale de la misma `publication_id` (PF-042).",
+        "tags": [
+          "events"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SiteSlug"
+          },
+          {
+            "name": "event_slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Slug"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evento, agenda y programas del release activo.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/PublicCacheControl"
+              },
+              "Surrogate-Key": {
+                "$ref": "#/components/headers/SurrogateKey"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/Vary"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicEvent"
+                },
+                "examples": {
+                  "event": {
+                    "$ref": "#/components/examples/public_event"
+                  },
+                  "cancelled": {
+                    "$ref": "#/components/examples/public_event_cancelled"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/v1/previews/{token}": {
+      "get": {
+        "operationId": "getPreview",
+        "summary": "Leer una vista previa",
+        "description": "Un uso, ligada al usuario, sin caché y sin indexar (PF-033).",
+        "tags": [
+          "previews"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{32,128}$"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Borrador de la página en la revisión de la vista previa.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "X-Robots-Tag": {
+                "$ref": "#/components/headers/NoIndex"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preview"
+                },
+                "examples": {
+                  "preview": {
+                    "$ref": "#/components/examples/preview"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Vista previa vencida, usada o inexistente.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "preview_expired": {
+                    "$ref": "#/components/examples/preview_expired"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "SiteSlug": {
+        "name": "slug",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Slug"
+        }
+      },
+      "IfNoneMatch": {
+        "name": "If-None-Match",
+        "in": "header",
+        "required": false,
+        "description": "ETag ya cacheado; si coincide se responde 304.",
+        "schema": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "RequestId": {
+        "name": "X-Request-Id",
+        "in": "header",
+        "required": false,
+        "description": "Se acepta si es válido; si no, se genera. Siempre se devuelve.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9-]{8,128}$"
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "description": "Cursor opaco devuelto en `next_cursor`.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      }
+    },
+    "headers": {
+      "Vary": {
+        "description": "Headers que cambian la respuesta.",
+        "schema": {
+          "type": "string"
+        },
+        "example": "Accept-Encoding"
+      },
+      "NoIndex": {
+        "description": "Las vistas previas no se indexan.",
+        "schema": {
+          "type": "string",
+          "const": "noindex"
+        }
+      },
+      "PublicCacheControl": {
+        "description": "Caché pública por defecto (spec 9.5).",
+        "schema": {
+          "type": "string"
+        },
+        "example": "public, max-age=60, stale-while-revalidate=300"
+      },
+      "SurrogateKey": {
+        "description": "Claves para purgar el CDN por sitio, página, publicación o evento.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "RequestId": {
+        "description": "Identificador del request (el recibido si era válido, o uno nuevo).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ETag": {
+        "description": "Revisión del recurso. Se envía en `If-Match` para modificarlo.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "NoStore": {
+        "description": "Las respuestas privadas no se cachean.",
+        "schema": {
+          "type": "string",
+          "const": "no-store"
+        }
+      }
+    },
+    "responses": {
+      "NotModified": {
+        "description": "El ETag coincide; se usa la copia cacheada.",
+        "headers": {
+          "ETag": {
+            "$ref": "#/components/headers/ETag"
+          }
+        }
+      },
+      "HealthLive": {
+        "description": "El proceso está vivo.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthLive"
+            },
+            "examples": {
+              "ok": {
+                "summary": "Vivo",
+                "value": {
+                  "status": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "HealthReady": {
+        "description": "Estado de las dependencias y de cada operación.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthReady"
+            },
+            "examples": {
+              "ready": {
+                "summary": "Listo, con operaciones en mock",
+                "value": {
+                  "status": "ready",
+                  "environment": "local",
+                  "checks": {
+                    "contract": "ok"
+                  },
+                  "operations": {
+                    "getMe": "example"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HealthNotReady": {
+        "description": "Alguna dependencia falla.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HealthReady"
+            },
+            "examples": {
+              "not_ready": {
+                "summary": "Una dependencia falla",
+                "value": {
+                  "status": "not_ready",
+                  "environment": "local",
+                  "checks": {
+                    "database": "failing"
+                  },
+                  "operations": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Parámetros o headers inválidos.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "bad_request": {
+                "summary": "Header o parámetro inválido",
+                "value": {
+                  "type": "https://errors.example.pe/bad-request",
+                  "title": "Bad request",
+                  "status": 400,
+                  "code": "bad_request",
+                  "detail": "El parámetro `limit` debe estar entre 1 y 100.",
+                  "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b",
+                  "errors": [
+                    {
+                      "pointer": "/query/limit",
+                      "detail": "debe ser <= 100"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "No existe o no es visible para quien llama.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "examples": {
+              "not_found": {
+                "$ref": "#/components/examples/problem_not_found"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Modality": {
+        "type": "string",
+        "enum": [
+          "in_person",
+          "online",
+          "hybrid"
+        ]
+      },
+      "PagePath": {
+        "type": "string",
+        "pattern": "^/([a-z0-9-]+(/[a-z0-9-]+)*)?$",
+        "maxLength": 255
+      },
+      "SiteResolution": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "site_id",
+          "slug",
+          "locale"
+        ],
+        "properties": {
+          "site_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          }
+        }
+      },
+      "PublicTheme": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "color_primary",
+          "color_on_primary",
+          "color_background",
+          "color_text",
+          "font_family",
+          "radius"
+        ],
+        "properties": {
+          "color_primary": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "color_on_primary": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "color_background": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "color_text": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "font_family": {
+            "type": "string",
+            "enum": [
+              "system",
+              "serif",
+              "humanist"
+            ]
+          },
+          "radius": {
+            "type": "string",
+            "enum": [
+              "none",
+              "small",
+              "medium"
+            ]
+          }
+        }
+      },
+      "PublicSite": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "site_id",
+          "slug",
+          "name",
+          "kind",
+          "locale",
+          "theme",
+          "navigation"
+        ],
+        "properties": {
+          "site_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "product",
+              "demo",
+              "client"
+            ],
+            "description": "`demo` muestra el banner \"Demo\" en todas las páginas (PF-041)."
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "theme": {
+            "$ref": "#/components/schemas/PublicTheme"
+          },
+          "navigation": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "href"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string",
+                  "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Block": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/hero.v1"
+          },
+          {
+            "$ref": "#/components/schemas/rich_text.v1"
+          },
+          {
+            "$ref": "#/components/schemas/image.v1"
+          },
+          {
+            "$ref": "#/components/schemas/event_catalog.v1"
+          },
+          {
+            "$ref": "#/components/schemas/featured_event.v1"
+          },
+          {
+            "$ref": "#/components/schemas/agenda.v1"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type"
+        }
+      },
+      "Seo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "canonical": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "PublicPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "site_id",
+          "page_id",
+          "publication_id",
+          "path",
+          "locale",
+          "title",
+          "seo",
+          "blocks",
+          "content_hash",
+          "published_at"
+        ],
+        "properties": {
+          "site_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "page_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "publication_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "title": {
+            "type": "string"
+          },
+          "seo": {
+            "$ref": "#/components/schemas/Seo"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Block"
+            }
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "published_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "Preview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "site_id",
+          "page_id",
+          "revision",
+          "path",
+          "locale",
+          "title",
+          "seo",
+          "blocks",
+          "expires_at"
+        ],
+        "properties": {
+          "site_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "page_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "title": {
+            "type": "string"
+          },
+          "seo": {
+            "$ref": "#/components/schemas/Seo"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Block"
+            }
+          },
+          "expires_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PublishedPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "locale",
+          "published_at"
+        ],
+        "properties": {
+          "path": {
+            "$ref": "#/components/schemas/PagePath"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "published_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PublishedPageCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublishedPage"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "Registration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "as_of"
+        ],
+        "description": "Orientativa; quien decide el cupo es Participation (RN-15).",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_open",
+              "open",
+              "few_left",
+              "full",
+              "closed"
+            ]
+          },
+          "as_of": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PublicEventSummary": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PublicEventFields"
+          }
+        ],
+        "type": "object",
+        "unevaluatedProperties": false
+      },
+      "PublicEventFields": {
+        "type": "object",
+        "description": "Campos comunes del resumen y del detalle de un evento.",
+        "required": [
+          "event_id",
+          "publication_id",
+          "slug",
+          "title",
+          "summary",
+          "state",
+          "modality",
+          "starts_at",
+          "ends_at",
+          "timezone",
+          "registration"
+        ],
+        "properties": {
+          "event_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "publication_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "cancelled"
+            ]
+          },
+          "modality": {
+            "$ref": "#/components/schemas/Modality"
+          },
+          "starts_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "ends_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "venue_name": {
+            "type": "string"
+          },
+          "registration": {
+            "$ref": "#/components/schemas/Registration"
+          }
+        }
+      },
+      "PublicEventCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicEventSummary"
+            }
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/NextCursor"
+          }
+        }
+      },
+      "PublicEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PublicEventFields"
+          }
+        ],
+        "type": "object",
+        "unevaluatedProperties": false,
+        "required": [
+          "description",
+          "sessions",
+          "programs"
+        ],
+        "properties": {
+          "description": {
+            "type": "array",
+            "description": "Párrafos de texto plano.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "title",
+                "starts_at",
+                "ends_at"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/components/schemas/Uuid"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "starts_at": {
+                  "$ref": "#/components/schemas/Timestamp"
+                },
+                "ends_at": {
+                  "$ref": "#/components/schemas/Timestamp"
+                },
+                "location": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "programs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/components/schemas/Uuid"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "HealthLive": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          }
+        }
+      },
+      "HealthReady": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "environment",
+          "checks",
+          "operations"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "not_ready"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "local",
+              "ci",
+              "staging",
+              "production"
+            ]
+          },
+          "checks": {
+            "type": "object",
+            "description": "Estado de cada dependencia.",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "failing",
+                "not_configured"
+              ]
+            }
+          },
+          "operations": {
+            "type": "object",
+            "description": "Estado de cada operación del contrato (MOCK-04).",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "example",
+                "memory",
+                "real"
+              ]
+            }
+          }
+        }
+      },
+      "Uuid": {
+        "type": "string",
+        "format": "uuid",
+        "description": "UUIDv7 generado por la aplicación."
+      },
+      "Slug": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+        "minLength": 2,
+        "maxLength": 63
+      },
+      "Locale": {
+        "type": "string",
+        "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+        "examples": [
+          "es-PE"
+        ]
+      },
+      "ProblemError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pointer",
+          "detail"
+        ],
+        "properties": {
+          "pointer": {
+            "type": "string",
+            "description": "JSON Pointer del campo con error."
+          },
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "request_id"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z_]+$",
+            "description": "Código estable (spec 9.7)."
+          },
+          "detail": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemError"
+            }
+          }
+        }
+      },
+      "Timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Fecha UTC en RFC 3339."
+      },
+      "NextCursor": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Cursor para la página siguiente, o `null` si no hay más."
+      },
+      "hero.v1": {
+        "title": "Bloque hero, versión 1",
+        "description": "Encabezado de la página con imagen opcional y llamada a la acción (PF-031).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "hero"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "heading"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "subheading": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "image_media_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "image_alt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 250
+              },
+              "cta": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "href"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "href": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                  }
+                }
+              }
+            },
+            "dependentRequired": {
+              "image_media_id": [
+                "image_alt"
+              ]
+            }
+          }
+        }
+      },
+      "rich_text.v1": {
+        "title": "Bloque de texto enriquecido, versión 1",
+        "description": "Texto estructurado en nodos y tramos. No acepta HTML (PF-031, SEC).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "rich_text"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "nodes"
+            ],
+            "properties": {
+              "nodes": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 200,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "spans"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "paragraph",
+                        "heading",
+                        "list_item"
+                      ]
+                    },
+                    "level": {
+                      "type": "integer",
+                      "minimum": 2,
+                      "maximum": 4
+                    },
+                    "spans": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "text"
+                        ],
+                        "properties": {
+                          "text": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "marks": {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "bold",
+                                "italic",
+                                "code"
+                              ]
+                            }
+                          },
+                          "href": {
+                            "type": "string",
+                            "maxLength": 2048,
+                            "pattern": "^(/[^\\s]*|https://[^\\s]+)$"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "image.v1": {
+        "title": "Bloque de imagen, versión 1",
+        "description": "Imagen de la biblioteca de medios. El texto alternativo es obligatorio (RN-17).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "image"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "media_id",
+              "alt"
+            ],
+            "properties": {
+              "media_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 250
+              },
+              "caption": {
+                "type": "string",
+                "maxLength": 300
+              }
+            }
+          }
+        }
+      },
+      "event_catalog.v1": {
+        "title": "Bloque de catálogo de eventos, versión 1",
+        "description": "Guarda un filtro, nunca una copia de los eventos (PF-037).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "event_catalog"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "limit"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 24
+              },
+              "filter": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "modality": {
+                    "type": "string",
+                    "enum": [
+                      "in_person",
+                      "online",
+                      "hybrid"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                    "maxLength": 63
+                  },
+                  "from": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "to": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "featured_event.v1": {
+        "title": "Bloque de evento destacado, versión 1",
+        "description": "Guarda el ID del evento y la publication de su release, no una copia (PF-037).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "featured_event"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "event_id",
+              "publication_id"
+            ],
+            "properties": {
+              "event_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "publication_id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        }
+      },
+      "agenda.v1": {
+        "title": "Bloque de agenda, versión 1",
+        "description": "Agenda de un evento según la publication de su release (PF-037).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "version",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "const": "agenda"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "event_id",
+              "publication_id"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "event_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "publication_id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        }
+      },
+      "Revision": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "examples": {
+      "site_resolution": {
+        "summary": "Host resuelto a su sitio",
+        "value": {
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "slug": "congreso-demo",
+          "locale": "es-PE"
+        }
+      },
+      "problem_not_found": {
+        "summary": "No existe o no es visible",
+        "value": {
+          "type": "https://errors.example.pe/not-found",
+          "title": "Not found",
+          "status": 404,
+          "code": "not_found",
+          "detail": "El recurso no existe.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      },
+      "public_site": {
+        "summary": "Sitio demo con tema y navegación",
+        "value": {
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "slug": "congreso-demo",
+          "name": "Congreso Demo",
+          "kind": "demo",
+          "locale": "es-PE",
+          "theme": {
+            "color_primary": "#1d4ed8",
+            "color_on_primary": "#ffffff",
+            "color_background": "#ffffff",
+            "color_text": "#111827",
+            "font_family": "humanist",
+            "radius": "small"
+          },
+          "navigation": [
+            {
+              "label": "Inicio",
+              "href": "/"
+            },
+            {
+              "label": "Guía del congreso",
+              "href": "/guia"
+            }
+          ]
+        }
+      },
+      "published_pages": {
+        "summary": "Rutas publicadas",
+        "value": {
+          "items": [
+            {
+              "path": "/",
+              "locale": "es-PE",
+              "published_at": "2026-11-04T10:00:00Z"
+            },
+            {
+              "path": "/guia",
+              "locale": "es-PE",
+              "published_at": "2026-11-07T15:00:00Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "public_page": {
+        "summary": "Página publicada",
+        "value": {
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "page_id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "publication_id": "01933f60-0a1b-7c2d-8e3f-4a5b6c7d8e9f",
+          "path": "/guia",
+          "locale": "es-PE",
+          "title": "Guía del congreso",
+          "seo": {
+            "title": "Guía del Congreso Demo",
+            "description": "Fechas, sedes y cómo inscribirte.",
+            "canonical": "https://congreso-demo.example.com/guia"
+          },
+          "blocks": [
+            {
+              "id": "01933f52-5e6f-7a71-8b8c-9d0e1f2a3b4c",
+              "type": "hero",
+              "version": 1,
+              "data": {
+                "heading": "Congreso Demo 2026",
+                "subheading": "Tres días de ponencias y talleres en Tingo María.",
+                "cta": {
+                  "label": "Ver la agenda",
+                  "href": "/guia#agenda"
+                }
+              }
+            },
+            {
+              "id": "01933f52-7a81-7c93-8dae-1f2a3b4c5d6e",
+              "type": "featured_event",
+              "version": 1,
+              "data": {
+                "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+                "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d"
+              }
+            }
+          ],
+          "content_hash": "sha256:9f2c4e1a7b3d5f6e8a0c2b4d6f8e0a1c3b5d7f9e1a3c5b7d9f1e3a5c7b9d1f3e",
+          "published_at": "2026-11-07T15:00:00Z"
+        }
+      },
+      "public_events": {
+        "summary": "Catálogo del sitio",
+        "value": {
+          "items": [
+            {
+              "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+              "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d",
+              "slug": "congreso-demo-2026",
+              "title": "Congreso Demo 2026",
+              "summary": "Ponencias y talleres sobre innovación agroindustrial.",
+              "state": "scheduled",
+              "modality": "in_person",
+              "starts_at": "2026-12-01T14:00:00Z",
+              "ends_at": "2026-12-03T23:00:00Z",
+              "timezone": "America/Lima",
+              "venue_name": "Auditorio principal",
+              "registration": {
+                "status": "open",
+                "as_of": "2026-11-08T15:00:00Z"
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      },
+      "public_event": {
+        "summary": "Release activo del evento",
+        "value": {
+          "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+          "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d",
+          "slug": "congreso-demo-2026",
+          "title": "Congreso Demo 2026",
+          "summary": "Ponencias y talleres sobre innovación agroindustrial.",
+          "state": "scheduled",
+          "modality": "in_person",
+          "starts_at": "2026-12-01T14:00:00Z",
+          "ends_at": "2026-12-03T23:00:00Z",
+          "timezone": "America/Lima",
+          "venue_name": "Auditorio principal",
+          "registration": {
+            "status": "open",
+            "as_of": "2026-11-08T15:00:00Z"
+          },
+          "description": [
+            "Tres días de ponencias, talleres y una feria de proyectos.",
+            "La inscripción es gratuita y tiene cupos limitados."
+          ],
+          "sessions": [
+            {
+              "id": "01933f72-7a81-7c93-8dae-2f3a4b5c6d7e",
+              "title": "Inauguración",
+              "starts_at": "2026-12-01T14:00:00Z",
+              "ends_at": "2026-12-01T15:00:00Z",
+              "location": "Auditorio principal"
+            }
+          ],
+          "programs": [
+            {
+              "id": "01933f73-8b92-7da4-9ebf-3a4b5c6d7e8f",
+              "name": "Innovación agroindustrial"
+            }
+          ]
+        }
+      },
+      "public_event_cancelled": {
+        "summary": "Evento cancelado",
+        "value": {
+          "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+          "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d",
+          "slug": "congreso-demo-2026",
+          "title": "Congreso Demo 2026",
+          "summary": "Ponencias y talleres sobre innovación agroindustrial.",
+          "state": "cancelled",
+          "modality": "in_person",
+          "starts_at": "2026-12-01T14:00:00Z",
+          "ends_at": "2026-12-03T23:00:00Z",
+          "timezone": "America/Lima",
+          "venue_name": "Auditorio principal",
+          "registration": {
+            "status": "closed",
+            "as_of": "2026-11-08T15:00:00Z"
+          },
+          "description": [
+            "Tres días de ponencias, talleres y una feria de proyectos.",
+            "La inscripción es gratuita y tiene cupos limitados."
+          ],
+          "sessions": [
+            {
+              "id": "01933f72-7a81-7c93-8dae-2f3a4b5c6d7e",
+              "title": "Inauguración",
+              "starts_at": "2026-12-01T14:00:00Z",
+              "ends_at": "2026-12-01T15:00:00Z",
+              "location": "Auditorio principal"
+            }
+          ],
+          "programs": [
+            {
+              "id": "01933f73-8b92-7da4-9ebf-3a4b5c6d7e8f",
+              "name": "Innovación agroindustrial"
+            }
+          ]
+        }
+      },
+      "preview": {
+        "summary": "Borrador en vista previa",
+        "value": {
+          "site_id": "01933f45-4d5e-7f6a-9b7c-8d9e0f1a2b3c",
+          "page_id": "01933f50-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "revision": 4,
+          "path": "/guia",
+          "locale": "es-PE",
+          "title": "Guía del congreso (borrador)",
+          "seo": {
+            "title": "Guía del Congreso Demo",
+            "description": "Fechas, sedes y cómo inscribirte.",
+            "canonical": "https://congreso-demo.example.com/guia"
+          },
+          "blocks": [
+            {
+              "id": "01933f52-5e6f-7a71-8b8c-9d0e1f2a3b4c",
+              "type": "hero",
+              "version": 1,
+              "data": {
+                "heading": "Congreso Demo 2026",
+                "subheading": "Tres días de ponencias y talleres en Tingo María.",
+                "cta": {
+                  "label": "Ver la agenda",
+                  "href": "/guia#agenda"
+                }
+              }
+            },
+            {
+              "id": "01933f52-7a81-7c93-8dae-1f2a3b4c5d6e",
+              "type": "featured_event",
+              "version": 1,
+              "data": {
+                "event_id": "01933f70-5e6f-7a71-9b8c-9d0e1f2a3b4c",
+                "publication_id": "01933f71-6f70-7b82-8c9d-0e1f2a3b4c5d"
+              }
+            }
+          ],
+          "expires_at": "2026-11-08T15:15:00Z"
+        }
+      },
+      "preview_expired": {
+        "summary": "Vista previa vencida o usada",
+        "value": {
+          "type": "https://errors.example.pe/preview-expired",
+          "title": "Preview expired",
+          "status": 404,
+          "code": "preview_expired",
+          "detail": "La vista previa venció o ya se usó. Genera una nueva desde el editor.",
+          "request_id": "01933f5e-8c2a-7b4e-9a10-3c5d7e9f1a2b"
+        }
+      }
+    }
+  }
+}

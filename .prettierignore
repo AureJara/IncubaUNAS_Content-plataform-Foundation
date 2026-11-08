@@ -1,0 +1,9 @@
+spec.md
+backlog.md
+docs/**/*.md
+CLAUDE.md
+pnpm-lock.yaml
+contracts/dist/
+contracts/docs/
+**/generated/
+coverage/

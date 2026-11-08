@@ -1,0 +1,13 @@
+{
+  "name": "@incuba/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cliente HTTP tipado generado de los contratos OpenAPI (API-04)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  }
+}

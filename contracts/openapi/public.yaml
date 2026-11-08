@@ -1,0 +1,470 @@
+openapi: 3.1.0
+info:
+  title: Public Read API (Equipo 1)
+  version: 1.0.0
+  description: >-
+    Lectura pública de sitios, páginas publicadas, catálogo y releases de eventos (spec 9.5 y 9.6). La sirve
+    `content-api` (proceso public-read) solo desde proyecciones: una visita nunca llama a otro servicio (RN-20). La
+    llaman los loaders de servidor de `web-public`.
+
+
+    Las respuestas llevan `ETag`, `Cache-Control` público y `Surrogate-Key`, y nunca `Set-Cookie`.
+  license:
+    name: Propietario (IncubaUNAS)
+    identifier: LicenseRef-IncubaUNAS
+servers:
+  - url: http://localhost:8083
+    description: Public Read API local
+tags:
+  - name: sites
+    description: Resolución de host, sitio y páginas publicadas.
+  - name: events
+    description: Catálogo y releases públicos de eventos.
+  - name: previews
+    description: Vistas previas de un solo uso.
+  - name: health
+    description: Vida y disponibilidad del servicio.
+security: []
+paths:
+  /health/live:
+    $ref: './common.yaml#/components/pathItems/HealthLive'
+  /health/ready:
+    $ref: './common.yaml#/components/pathItems/HealthReady'
+
+  /public/v1/site-resolutions:
+    get:
+      operationId: resolveSite
+      summary: Resolver host → sitio
+      description: >-
+        El host se canoniza (minúsculas, sin puerto, IDN a punycode, sin punto final) y solo se resuelven dominios
+        `active`. Devuelve IDs opacos (PF-022).
+      tags: [sites]
+      parameters:
+        - name: host
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 253 }
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Sitio del host.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/PublicCacheControl' }
+            Surrogate-Key: { $ref: './common.yaml#/components/headers/SurrogateKey' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SiteResolution' }
+              examples:
+                resolution: { $ref: '../examples/public.yaml#/site_resolution' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /public/v1/sites/{slug}:
+    get:
+      operationId: getPublicSite
+      summary: Snapshot público del sitio
+      tags: [sites]
+      parameters:
+        - $ref: '#/components/parameters/SiteSlug'
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Sitio con tema y navegación publicados.
+          headers:
+            ETag: { $ref: './common.yaml#/components/headers/ETag' }
+            Cache-Control: { $ref: './common.yaml#/components/headers/PublicCacheControl' }
+            Surrogate-Key: { $ref: './common.yaml#/components/headers/SurrogateKey' }
+            Vary: { $ref: '#/components/headers/Vary' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicSite' }
+              examples:
+                site: { $ref: '../examples/public.yaml#/public_site' }
+        '304': { $ref: '#/components/responses/NotModified' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /public/v1/sites/{slug}/pages:
+    get:
+      operationId: listPublishedPages
+      summary: Rutas publicadas, para el sitemap
+      tags: [sites]
+      parameters:
+        - $ref: '#/components/parameters/SiteSlug'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Páginas con publicación vigente.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/PublicCacheControl' }
+            Surrogate-Key: { $ref: './common.yaml#/components/headers/SurrogateKey' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublishedPageCollection' }
+              examples:
+                pages: { $ref: '../examples/public.yaml#/published_pages' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /public/v1/sites/{slug}/pages/{path}:
+    get:
+      operationId: getPublicPage
+      summary: Página publicada
+      tags: [sites]
+      parameters:
+        - $ref: '#/components/parameters/SiteSlug'
+        - name: path
+          in: path
+          required: true
+          description: >-
+            Ruta de la página codificada como un solo segmento (`encodeURIComponent`): `/guia` se envía como `%2Fguia`
+            y la portada como `%2F`.
+          schema: { $ref: '#/components/schemas/PagePath' }
+        - name: locale
+          in: query
+          required: false
+          schema: { $ref: './common.yaml#/components/schemas/Locale' }
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Snapshot de la publicación vigente.
+          headers:
+            ETag: { $ref: './common.yaml#/components/headers/ETag' }
+            Cache-Control: { $ref: './common.yaml#/components/headers/PublicCacheControl' }
+            Surrogate-Key: { $ref: './common.yaml#/components/headers/SurrogateKey' }
+            Vary: { $ref: '#/components/headers/Vary' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicPage' }
+              examples:
+                page: { $ref: '../examples/public.yaml#/public_page' }
+        '304': { $ref: '#/components/responses/NotModified' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /public/v1/sites/{slug}/events:
+    get:
+      operationId: listPublicEvents
+      summary: Catálogo proyectado
+      description: Solo releases `active` (RN-14).
+      tags: [events]
+      parameters:
+        - $ref: '#/components/parameters/SiteSlug'
+        - $ref: './common.yaml#/components/parameters/Cursor'
+        - $ref: './common.yaml#/components/parameters/Limit'
+        - name: modality
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/Modality' }
+        - name: category
+          in: query
+          required: false
+          schema: { $ref: './common.yaml#/components/schemas/Slug' }
+        - name: from
+          in: query
+          required: false
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: false
+          schema: { type: string, format: date }
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Eventos del sitio.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/PublicCacheControl' }
+            Surrogate-Key: { $ref: './common.yaml#/components/headers/SurrogateKey' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicEventCollection' }
+              examples:
+                events: { $ref: '../examples/public.yaml#/public_events' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /public/v1/sites/{slug}/events/{event_slug}:
+    get:
+      operationId: getPublicEvent
+      summary: Release público coherente
+      description: Todo lo que devuelve sale de la misma `publication_id` (PF-042).
+      tags: [events]
+      parameters:
+        - $ref: '#/components/parameters/SiteSlug'
+        - name: event_slug
+          in: path
+          required: true
+          schema: { $ref: './common.yaml#/components/schemas/Slug' }
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Evento, agenda y programas del release activo.
+          headers:
+            ETag: { $ref: './common.yaml#/components/headers/ETag' }
+            Cache-Control: { $ref: './common.yaml#/components/headers/PublicCacheControl' }
+            Surrogate-Key: { $ref: './common.yaml#/components/headers/SurrogateKey' }
+            Vary: { $ref: '#/components/headers/Vary' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicEvent' }
+              examples:
+                event: { $ref: '../examples/public.yaml#/public_event' }
+                cancelled: { $ref: '../examples/public.yaml#/public_event_cancelled' }
+        '304': { $ref: '#/components/responses/NotModified' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /public/v1/previews/{token}:
+    get:
+      operationId: getPreview
+      summary: Leer una vista previa
+      description: Un uso, ligada al usuario, sin caché y sin indexar (PF-033).
+      tags: [previews]
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string, pattern: '^[A-Za-z0-9_-]{32,128}$' }
+        - $ref: './common.yaml#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Borrador de la página en la revisión de la vista previa.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+            X-Robots-Tag: { $ref: '#/components/headers/NoIndex' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Preview' }
+              examples:
+                preview: { $ref: '../examples/public.yaml#/preview' }
+        '400': { $ref: './common.yaml#/components/responses/BadRequest' }
+        '404':
+          description: Vista previa vencida, usada o inexistente.
+          headers:
+            Cache-Control: { $ref: './common.yaml#/components/headers/NoStore' }
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+              examples:
+                preview_expired: { $ref: '../examples/public.yaml#/preview_expired' }
+
+components:
+  parameters:
+    SiteSlug:
+      name: slug
+      in: path
+      required: true
+      schema: { $ref: './common.yaml#/components/schemas/Slug' }
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: ETag ya cacheado; si coincide se responde 304.
+      schema: { type: string, maxLength: 256 }
+  headers:
+    Vary:
+      description: Headers que cambian la respuesta.
+      schema: { type: string }
+      example: Accept-Encoding
+    NoIndex:
+      description: Las vistas previas no se indexan.
+      schema: { type: string, const: noindex }
+  responses:
+    NotModified:
+      description: El ETag coincide; se usa la copia cacheada.
+      headers:
+        ETag: { $ref: './common.yaml#/components/headers/ETag' }
+  schemas:
+    Modality:
+      type: string
+      enum: [in_person, online, hybrid]
+    PagePath:
+      type: string
+      pattern: '^/([a-z0-9-]+(/[a-z0-9-]+)*)?$'
+      maxLength: 255
+    SiteResolution:
+      type: object
+      additionalProperties: false
+      required: [site_id, slug, locale]
+      properties:
+        site_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        slug: { $ref: './common.yaml#/components/schemas/Slug' }
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+    PublicTheme:
+      type: object
+      additionalProperties: false
+      required: [color_primary, color_on_primary, color_background, color_text, font_family, radius]
+      properties:
+        color_primary: { type: string, pattern: '^#[0-9a-f]{6}$' }
+        color_on_primary: { type: string, pattern: '^#[0-9a-f]{6}$' }
+        color_background: { type: string, pattern: '^#[0-9a-f]{6}$' }
+        color_text: { type: string, pattern: '^#[0-9a-f]{6}$' }
+        font_family: { type: string, enum: [system, serif, humanist] }
+        radius: { type: string, enum: [none, small, medium] }
+    PublicSite:
+      type: object
+      additionalProperties: false
+      required: [site_id, slug, name, kind, locale, theme, navigation]
+      properties:
+        site_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        slug: { $ref: './common.yaml#/components/schemas/Slug' }
+        name: { type: string }
+        kind:
+          type: string
+          enum: [product, demo, client]
+          description: '`demo` muestra el banner "Demo" en todas las páginas (PF-041).'
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+        theme: { $ref: '#/components/schemas/PublicTheme' }
+        navigation:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [label, href]
+            properties:
+              label: { type: string }
+              href: { type: string, pattern: '^(/[^\s]*|https://[^\s]+)$' }
+    Block:
+      oneOf:
+        - $ref: '../schemas/blocks/hero.v1.json'
+        - $ref: '../schemas/blocks/rich_text.v1.json'
+        - $ref: '../schemas/blocks/image.v1.json'
+        - $ref: '../schemas/blocks/event_catalog.v1.json'
+        - $ref: '../schemas/blocks/featured_event.v1.json'
+        - $ref: '../schemas/blocks/agenda.v1.json'
+      discriminator:
+        propertyName: type
+    Seo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string }
+        description: { type: string }
+        canonical: { type: string, format: uri }
+    PublicPage:
+      type: object
+      additionalProperties: false
+      required: [site_id, page_id, publication_id, path, locale, title, seo, blocks, content_hash, published_at]
+      properties:
+        site_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        page_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        publication_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        path: { $ref: '#/components/schemas/PagePath' }
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+        title: { type: string }
+        seo: { $ref: '#/components/schemas/Seo' }
+        blocks:
+          type: array
+          items: { $ref: '#/components/schemas/Block' }
+        content_hash: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        published_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    Preview:
+      type: object
+      additionalProperties: false
+      required: [site_id, page_id, revision, path, locale, title, seo, blocks, expires_at]
+      properties:
+        site_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        page_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        revision: { $ref: './common.yaml#/components/schemas/Revision' }
+        path: { $ref: '#/components/schemas/PagePath' }
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+        title: { type: string }
+        seo: { $ref: '#/components/schemas/Seo' }
+        blocks:
+          type: array
+          items: { $ref: '#/components/schemas/Block' }
+        expires_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    PublishedPage:
+      type: object
+      additionalProperties: false
+      required: [path, locale, published_at]
+      properties:
+        path: { $ref: '#/components/schemas/PagePath' }
+        locale: { $ref: './common.yaml#/components/schemas/Locale' }
+        published_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    PublishedPageCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/PublishedPage' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    Registration:
+      type: object
+      additionalProperties: false
+      required: [status, as_of]
+      description: Orientativa; quien decide el cupo es Participation (RN-15).
+      properties:
+        status: { type: string, enum: [not_open, open, few_left, full, closed] }
+        as_of: { $ref: './common.yaml#/components/schemas/Timestamp' }
+    PublicEventSummary:
+      allOf:
+        - $ref: '#/components/schemas/PublicEventFields'
+      type: object
+      unevaluatedProperties: false
+    PublicEventFields:
+      type: object
+      description: Campos comunes del resumen y del detalle de un evento.
+      required:
+        [event_id, publication_id, slug, title, summary, state, modality, starts_at, ends_at, timezone, registration]
+      properties:
+        event_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        publication_id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        slug: { $ref: './common.yaml#/components/schemas/Slug' }
+        title: { type: string }
+        summary: { type: string }
+        state: { type: string, enum: [scheduled, cancelled] }
+        modality: { $ref: '#/components/schemas/Modality' }
+        starts_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        ends_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+        timezone: { type: string }
+        venue_name: { type: string }
+        registration: { $ref: '#/components/schemas/Registration' }
+    PublicEventCollection:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/PublicEventSummary' }
+        next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
+    PublicEvent:
+      allOf:
+        - $ref: '#/components/schemas/PublicEventFields'
+      type: object
+      unevaluatedProperties: false
+      required: [description, sessions, programs]
+      properties:
+        description:
+          type: array
+          description: Párrafos de texto plano.
+          items: { type: string }
+        sessions:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, title, starts_at, ends_at]
+            properties:
+              id: { $ref: './common.yaml#/components/schemas/Uuid' }
+              title: { type: string }
+              starts_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+              ends_at: { $ref: './common.yaml#/components/schemas/Timestamp' }
+              location: { type: string }
+        programs:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, name]
+            properties:
+              id: { $ref: './common.yaml#/components/schemas/Uuid' }
+              name: { type: string }

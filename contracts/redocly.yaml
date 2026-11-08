@@ -1,0 +1,28 @@
+# Configuración de Redocly para los cuatro contratos del Equipo 1 (spec 3.2, API-03 y API-09).
+extends:
+  - recommended
+
+apis:
+  auth:
+    root: openapi/auth.yaml
+  platform:
+    root: openapi/platform.yaml
+  cms:
+    root: openapi/cms.yaml
+  public:
+    root: openapi/public.yaml
+
+rules:
+  # Cada ejemplo valida contra el schema de su media type (MOCK-02).
+  no-invalid-media-type-examples:
+    severity: error
+    allowAdditionalProperties: false
+  no-invalid-schema-examples: error
+  operation-operationId: error
+  operation-summary: error
+  operation-4xx-response: error
+  no-unused-components: warn
+  security-defined: error
+  tag-description: error
+  # Los servidores de los contratos son los locales de desarrollo; los de staging se añaden al desplegar (Fase 5).
+  no-server-example.com: off

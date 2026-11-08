@@ -1,0 +1,21 @@
+{
+  "title": "Bloque de evento destacado, versión 1",
+  "description": "Guarda el ID del evento y la publication de su release, no una copia (PF-037).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "version", "data"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "type": { "type": "string", "const": "featured_event" },
+    "version": { "type": "integer", "const": 1 },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "publication_id"],
+      "properties": {
+        "event_id": { "type": "string", "format": "uuid" },
+        "publication_id": { "type": "string", "format": "uuid" }
+      }
+    }
+  }
+}

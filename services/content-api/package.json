@@ -1,0 +1,19 @@
+{
+  "name": "@incuba/content-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CMS y Public Read API (spec 9.4 y 9.5). El proyector llega en la Fase 2",
+  "type": "module",
+  "scripts": {
+    "dev:cms": "node --watch --env-file-if-exists=../../.env src/main-cms.ts",
+    "dev:public": "node --watch --env-file-if-exists=../../.env src/main-public.ts",
+    "start:cms": "node src/main-cms.ts",
+    "start:public": "node src/main-public.ts"
+  },
+  "dependencies": {
+    "@incuba/authz": "workspace:*",
+    "@incuba/http-kit": "workspace:*",
+    "@incuba/shared-kernel": "workspace:*",
+    "fastify": "5.12.8"
+  }
+}

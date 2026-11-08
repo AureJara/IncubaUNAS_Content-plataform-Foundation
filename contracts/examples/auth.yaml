@@ -1,0 +1,43 @@
+# Ejemplos del Auth BFF (spec 3.8, MOCK-01). Datos ficticios: el repositorio es público.
+# Cada entrada es un Example Object de OpenAPI que referencia auth.yaml.
+
+jwks:
+  summary: Clave de firma vigente (valores ficticios)
+  value:
+    keys:
+      - kty: EC
+        crv: P-256
+        kid: example-key-2026-11
+        use: sig
+        alg: ES256
+        x: ZXhhbXBsZS14LWNvb3JkaW5hdGUtbm90LWEtcmVhbC1rZXk
+        y: ZXhhbXBsZS15LWNvb3JkaW5hdGUtbm90LWEtcmVhbC1rZXk
+
+token_request:
+  summary: Service account con secreto (valores ficticios)
+  value:
+    grant_type: client_credentials
+    client_id: sa_01933f465e6f7a718c839e0f1a2b3c4d
+    client_secret: not-a-real-secret-example-0000000000000000
+    scope: events:read
+    audience: platform-api
+
+token_response:
+  summary: Token interno (valor ficticio)
+  value:
+    access_token: not-a-real-token-example
+    token_type: Bearer
+    expires_in: 300
+    scope: events:read
+
+oauth_invalid_scope:
+  summary: Scope no autorizado para el client
+  value:
+    error: invalid_scope
+    error_description: El client no tiene el scope pedido.
+
+oauth_invalid_client:
+  summary: Client vencido o revocado
+  value:
+    error: invalid_client
+    error_description: Credenciales inválidas.
