@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+@import '@incuba/ui/theme.css';
+@source '../../../packages/ui/src';
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-surface font-body-md text-body-md text-on-surface antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}

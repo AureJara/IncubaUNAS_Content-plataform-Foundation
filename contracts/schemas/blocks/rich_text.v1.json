@@ -39,7 +39,11 @@
                       "uniqueItems": true,
                       "items": { "type": "string", "enum": ["bold", "italic", "code"] }
                     },
-                    "href": { "type": "string", "maxLength": 2048, "pattern": "^(/[^\\s]*|https://[^\\s]+)$" }
+                    "href": {
+                      "type": "string",
+                      "maxLength": 2048,
+                      "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$"
+                    }
                   }
                 }
               }

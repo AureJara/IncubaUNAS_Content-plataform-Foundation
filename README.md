@@ -4,8 +4,9 @@ Plataforma de eventos, congresos y convocatorias de IncubaUNAS. Este repositorio
 sesión y tokens internos, organizaciones y membresías, CMS, sitio público y Admin shell. De los equipos 2–5 solo hay
 contratos.
 
-> **Estado: Sprint 0, solo backend y con las APIs en mock** (spec 3.8). Todas las operaciones responden, pero casi
-> todas con el ejemplo del contrato y el header `X-Mock`. Un mock no es trabajo terminado. La UI todavía no existe.
+> **Estado: Sprint 0, con las APIs en mock** (spec 3.8). Todas las operaciones responden, pero casi todas con el
+> ejemplo del contrato y el header `X-Mock`. El sitio público y el Admin shell ya existen y leen esos mocks, así que lo
+> que muestran son datos de prueba. Un mock no es trabajo terminado.
 
 ## Documentación
 
@@ -29,6 +30,9 @@ contratos.
 | `packages/http-kit`      | Registro de rutas por `operationId`, validación con el OpenAPI, mocks, idempotencia, Problem Details |
 | `packages/authz`         | Verificación de tokens internos, roles y scopes                                                      |
 | `packages/api-client`    | Cliente tipado generado desde los contratos                                                          |
+| `packages/ui`            | Tokens de diseño (Tailwind 4), fuentes autoalojadas e íconos que comparten los dos frontends         |
+| `apps/web-public`        | Sitio público: React Router 8 en modo framework con SSR y servidor Express                           |
+| `apps/admin-shell`       | Admin shell: SPA de React Router 8 en modo datos                                                     |
 | `services/gateway`       | BFF: sesión de prueba en local, firma de tokens internos, JWKS y proxy                               |
 | `services/platform-api`  | Identidad, organizaciones, membresías, invitaciones, dominios y auditoría                            |
 | `services/content-api`   | Procesos `cms` y `public-read`                                                                       |
@@ -93,6 +97,39 @@ Todos exponen `GET /health/live` y `GET /health/ready`; `ready` lista el estado 
 
 El navegador y el frontend hablan solo con el **gateway** (y con `public-read` para el sitio público). Llamar directo a
 `platform-api` o al CMS sin token da 401: el token interno lo pone el gateway.
+
+## Levantar los frontends
+
+Con las APIs levantadas, cada frontend en su terminal:
+
+```bash
+pnpm dev:web
+```
+
+```bash
+pnpm dev:admin
+```
+
+| Frontend      | Puerto | Qué hace                                                                                                               |
+| ------------- | -----: | ---------------------------------------------------------------------------------------------------------------------- |
+| `web-public`  |   3000 | Resuelve el sitio por el host (el mock resuelve cualquier host al sitio de demo) y lee `public-read` desde el servidor |
+| `admin-shell` |   5173 | Vite reenvía `/auth`, `/platform/v1`, `/cms/v1` y `/.well-known` al gateway, así que comparten origen                  |
+
+Las variables están en `.env.example`: `CONTENT_PUBLIC_URL` (la Public Read API que lee el sitio), `WEB_PUBLIC_PORT`,
+`ADMIN_SHELL_PORT` y `GATEWAY_URL`.
+
+Para probar el sitio como en producción, con su CSP estricta:
+
+```bash
+pnpm --filter @incuba/web-public build
+```
+
+```bash
+pnpm --filter @incuba/web-public start
+```
+
+El shell compilado se prueba con `pnpm --filter @incuba/admin-shell build` y después
+`pnpm --filter @incuba/admin-shell preview`, que aplica su CSP.
 
 ## Trabajar con los mocks
 

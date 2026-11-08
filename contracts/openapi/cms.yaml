@@ -580,9 +580,9 @@ components:
       maxLength: 255
     Link:
       type: string
-      description: Solo relativo o `https:` (RN-18).
+      description: Solo una ruta del mismo sitio (`/…`, nunca `//…`) o `https:` (RN-18).
       maxLength: 2048
-      pattern: '^(/[^\s]*|https://[^\s]+)$'
+      pattern: '^(/(?![/\\])[^\s]*|https://[^\s]+)$'
     HexColor:
       type: string
       pattern: '^#[0-9a-f]{6}$'
@@ -694,7 +694,10 @@ components:
           items: { $ref: '#/components/schemas/SiteSummary' }
         next_cursor: { $ref: './common.yaml#/components/schemas/NextCursor' }
     Block:
-      description: Bloque tipado; cada tipo valida contra su JSON Schema versionado (PF-031).
+      description: >-
+        Bloque tipado; cada tipo valida contra su JSON Schema versionado (PF-031). Lo distinguen las constantes `type` y
+        `version` de cada schema, sin `discriminator`: el implícito tomaría el nombre del schema (`hero.v1`) en vez del
+        valor de `type` (`hero`), y un mismo `type` puede tener varias versiones.
       oneOf:
         - $ref: '../schemas/blocks/hero.v1.json'
         - $ref: '../schemas/blocks/rich_text.v1.json'
@@ -702,8 +705,6 @@ components:
         - $ref: '../schemas/blocks/event_catalog.v1.json'
         - $ref: '../schemas/blocks/featured_event.v1.json'
         - $ref: '../schemas/blocks/agenda.v1.json'
-      discriminator:
-        propertyName: type
     Blocks:
       type: array
       maxItems: 50

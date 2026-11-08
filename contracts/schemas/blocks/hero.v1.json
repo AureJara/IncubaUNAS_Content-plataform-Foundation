@@ -23,7 +23,7 @@
           "required": ["label", "href"],
           "properties": {
             "label": { "type": "string", "minLength": 1, "maxLength": 60 },
-            "href": { "type": "string", "maxLength": 2048, "pattern": "^(/[^\\s]*|https://[^\\s]+)$" }
+            "href": { "type": "string", "maxLength": 2048, "pattern": "^(/(?![/\\\\])[^\\s]*|https://[^\\s]+)$" }
           }
         }
       },
