@@ -10,16 +10,17 @@ contratos.
 
 ## Documentación
 
-| Documento                                                                              | Qué contiene                                                                                                |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| [`spec.md`](spec.md)                                                                   | La especificación del Equipo 1: requisitos, arquitectura, reglas y catálogo de APIs. Es la fuente de verdad |
-| [`backlog.md`](backlog.md)                                                             | El trabajo ordenado por sprints (F0–F5) y los acuerdos pendientes con otros equipos (C-xx)                  |
-| [`docs/COBERTURA.md`](docs/COBERTURA.md)                                               | Qué está hecho, a medias o pendiente, y en qué estado responde cada operación                               |
-| [`docs/adr/`](docs/adr/)                                                               | Decisiones de arquitectura. ADR-0001: todo el frontend con React y React Router                             |
-| [`contracts/openapi/`](contracts/openapi/)                                             | Los contratos de las APIs (OpenAPI 3.1), con sus ejemplos en `contracts/examples/`                          |
-| [`packages/authz/README.md`](packages/authz/README.md)                                 | Cómo verificar los tokens internos, claims, roles y scopes; pensado para los equipos 2–4                    |
-| [`CLAUDE.md`](CLAUDE.md)                                                               | Reglas de trabajo del equipo                                                                                |
-| [Arquitectura de referencia](https://github.com/juancxdev/event-platform-architecture) | La arquitectura de los 5 equipos. Si el spec la contradice, manda la arquitectura                           |
+| Documento                                                                              | Qué contiene                                                                                              |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `spec.md` (no está en el repositorio)                                                  | La especificación del Equipo 1 y fuente de verdad. No se publica: pídela al equipo y déjala en la raíz    |
+| [`contracts/catalog.json`](contracts/catalog.json)                                     | Las rutas del catálogo de APIs del spec (9.2–9.6); `contracts:check` exige que todas estén en un contrato |
+| [`backlog.md`](backlog.md)                                                             | El trabajo ordenado por sprints (F0–F5) y los acuerdos pendientes con otros equipos (C-xx)                |
+| [`docs/COBERTURA.md`](docs/COBERTURA.md)                                               | Qué está hecho, a medias o pendiente, y en qué estado responde cada operación                             |
+| [`docs/adr/`](docs/adr/)                                                               | Decisiones de arquitectura. ADR-0001: todo el frontend con React y React Router                           |
+| [`contracts/openapi/`](contracts/openapi/)                                             | Los contratos de las APIs (OpenAPI 3.1), con sus ejemplos en `contracts/examples/`                        |
+| [`packages/authz/README.md`](packages/authz/README.md)                                 | Cómo verificar los tokens internos, claims, roles y scopes; pensado para los equipos 2–4                  |
+| [`CLAUDE.md`](CLAUDE.md)                                                               | Reglas de trabajo del equipo                                                                              |
+| [Arquitectura de referencia](https://github.com/juancxdev/event-platform-architecture) | La arquitectura de los 5 equipos. Si el spec la contradice, manda la arquitectura                         |
 
 ## Estructura
 

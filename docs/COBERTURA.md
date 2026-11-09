@@ -14,7 +14,7 @@ esos mocks.
   siguen pendientes hasta que sus operaciones estén en `real`.
 - Los frontends existen pero solo muestran datos de prueba: el sitio público pinta lo que devuelve la Public Read API en
   mock y el shell, la sesión de prueba del gateway. Los dos lo avisan en pantalla. Ver [Frontends](#frontends).
-- `pnpm check` está en verde: lint de contratos, `contracts:check`, ESLint, Prettier, `tsc` y 125 pruebas en 11
+- `pnpm check` está en verde: lint de contratos, `contracts:check`, ESLint, Prettier, `tsc` y 130 pruebas en 11
   archivos.
 
 ## Estados
@@ -35,7 +35,7 @@ operaciones. Con `APP_ENV=staging` o `production` ningún servicio arranca mient
 | ----- | --------- | --------------------------------------------------------------------------------------------------------- | --------- |
 | F0-01 | Hecho     | Monorepo pnpm, TypeScript estricto, ESLint con fronteras de capas, Prettier, `.gitattributes`, `.editorconfig`, `.nvmrc`, CODEOWNERS, ADR-0001. `tests/architecture` prueba que `pg` en `domain/` falla el lint | — |
 | F0-02 | Pendiente | `.env.example` sin secretos                                                                               | Docker Compose con PostgreSQL, Keycloak, Redis, Redpanda, MinIO, ClamAV y Mailpit; `pnpm dev:up` |
-| F0-03 | Parcial   | Cuatro contratos OpenAPI 3.1 con las 62 rutas del catálogo (lo comprueba `contracts:check`), scopes, Problem Details y un ejemplo por respuesta por defecto y por cuerpo, validados contra su schema | Spectral; marcar en el contrato las adiciones de spec 9.6 como propuestas (hoy solo se anotan en esta tabla); registrar los códigos de error nuevos (C-07) |
+| F0-03 | Parcial   | Cuatro contratos OpenAPI 3.1 con las 62 rutas del catálogo (lo comprueba `contracts:check` contra `contracts/catalog.json`, copia del spec, que no se publica), scopes, Problem Details y un ejemplo por respuesta por defecto y por cuerpo, validados contra su schema | Spectral; marcar en el contrato las adiciones de spec 9.6 como propuestas (hoy solo se anotan en esta tabla); registrar los códigos de error nuevos (C-07) |
 | F0-04 | Pendiente | —                                                                                                         | AsyncAPI y JSON Schemas de los eventos |
 | F0-05 | Parcial   | `pnpm contracts:build` genera los JSON empaquetados y los tipos del `api-client`; `contracts:check` falla si quedaron desactualizados | El workflow de CI; la documentación navegable con Redoc (`contracts/docs/` está vacío) |
 | F0-06 | Hecho     | `shared-kernel` y `http-kit`: Problem Details, request ID (UUID v7), idempotencia, ETag/`If-Match` (428 y 412), cursor, validación de request y response con el OpenAPI, rutas por `operationId` | El almacén de idempotencia es en memoria hasta F0-07 |
@@ -63,6 +63,7 @@ SWR, Redux y axios) y los tokens de `packages/ui`. Ninguno escribe HTML crudo ni
 | --------------------------------------------------------------------------------------------------------------------------- | ------- |
 | SSR en modo framework; un middleware de servidor resuelve el host con `resolveSite` y guarda el sitio en el contexto | Hecho   |
 | Rutas `/`, `/eventos/:eventSlug` y `/*` (página del CMS); una ruta con mayúsculas o `//` da 404 sin llamar a la API       | Hecho   |
+| Título en toda página (WCAG 2.4.2), también en las de error: "Página no encontrada · {sitio}" o "El sitio no está disponible" | Hecho   |
 | Bloques `hero`, `rich_text`, `event_catalog` y `featured_event`, con una llamada a eventos por bloque de catálogo          | Hecho   |
 | Bloques `image` y `agenda`: no se pintan (no hay assets ni sesiones en el mock)                                            | Pendiente |
 | `Cache-Control` del recurso principal y unión de `Surrogate-Key`; todo error sale con `no-store` y sin claves              | Hecho   |

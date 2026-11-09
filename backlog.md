@@ -3,7 +3,7 @@
 > Backlog de trabajo para desarrollar **solo** la parte del Equipo 1 de la plataforma de eventos de IncubaUNAS.
 > Desglosa las 40 historias del backlog canónico (PF-001 a PF-055) en ítems implementables, ordenados por fase y sprint.
 >
-> **Fuente:** [`spec.md`](spec.md) v1.3 y [event-platform-architecture](https://github.com/juancxdev/event-platform-architecture)
+> **Fuente:** `spec.md` v1.3 (no se publica en el repositorio) y [event-platform-architecture](https://github.com/juancxdev/event-platform-architecture)
 > (commit `df94d0b`). **Versión:** 1.2 (2026-11-08): React Router 8 en todo el frontend y APIs con mocks desde el
 > Sprint 0 (F0-16, F0-17). La 1.1 pasó el sitio público a React.
 
