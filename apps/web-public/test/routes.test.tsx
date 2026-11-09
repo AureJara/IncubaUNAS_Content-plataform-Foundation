@@ -1,13 +1,21 @@
 // @vitest-environment jsdom
 // Rutas del sitio público con la Public Read API falsa (FE-09): resolución por host, bloques y errores.
 import { createPublicClient, type PublicComponents } from '@incuba/api-client';
-import { cleanup, configure, render, screen } from '@testing-library/react';
-import { createRoutesStub, RouterContextProvider, type LoaderFunction, type MiddlewareFunction } from 'react-router';
+import { cleanup, configure, render, screen, waitFor } from '@testing-library/react';
+import type { ComponentType } from 'react';
+import {
+  createRoutesStub,
+  Meta,
+  RouterContextProvider,
+  type LoaderFunction,
+  type MetaFunction,
+  type MiddlewareFunction,
+} from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
 import { publicApiContext } from '../app/api.server.ts';
-import App, { ErrorBoundary, loader as rootLoader, middleware } from '../app/root.tsx';
-import EventPage, { loader as eventLoader } from '../app/routes/event.tsx';
-import Page, { loader as pageLoader } from '../app/routes/page.tsx';
+import App, { ErrorBoundary, loader as rootLoader, meta as rootMeta, middleware } from '../app/root.tsx';
+import EventPage, { loader as eventLoader, meta as eventMeta } from '../app/routes/event.tsx';
+import Page, { loader as pageLoader, meta as pageMeta } from '../app/routes/page.tsx';
 
 type Schemas = PublicComponents['schemas'];
 
@@ -16,6 +24,18 @@ type Schemas = PublicComponents['schemas'];
  * del servidor). En la prueba se usan las mismas funciones, solo con el tipo del stub.
  */
 const loose = <T,>(value: unknown): T => value as T;
+
+/** `<Meta />` vive en el Layout, que el stub no usa: se pinta junto a la raíz para leer el título del documento. */
+function withMeta<P extends object>(Component: ComponentType<P>): ComponentType<P> {
+  return function WithMeta(props: P) {
+    return (
+      <>
+        <Meta />
+        <Component {...props} />
+      </>
+    );
+  };
+}
 
 const SITE: Schemas['PublicSite'] = {
   site_id: '018f6b2c-0000-7000-8000-000000000001',
@@ -135,12 +155,18 @@ function setup(path: string, overrides: Record<string, Handler> = {}) {
         path: '/',
         middleware: loose<MiddlewareFunction[]>(middleware),
         loader: rootLoader,
-        Component: App,
-        ErrorBoundary,
+        meta: loose<MetaFunction>(rootMeta),
+        Component: withMeta(App),
+        ErrorBoundary: withMeta(ErrorBoundary),
         children: [
-          { path: 'eventos/:eventSlug', loader: loose<LoaderFunction>(eventLoader), Component: EventPage },
-          { index: true, loader: pageLoader, Component: Page },
-          { path: '*', loader: pageLoader, Component: Page },
+          {
+            path: 'eventos/:eventSlug',
+            loader: loose<LoaderFunction>(eventLoader),
+            meta: loose<MetaFunction>(eventMeta),
+            Component: EventPage,
+          },
+          { index: true, loader: pageLoader, meta: loose<MetaFunction>(pageMeta), Component: Page },
+          { path: '*', loader: pageLoader, meta: loose<MetaFunction>(pageMeta), Component: Page },
         ],
       },
     ],
@@ -195,5 +221,33 @@ describe('web-public', () => {
     setup('/', { '/public/v1/sites/incubaunas': () => json({ detail: 'pool agotado en db-01' }, 500) });
     expect(await screen.findByRole('heading', { name: 'El sitio no está disponible' })).toBeTruthy();
     expect(screen.queryByText(/db-01/u)).toBeNull();
+  });
+});
+
+describe('título del documento (WCAG 2.4.2)', () => {
+  it('una página usa el suyo, con el nombre del sitio', async () => {
+    setup('/');
+    await waitFor(() => expect(document.title).toBe('Inicio · IncubaUNAS'));
+  });
+
+  it('un evento usa su título', async () => {
+    setup('/eventos/feria-agtech');
+    await waitFor(() => expect(document.title).toBe('Feria AgTech · IncubaUNAS'));
+  });
+
+  it('una ruta inválida da 404 con título, no una pestaña sin nombre', async () => {
+    setup('/Mayusculas');
+    await waitFor(() => expect(document.title).toBe('Página no encontrada · IncubaUNAS'));
+  });
+
+  it('un host sin sitio da 404 con título aunque no haya nombre de sitio', async () => {
+    setup('/', { '/public/v1/site-resolutions': notFound });
+    await waitFor(() => expect(document.title).toBe('Página no encontrada'));
+  });
+
+  it('un fallo de la API da un título genérico sin detalles internos', async () => {
+    setup('/', { '/public/v1/sites/incubaunas': () => json({ detail: 'pool agotado en db-01' }, 500) });
+    await waitFor(() => expect(document.title).toBe('El sitio no está disponible'));
+    expect(document.title).not.toMatch(/db-01/u);
   });
 });

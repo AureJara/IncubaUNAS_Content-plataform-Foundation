@@ -14,7 +14,7 @@ esos mocks.
   siguen pendientes hasta que sus operaciones estén en `real`.
 - Los frontends existen pero solo muestran datos de prueba: el sitio público pinta lo que devuelve la Public Read API en
   mock y el shell, la sesión de prueba del gateway. Los dos lo avisan en pantalla. Ver [Frontends](#frontends).
-- `pnpm check` está en verde: lint de contratos, `contracts:check`, ESLint, Prettier, `tsc` y 125 pruebas en 11
+- `pnpm check` está en verde: lint de contratos, `contracts:check`, ESLint, Prettier, `tsc` y 130 pruebas en 11
   archivos.
 
 ## Estados
@@ -63,6 +63,7 @@ SWR, Redux y axios) y los tokens de `packages/ui`. Ninguno escribe HTML crudo ni
 | --------------------------------------------------------------------------------------------------------------------------- | ------- |
 | SSR en modo framework; un middleware de servidor resuelve el host con `resolveSite` y guarda el sitio en el contexto | Hecho   |
 | Rutas `/`, `/eventos/:eventSlug` y `/*` (página del CMS); una ruta con mayúsculas o `//` da 404 sin llamar a la API       | Hecho   |
+| Título en toda página (WCAG 2.4.2), también en las de error: "Página no encontrada · {sitio}" o "El sitio no está disponible" | Hecho   |
 | Bloques `hero`, `rich_text`, `event_catalog` y `featured_event`, con una llamada a eventos por bloque de catálogo          | Hecho   |
 | Bloques `image` y `agenda`: no se pintan (no hay assets ni sesiones en el mock)                                            | Pendiente |
 | `Cache-Control` del recurso principal y unión de `Surrogate-Key`; todo error sale con `no-store` y sin claves              | Hecho   |
