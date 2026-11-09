@@ -1,6 +1,7 @@
 # Reglas de trabajo — Equipo 1 (Content & Platform Foundation)
 
-- La fuente de verdad es `spec.md`; el trabajo se ordena con `backlog.md`. Si el spec contradice a la arquitectura
+- La fuente de verdad es `spec.md`; el trabajo se ordena con `backlog.md`. `spec.md` no se sube al repositorio (está en
+  `.gitignore`): si cambia su catálogo de rutas (9.2–9.6), se actualiza `contracts/catalog.json`. Si el spec contradice a la arquitectura
   (https://github.com/juancxdev/event-platform-architecture), manda la arquitectura.
 - Solo se desarrolla el Equipo 1. De los equipos 2–5 solo hay contratos.
 - Todo se conecta mediante APIs con contrato (spec 3.2). Contrato primero: se cambia `contracts/` y se corre

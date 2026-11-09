@@ -4,7 +4,7 @@
 //    que usa http-kit en ejecución;
 // 3. convenciones de spec 9.1: Idempotency-Key en POST de comando, If-Match en PATCH/PUT, errores en Problem Details;
 // 4. ningún secreto en el repositorio público;
-// 5. toda ruta del catálogo (spec 9.2–9.6) existe en algún contrato.
+// 5. toda ruta del catálogo (spec 9.2–9.6, copiado en contracts/catalog.json) existe en algún contrato.
 import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { extname, join, relative } from 'node:path';
@@ -133,23 +133,59 @@ async function checkSecrets(): Promise<void> {
   }
 }
 
-// 5. Catálogo de spec 9.2–9.6 (F0-03).
-async function checkCatalog(contracts: readonly Contract[]): Promise<number> {
-  const spec = await readFile(join(ROOT, 'spec.md'), 'utf8');
+// 5. Catálogo de spec 9.2–9.6 (F0-03). El spec no se sube al repositorio (está en .gitignore): sus rutas se copian en
+// contracts/catalog.json para que la comprobación corra igual en cualquier clon. Si spec.md está en la carpeta, además
+// se exige que la copia siga igual al spec.
+const CATALOG = join(ROOT, 'contracts', 'catalog.json');
+
+function specRoutes(spec: string): string[] | undefined {
   const start = spec.indexOf('### 9.2');
   const end = spec.indexOf('### 9.7');
-  const section = spec.slice(start, end);
-  const normalize = (path: string) => path.replace(/\{[^}]+\}/g, '{}');
-  const published = new Set(
-    contracts.flatMap((c) => c.operations.map((op) => `${op.method.toUpperCase()} ${normalize(op.path)}`)),
-  );
-  const routes = [...section.matchAll(/`(GET|POST|PUT|PATCH|DELETE) (\/[^`?\s]*)/g)].map(
-    ([, method, path]) => `${method} ${normalize(path ?? '')}`,
-  );
-  for (const route of new Set(routes)) {
-    if (!published.has(route)) problems.push(`catálogo: ${route} no está en ningún contrato`);
+  if (start < 0 || end < start) return undefined;
+  const routes = [...spec.slice(start, end).matchAll(/`(GET|POST|PUT|PATCH|DELETE) (\/[^`?\s]*)/g)];
+  return [...new Set(routes.map(([, method, path]) => `${method} ${path ?? ''}`))];
+}
+
+async function readCatalog(): Promise<string[]> {
+  const catalog: unknown = JSON.parse(await readFile(CATALOG, 'utf8'));
+  const routes = (catalog as { routes?: unknown }).routes;
+  if (!Array.isArray(routes) || routes.length === 0 || !routes.every((r) => typeof r === 'string')) {
+    problems.push('contracts/catalog.json: falta la lista `routes`');
+    return [];
   }
-  return new Set(routes).size;
+  return routes as string[];
+}
+
+async function checkCatalogMatchesSpec(catalog: readonly string[]): Promise<void> {
+  const spec = await readFile(join(ROOT, 'spec.md'), 'utf8').catch(() => undefined);
+  if (spec === undefined) return; // clon sin el spec: manda la copia del repositorio
+  const fromSpec = specRoutes(spec);
+  if (fromSpec === undefined) {
+    problems.push('spec.md: no se encuentran las secciones 9.2–9.7 del catálogo');
+    return;
+  }
+  const copied = new Set(catalog);
+  const missing = fromSpec.filter((route) => !copied.has(route));
+  const extra = catalog.filter((route) => !fromSpec.includes(route));
+  if (missing.length > 0 || extra.length > 0) {
+    problems.push(
+      `contracts/catalog.json no coincide con spec.md (faltan: ${missing.join(', ') || 'ninguna'}; ` +
+        `sobran: ${extra.join(', ') || 'ninguna'})`,
+    );
+  }
+}
+
+async function checkCatalog(contracts: readonly Contract[]): Promise<number> {
+  const catalog = await readCatalog();
+  await checkCatalogMatchesSpec(catalog);
+  const normalize = (route: string) => route.replace(/\{[^}]+\}/g, '{}');
+  const published = new Set(
+    contracts.flatMap((c) => c.operations.map((op) => normalize(`${op.method.toUpperCase()} ${op.path}`))),
+  );
+  for (const route of catalog) {
+    if (!published.has(normalize(route))) problems.push(`catálogo: ${route} no está en ningún contrato`);
+  }
+  return new Set(catalog.map(normalize)).size;
 }
 
 await checkDrift();

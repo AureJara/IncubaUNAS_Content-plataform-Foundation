@@ -11,3 +11,7 @@ build/
 .DS_Store
 .vscode/
 .idea/
+
+# La especificación del Equipo 1 no se publica: vive solo en la copia local. Su catálogo de rutas está en
+# contracts/catalog.json para que contracts:check corra en cualquier clon.
+/spec.md
